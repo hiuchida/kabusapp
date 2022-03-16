@@ -18,6 +18,8 @@ import io.swagger.client.model.TokenSuccess;
 import org.junit.Test;
 import org.junit.Ignore;
 
+import static org.junit.Assert.assertEquals;  // add
+import static org.junit.Assert.assertNotNull; // add
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +30,7 @@ import java.util.Map;
 /**
  * API tests for AuthApi
  */
-@Ignore
+//@Ignore // modify
 public class AuthApiTest {
 
     private final AuthApi api = new AuthApi();
@@ -44,8 +46,13 @@ public class AuthApiTest {
     @Test
     public void tokenPostTest() throws Exception {
         RequestToken body = null;
+        body = new RequestToken();           // add
+        body.setApIPassword("YourPassword"); // add
         TokenSuccess response = api.tokenPost(body);
 
         // TODO: test validations
+        System.out.println(response);                     // add
+        assertEquals(0, (int) response.getResultCode());  // add
+        assertNotNull(response.getToken());               // add
     }
 }
