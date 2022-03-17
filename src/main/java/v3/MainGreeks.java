@@ -24,10 +24,16 @@ public class MainGreeks {
 	        double totalGanma = 0.0;
 	        double totalTheta = 0.0;
 	        double totalVega = 0.0;
+	        int idx = 0;
 	        for (int i = 0; i < response.size(); i++) {
 		        PositionsSuccess pos = response.get(i);
+		        String code = pos.getSymbol();
+		        String name = pos.getSymbolName();
 		        int sign = sign(pos.getSide());
 		        int qty = (int)(sign * pos.getLeavesQty());
+		        if (qty == 0) { // 数量0は除外
+		        	continue;
+		        }
 		        Integer type = pos.getSecurityType();
 		        if (type == null) { // ※先物・オプション銘柄以外はnull
 		        	continue;
@@ -45,7 +51,7 @@ public class MainGreeks {
 		        	delta = 0.1;
 		        	break;
 		        case 103: // 日経225OP
-		        	BoardSuccess board = board(pos.getSymbol());
+		        	BoardSuccess board = board(code);
 		        	delta = board.getDelta();
 		        	ganma = board.getGamma() * 100.0;
 		        	theta = board.getTheta();
@@ -56,7 +62,7 @@ public class MainGreeks {
 		        	break;
 		        }
 		        if (delta != null) {
-			        System.out.println((i + 1) + ": " + pos.getSymbolName() + " " + qty + " "
+			        System.out.println((++idx) + ": " + name + " " + qty + " "
 			        		+ delta + " " + doubleStr(qty * delta) + " " + ganma + " " + doubleStr(qty * ganma) + " "
 			        		+ theta + " " + doubleStr(qty * theta) + " " + vega + " " + doubleStr(qty * vega) + " "
 			        		+ iv);
