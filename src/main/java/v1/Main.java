@@ -22,7 +22,7 @@ public class Main {
 		}
 		{
 	        String X_API_KEY = token;
-	        String symbol = "9433@1";
+	        String symbol = "9433@1"; // ＫＤＤＩ
 	        BoardSuccess response = infoApi.boardGet(X_API_KEY, symbol);
 	        System.out.println(response);
 	    }
