@@ -17,6 +17,8 @@ import io.swagger.client.model.WalletCashSuccess;
 import io.swagger.client.model.WalletFutureSuccess;
 import io.swagger.client.model.WalletMarginSuccess;
 import io.swagger.client.model.WalletOptionSuccess;
+import v2.AuthorizedToken;
+
 import org.junit.Test;
 import org.junit.Ignore;
 
@@ -30,7 +32,7 @@ import java.util.Map;
 /**
  * API tests for WalletApi
  */
-@Ignore
+// @Ignore
 public class WalletApiTest {
 
     private final WalletApi api = new WalletApi();
@@ -45,10 +47,11 @@ public class WalletApiTest {
      */
     @Test
     public void walletCashGetTest() throws Exception {
-        String X_API_KEY = null;
+        String X_API_KEY = AuthorizedToken.getToken();
         WalletCashSuccess response = api.walletCashGet(X_API_KEY);
 
         // TODO: test validations
+        System.out.println(response);        
     }
     /**
      * 取引余力（現物）（銘柄指定）
@@ -60,11 +63,12 @@ public class WalletApiTest {
      */
     @Test
     public void walletCashSymbolGetTest() throws Exception {
-        String X_API_KEY = null;
-        String symbol = null;
+        String X_API_KEY = AuthorizedToken.getToken();
+        String symbol = "9433@1"; // ＫＤＤＩ
         WalletCashSuccess response = api.walletCashSymbolGet(X_API_KEY, symbol);
 
         // TODO: test validations
+        System.out.println(response);        
     }
     /**
      * 取引余力（先物）
@@ -76,10 +80,11 @@ public class WalletApiTest {
      */
     @Test
     public void walletFutureGetTest() throws Exception {
-        String X_API_KEY = null;
+        String X_API_KEY = AuthorizedToken.getToken();
         WalletFutureSuccess response = api.walletFutureGet(X_API_KEY);
 
         // TODO: test validations
+        System.out.println(response);        
     }
     /**
      * 取引余力（先物）（銘柄指定）
@@ -91,11 +96,12 @@ public class WalletApiTest {
      */
     @Test
     public void walletFutureSymbolGetTest() throws Exception {
-        String X_API_KEY = null;
-        String symbol = null;
+        String X_API_KEY = AuthorizedToken.getToken();
+        String symbol = "167040019@2"; // 日経225mini 22/04
         WalletFutureSuccess response = api.walletFutureSymbolGet(X_API_KEY, symbol);
 
         // TODO: test validations
+        System.out.println(response);        
     }
     /**
      * 取引余力（信用）
@@ -107,10 +113,11 @@ public class WalletApiTest {
      */
     @Test
     public void walletMarginGetTest() throws Exception {
-        String X_API_KEY = null;
+        String X_API_KEY = AuthorizedToken.getToken();
         WalletMarginSuccess response = api.walletMarginGet(X_API_KEY);
 
         // TODO: test validations
+        System.out.println(response);        
     }
     /**
      * 取引余力（信用）（銘柄指定）
@@ -122,11 +129,12 @@ public class WalletApiTest {
      */
     @Test
     public void walletMarginSymbolGetTest() throws Exception {
-        String X_API_KEY = null;
-        String symbol = null;
+        String X_API_KEY = AuthorizedToken.getToken();
+        String symbol = "9433@1"; // ＫＤＤＩ
         WalletMarginSuccess response = api.walletMarginSymbolGet(X_API_KEY, symbol);
 
         // TODO: test validations
+        System.out.println(response);        
     }
     /**
      * 取引余力（オプション）
@@ -138,10 +146,11 @@ public class WalletApiTest {
      */
     @Test
     public void walletOptionGetTest() throws Exception {
-        String X_API_KEY = null;
+        String X_API_KEY = AuthorizedToken.getToken();
         WalletOptionSuccess response = api.walletOptionGet(X_API_KEY);
 
         // TODO: test validations
+        System.out.println(response);        
     }
     /**
      * 取引余力（オプション）（銘柄指定）
@@ -153,10 +162,11 @@ public class WalletApiTest {
      */
     @Test
     public void walletOptionSymbolGetTest() throws Exception {
-        String X_API_KEY = null;
-        String symbol = null;
+        String X_API_KEY = AuthorizedToken.getToken();
+        String symbol = "147047018@2"; // 日経平均オプション 22/04 コール 27000
         WalletOptionSuccess response = api.walletOptionSymbolGet(X_API_KEY, symbol);
 
         // TODO: test validations
+        System.out.println(response);        
     }
 }
