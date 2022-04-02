@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * API tests for AuthApi
  */
-//@Ignore // modify
+// @Ignore // modify
 public class AuthApiTest {
 
     private final AuthApi api = new AuthApi();

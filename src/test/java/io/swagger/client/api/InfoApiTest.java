@@ -12,9 +12,12 @@
 
 package io.swagger.client.api;
 
+import java.util.List;
+
+import org.junit.Test;
+
 import io.swagger.client.model.ApiSoftLimitResponse;
 import io.swagger.client.model.BoardSuccess;
-import io.swagger.client.model.ErrorResponse;
 import io.swagger.client.model.ExchangeResponse;
 import io.swagger.client.model.InlineResponse200;
 import io.swagger.client.model.MarginPremiumResponse;
@@ -24,20 +27,13 @@ import io.swagger.client.model.PrimaryExchangeResponse;
 import io.swagger.client.model.RegulationsResponse;
 import io.swagger.client.model.SymbolNameSuccess;
 import io.swagger.client.model.SymbolSuccess;
-import org.junit.Test;
-import org.junit.Ignore;
-
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import v2.AuthorizedToken;
 
 
 /**
  * API tests for InfoApi
  */
-@Ignore
+// @Ignore
 public class InfoApiTest {
 
     private final InfoApi api = new InfoApi();
@@ -52,10 +48,11 @@ public class InfoApiTest {
      */
     @Test
     public void apisoftlimitGetTest() throws Exception {
-        String X_API_KEY = null;
+        String X_API_KEY = AuthorizedToken.getToken();
         ApiSoftLimitResponse response = api.apisoftlimitGet(X_API_KEY);
 
         // TODO: test validations
+        System.out.println(response);        
     }
     /**
      * 時価情報・板情報
@@ -67,11 +64,12 @@ public class InfoApiTest {
      */
     @Test
     public void boardGetTest() throws Exception {
-        String X_API_KEY = null;
-        String symbol = null;
+        String X_API_KEY = AuthorizedToken.getToken();
+        String symbol = "9433@1"; // ＫＤＤＩ
         BoardSuccess response = api.boardGet(X_API_KEY, symbol);
 
         // TODO: test validations
+        System.out.println(response);        
     }
     /**
      * 為替情報
@@ -83,11 +81,12 @@ public class InfoApiTest {
      */
     @Test
     public void exchangeGetTest() throws Exception {
-        String X_API_KEY = null;
-        String symbol = null;
+        String X_API_KEY = AuthorizedToken.getToken();
+        String symbol = "usdjpy";
         ExchangeResponse response = api.exchangeGet(X_API_KEY, symbol);
 
         // TODO: test validations
+        System.out.println(response);        
     }
     /**
      * プレミアム料取得
@@ -99,11 +98,12 @@ public class InfoApiTest {
      */
     @Test
     public void marginpremiumGetTest() throws Exception {
-        String X_API_KEY = null;
-        String symbol = null;
+        String X_API_KEY = AuthorizedToken.getToken();
+        String symbol = "9433"; // ＫＤＤＩ
         MarginPremiumResponse response = api.marginpremiumGet(X_API_KEY, symbol);
 
         // TODO: test validations
+        System.out.println(response);        
     }
     /**
      * 注文約定照会
@@ -115,8 +115,8 @@ public class InfoApiTest {
      */
     @Test
     public void ordersGetTest() throws Exception {
-        String X_API_KEY = null;
-        String product = null;
+        String X_API_KEY = AuthorizedToken.getToken();
+        String product = "3";
         String id = null;
         String updtime = null;
         String details = null;
@@ -127,6 +127,15 @@ public class InfoApiTest {
         List<OrdersSuccess> response = api.ordersGet(X_API_KEY, product, id, updtime, details, symbol, state, side, cashmargin);
 
         // TODO: test validations
+//        System.out.println(response);
+        System.out.println("List<OrdersSuccess>.size=" + response.size());
+        for (int i = 0; i < response.size(); i++) {
+        	OrdersSuccess order = response.get(i);
+        	if (order.getState() == 5) {
+        		continue;
+        	}
+        	System.out.println((i + 1) + ": " + order);
+        }
     }
     /**
      * 残高照会
@@ -138,14 +147,15 @@ public class InfoApiTest {
      */
     @Test
     public void positionsGetTest() throws Exception {
-        String X_API_KEY = null;
-        String product = null;
+        String X_API_KEY = AuthorizedToken.getToken();
+        String product = "3";
         String symbol = null;
         String side = null;
         String addinfo = null;
         List<PositionsSuccess> response = api.positionsGet(X_API_KEY, product, symbol, side, addinfo);
 
         // TODO: test validations
+        System.out.println(response);        
     }
     /**
      * 優先市場
@@ -157,11 +167,12 @@ public class InfoApiTest {
      */
     @Test
     public void primaryExchangeGetTest() throws Exception {
-        String X_API_KEY = null;
-        String symbol = null;
+        String X_API_KEY = AuthorizedToken.getToken();
+        String symbol = "9433"; // ＫＤＤＩ
         PrimaryExchangeResponse response = api.primaryExchangeGet(X_API_KEY, symbol);
 
         // TODO: test validations
+        System.out.println(response);        
     }
     /**
      * 詳細ランキング
@@ -173,12 +184,13 @@ public class InfoApiTest {
      */
     @Test
     public void rankingGetTest() throws Exception {
-        String X_API_KEY = null;
-        String type = null;
-        String exchangeDivision = null;
+        String X_API_KEY = AuthorizedToken.getToken();
+        String type = "1"; // 値上がり率
+        String exchangeDivision = "T1"; // 東証一部
         InlineResponse200 response = api.rankingGet(X_API_KEY, type, exchangeDivision);
 
         // TODO: test validations
+        System.out.println(response);        
     }
     /**
      * 規制情報
@@ -190,11 +202,12 @@ public class InfoApiTest {
      */
     @Test
     public void regulationsGetTest() throws Exception {
-        String X_API_KEY = null;
-        String symbol = null;
+        String X_API_KEY = AuthorizedToken.getToken();
+        String symbol = "9433@1"; // ＫＤＤＩ
         RegulationsResponse response = api.regulationsGet(X_API_KEY, symbol);
 
         // TODO: test validations
+        System.out.println(response);        
     }
     /**
      * 銘柄情報
@@ -206,12 +219,13 @@ public class InfoApiTest {
      */
     @Test
     public void symbolGetTest() throws Exception {
-        String X_API_KEY = null;
-        String symbol = null;
+        String X_API_KEY = AuthorizedToken.getToken();
+        String symbol = "9433@1"; // ＫＤＤＩ
         String addinfo = null;
         SymbolSuccess response = api.symbolGet(X_API_KEY, symbol, addinfo);
 
         // TODO: test validations
+        System.out.println(response);        
     }
     /**
      * 先物銘柄コード取得
@@ -223,12 +237,13 @@ public class InfoApiTest {
      */
     @Test
     public void symbolnameFutureGetTest() throws Exception {
-        String X_API_KEY = null;
-        Integer derivMonth = null;
-        String futureCode = null;
+        String X_API_KEY = AuthorizedToken.getToken();
+        Integer derivMonth = 202206;
+        String futureCode = "NK225mini";
         SymbolNameSuccess response = api.symbolnameFutureGet(X_API_KEY, derivMonth, futureCode);
 
         // TODO: test validations
+        System.out.println(response);        
     }
     /**
      * オプション銘柄コード取得
@@ -240,12 +255,13 @@ public class InfoApiTest {
      */
     @Test
     public void symbolnameOptionGetTest() throws Exception {
-        String X_API_KEY = null;
-        Integer derivMonth = null;
-        String putOrCall = null;
-        Integer strikePrice = null;
+        String X_API_KEY = AuthorizedToken.getToken();
+        Integer derivMonth = 202204;
+        String putOrCall = "C";
+        Integer strikePrice = 26000;
         SymbolNameSuccess response = api.symbolnameOptionGet(X_API_KEY, derivMonth, putOrCall, strikePrice);
 
         // TODO: test validations
+        System.out.println(response);        
     }
 }
