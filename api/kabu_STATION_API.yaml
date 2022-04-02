@@ -5643,7 +5643,7 @@ components:
         ChangePreviousClose: 1360.0000
         ChangePreviousClosePer: 129.77
         OpeningPrice: 2380.0
-        OpeningPriceTime: 8"2020-07-22T09:00:00+09:00"
+        OpeningPriceTime: "2020-07-22T09:00:00+09:00"
         HighPrice: 2418.0
         HighPriceTime: "2020-07-22T13:25:47+09:00"
         LowPrice: 2370.0
