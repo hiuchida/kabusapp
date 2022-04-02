@@ -474,7 +474,7 @@ public class InfoApi {
         
         // create path and map variables
         String localVarPath = "/margin/marginpremium/{symbol}"
-            .replaceAll("\\{" + "Symbol" + "\\}", apiClient.escapeString(symbol.toString()));
+            .replaceAll("\\{" + "symbol" + "\\}", apiClient.escapeString(symbol.toString()));
 
         List<Pair> localVarQueryParams = new ArrayList<Pair>();
         List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
