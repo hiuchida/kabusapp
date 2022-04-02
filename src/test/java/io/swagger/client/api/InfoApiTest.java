@@ -14,6 +14,7 @@ package io.swagger.client.api;
 
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import io.swagger.client.model.ApiSoftLimitResponse;
@@ -182,6 +183,7 @@ public class InfoApiTest {
      * @throws Exception
      *          if the Api call fails
      */
+    @Ignore
     @Test
     public void rankingGetTest() throws Exception {
         String X_API_KEY = AuthorizedToken.getToken();
