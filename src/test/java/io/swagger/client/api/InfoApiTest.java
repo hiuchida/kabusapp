@@ -183,12 +183,11 @@ public class InfoApiTest {
      * @throws Exception
      *          if the Api call fails
      */
-    @Ignore
     @Test
     public void rankingGetTest() throws Exception {
         String X_API_KEY = AuthorizedToken.getToken();
         String type = "1"; // 値上がり率
-        String exchangeDivision = "T1"; // 東証一部
+        String exchangeDivision = "ALL"; // 全市場
         InlineResponse200 response = api.rankingGet(X_API_KEY, type, exchangeDivision);
 
         // TODO: test validations
