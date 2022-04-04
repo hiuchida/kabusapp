@@ -8,6 +8,9 @@ import io.swagger.client.model.BoardSuccess;
 import io.swagger.client.model.PositionsSuccess;
 import v2.AuthorizedToken;
 
+/**
+ * 残高のGreeksを集計する。
+ */
 public class MainGreeks {
 	private static InfoApi infoApi = new InfoApi();
 	
