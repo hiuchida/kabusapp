@@ -89,8 +89,13 @@ public class LockedAuthorizedToken {
 			bAvailable = ping(token);
 		}
 		if (!bAvailable) {
-			token = auth();
-			FileUtil.writeOneLine(TXT_FILEPATH, token);
+			try {
+				token = auth();
+				FileUtil.writeOneLine(TXT_FILEPATH, token);
+			} catch (ApiException e) {
+				FileUtil.writeOneLine(TXT_FILEPATH, "");
+				throw e;
+			}
 		}
 		return token;
 	}
