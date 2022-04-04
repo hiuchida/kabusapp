@@ -73,7 +73,7 @@ public class FileUtil {
 	 */
 	public static void writeOneLine(String filepath, String line) {
 		try (PrintWriter pw = writer(filepath, FileUtil.UTF8)) {
-			pw.println(line);
+			pw.print(line);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
