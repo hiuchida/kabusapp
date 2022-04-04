@@ -44,6 +44,19 @@ public class FileUtil {
 	}
 
 	/**
+	 * 出力ファイルを開く。
+	 * 
+	 * @param filepath ファイルパス。
+	 * @param encoding エンコーディング。
+	 * @param bAppend  true:追記、false:上書き
+	 * @return 出力ファイル。
+	 * @throws IOException 例外。
+	 */
+	public static PrintWriter writer(String filepath, String encoding, boolean bAppend) throws IOException {
+		return new PrintWriter(new OutputStreamWriter(new FileOutputStream(filepath, bAppend), encoding));
+	}
+
+	/**
 	 * ファイルの先頭1行を取得する。
 	 * 
 	 * @param filepath ファイルパス。

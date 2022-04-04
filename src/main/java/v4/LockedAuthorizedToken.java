@@ -1,5 +1,10 @@
 package v4;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import io.swagger.client.ApiException;
 import io.swagger.client.api.AuthApi;
 import io.swagger.client.api.InfoApi;
@@ -27,6 +32,10 @@ public class LockedAuthorizedToken {
 	 * ファイルロック管理用0バイトのファイルパス。存在しなければ生成される。
 	 */
 	private static final String LOCK_FILEPATH = DIRPATH + "LockedAuthorizedToken.lock";
+	/**
+	 * ファイルロック管理ログのファイルパス。存在しなければ生成される。
+	 */
+	private static final String LOG_FILEPATH = DIRPATH + "LockedAuthorizedToken.log";
 	
 	/**
 	 * シングルトンインスタンス。
@@ -88,11 +97,14 @@ public class LockedAuthorizedToken {
 		if (token != null && token.length() > 0) {
 			bAvailable = ping(token);
 		}
+		printLog("initToken", "check token=" + token + ", bAvailable=" + bAvailable);
 		if (!bAvailable) {
 			try {
 				token = auth();
+				printLog("initToken", "save  token=" + token);
 				FileUtil.writeOneLine(TXT_FILEPATH, token);
 			} catch (ApiException e) {
+				printLog("initToken", "error token=" + token);
 				FileUtil.writeOneLine(TXT_FILEPATH, "");
 				throw e;
 			}
@@ -130,6 +142,21 @@ public class LockedAuthorizedToken {
         TokenSuccess response = authApi.tokenPost(body);
         System.out.println(response);
         return response.getToken();
+	}
+
+	/**
+	 * ファイルロック管理ログに追記する。
+	 * @param method メソッド名。
+	 * @param msg    メッセージ文字列。
+	 */
+	private void printLog(String method, String msg) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS ");
+		String time = sdf.format(new Date());
+		try (PrintWriter pw = FileUtil.writer(LOG_FILEPATH, FileUtil.UTF8, true)) {
+	        pw.println(time + method + "(): " + msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
