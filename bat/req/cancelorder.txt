@@ -1,0 +1,4 @@
+{
+	"OrderId":"20220404A02Nxxxxxxxx",
+	"Password":"YourTradePassword"
+}

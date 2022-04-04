@@ -1,0 +1,12 @@
+{
+	"Password":"YourTradePassword",
+	"Symbol":"167060019",
+	"Exchange":2,
+	"TradeType":1,
+	"TimeInForce":1,
+	"Side":"1",
+	"Qty":1,
+	"FrontOrderType":20,
+	"Price":29000,
+	"ExpireDay":0
+}

@@ -1,0 +1,79 @@
+
+set PORT=18080
+
+set JSON=application/json
+
+curl -v -X POST -H "Content-Type: %JSON%" -H "Accept: %JSON%" "http://localhost:%PORT%/kabusapi/token" -d "{\"APIPassword\":\"ACBTgDD4\"}"
+
+curl -v -X POST -H "Content-Type: %JSON%" -H "Accept: %JSON%" "http://localhost:%PORT%/kabusapi/token" -d "@req\login.txt"
+
+curl -v -X POST -H "X-API-KEY: %TOKEN%" -H "Content-Type: %JSON%" -H "Accept: %JSON%" -o sendorder_gb.json "http://localhost:%PORT%/kabusapi/sendorder" -d "@req\sendorder_gb.txt"
+
+curl -v -X POST -H "X-API-KEY: %TOKEN%" -H "Content-Type: %JSON%" -H "Accept: %JSON%" -o sendorder_sb.json "http://localhost:%PORT%/kabusapi/sendorder" -d "@req\sendorder_sb.txt"
+
+curl -v -X POST -H "X-API-KEY: %TOKEN%" -H "Content-Type: %JSON%" -H "Accept: %JSON%" -o sendorder_ss.json "http://localhost:%PORT%/kabusapi/sendorder" -d "@req\sendorder_ss.txt"
+
+curl -v -X POST -H "X-API-KEY: %TOKEN%" -H "Content-Type: %JSON%" -H "Accept: %JSON%" -o sendorder_future_b.json "http://localhost:%PORT%/kabusapi/sendorder/future" -d "@req\sendorder_future_b.txt"
+
+curl -v -X POST -H "X-API-KEY: %TOKEN%" -H "Content-Type: %JSON%" -H "Accept: %JSON%" -o sendorder_future_s.json "http://localhost:%PORT%/kabusapi/sendorder/future" -d "@req\sendorder_future_s.txt"
+
+curl -v -X POST -H "X-API-KEY: %TOKEN%" -H "Content-Type: %JSON%" -H "Accept: %JSON%" -o sendorder_option_b.json "http://localhost:%PORT%/kabusapi/sendorder/option" -d "@req\sendorder_option_b.txt"
+
+curl -v -X POST -H "X-API-KEY: %TOKEN%" -H "Content-Type: %JSON%" -H "Accept: %JSON%" -o sendorder_option_s.json "http://localhost:%PORT%/kabusapi/sendorder/option" -d "@req\sendorder_option_s.txt"
+
+curl -v -X PUT  -H "X-API-KEY: %TOKEN%" -H "Content-Type: %JSON%" -H "Accept: %JSON%" -o cancelorder.json "http://localhost:%PORT%/kabusapi/cancelorder" -d "@req\cancelorder.txt"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o wallet_cash.json "http://localhost:%PORT%/kabusapi/wallet/cash"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o wallet_cash_9433.json "http://localhost:%PORT%/kabusapi/wallet/cash/9433@1"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o wallet_margin.json "http://localhost:%PORT%/kabusapi/wallet/margin"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o wallet_margin_9433.json "http://localhost:%PORT%/kabusapi/wallet/margin/9433@1"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o wallet_future.json "http://localhost:%PORT%/kabusapi/wallet/future"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o wallet_future_2206.json "http://localhost:%PORT%/kabusapi/wallet/future/167060019@2"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o wallet_option.json "http://localhost:%PORT%/kabusapi/wallet/option"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o wallet_option_2204C27500.json "http://localhost:%PORT%/kabusapi/wallet/option/147047518@2"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o board_9433.json "http://localhost:%PORT%/kabusapi/board/9433@1"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o board_2206.json "http://localhost:%PORT%/kabusapi/board/167060019@2"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o board_2204C27500.json "http://localhost:%PORT%/kabusapi/board/147047518@2"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o symbol_9433.json "http://localhost:%PORT%/kabusapi/symbol/9433@1"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o symbol_2206.json "http://localhost:%PORT%/kabusapi/symbol/167060019@2"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o symbol_2204C27500.json "http://localhost:%PORT%/kabusapi/symbol/147047518@2"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o orders.json "http://localhost:%PORT%/kabusapi/orders"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o positions.json "http://localhost:%PORT%/kabusapi/positions?product=0"
+
+curl -v -X PUT -H "X-API-KEY: %TOKEN%" -H "Content-Type: %JSON%" -H "Accept: %JSON%" -o register.json "http://localhost:%PORT%/kabusapi/register" -d "@req\register.txt"
+
+curl -v -X PUT -H "X-API-KEY: %TOKEN%" -H "Content-Type: %JSON%" -H "Accept: %JSON%" -o unregister.json "http://localhost:%PORT%/kabusapi/unregister" -d "@req\unregister.txt"
+
+curl -v -X PUT -H "X-API-KEY: %TOKEN%" -H "Content-Type: %JSON%" -H "Accept: %JSON%" -o unregister_all.json "http://localhost:%PORT%/kabusapi/unregister/all" -d "{}"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o symbolname_future.json "http://localhost:%PORT%/kabusapi/symbolname/future?FutureCode=NK225mini&DerivMonth=202206"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o symbolname_option.json "http://localhost:%PORT%/kabusapi/symbolname/option?DerivMonth=202204&PutOrCall=C&StrikePrice=27500"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o ranking.json "http://localhost:%PORT%/kabusapi/ranking?Type=1&ExchangeDivision=ALL"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o exchange.json "http://localhost:%PORT%/kabusapi/exchange/usdjpy"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o regulations.json "http://localhost:%PORT%/kabusapi/regulations/9433@1"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o primaryexchange.json "http://localhost:%PORT%/kabusapi/primaryexchange/9433"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o apisoftlimit.json "http://localhost:%PORT%/kabusapi/apisoftlimit"
+
+curl -v -H "X-API-KEY: %TOKEN%" -H "Accept: %JSON%" -o marginpremium.json "http://localhost:%PORT%/kabusapi/margin/marginpremium/9433"
+

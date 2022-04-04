@@ -1,0 +1,15 @@
+{
+	"Password":"YourTradePassword",
+	"Symbol":"9433",
+	"Exchange":1,
+	"SecurityType":1,
+	"Side":"2",
+	"CashMargin":2,
+	"MarginTradeType":2,
+	"DelivType":0,
+	"AccountType":4,
+	"Qty":100,
+	"FrontOrderType":20,
+	"Price":1300,
+	"ExpireDay":0
+}

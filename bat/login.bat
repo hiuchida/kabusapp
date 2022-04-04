@@ -8,8 +8,10 @@ set PORT=18080
 set TOKENJSON=
 set TOKEN=
 
+set JSON=application/json
+
 rem ÉçÉOÉCÉì
-curl -o TOKENRESP -X POST -H "Content-Type: application/json" -H "Accept: application/json" "http://localhost:%PORT%/kabusapi/token" -d "@login.txt"
+curl -o TOKENRESP -X POST -H "Content-Type: %JSON%" -H "Accept: %JSON%" "http://localhost:%PORT%/kabusapi/token" -d "@req\login.txt"
 for /F "delims="" tokens=1" %%i in (TOKENRESP) do set TOKENJSON=%%i
 set TOKEN=%TOKENJSON:~25,-2%
 echo TOKENJSON=%TOKENJSON%
