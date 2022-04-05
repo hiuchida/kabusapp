@@ -11,6 +11,8 @@ import io.swagger.client.api.InfoApi;
 import io.swagger.client.model.ApiSoftLimitResponse;
 import io.swagger.client.model.RequestToken;
 import io.swagger.client.model.TokenSuccess;
+import util.FileLockUtil;
+import util.FileUtil;
 
 /**
  * 認証済TOKENをファイルロック管理する。

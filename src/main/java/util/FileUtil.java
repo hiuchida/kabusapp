@@ -1,4 +1,4 @@
-package v4;
+package util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -82,7 +82,7 @@ public class FileUtil {
 	 * ファイルの先頭1行を保存する。
 	 * 
 	 * @param filepath ファイルパス。
-	 * @param line 先頭1行の文字列。
+	 * @param line     先頭1行の文字列。
 	 */
 	public static void writeOneLine(String filepath, String line) {
 		try (PrintWriter pw = writer(filepath, FileUtil.UTF8)) {
