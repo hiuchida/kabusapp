@@ -2,9 +2,7 @@ package v5;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,6 +12,7 @@ import java.util.TreeSet;
 import io.swagger.client.ApiException;
 import io.swagger.client.api.InfoApi;
 import io.swagger.client.model.PositionsSuccess;
+import util.DateTimeUtil;
 import util.FileUtil;
 import v4.LockedAuthorizedToken;
 
@@ -182,9 +181,9 @@ public class MainPositions {
 			sb.append(profitHigh).append(TAB);
 			sb.append(profitLow).append(TAB);
 			sb.append(createDate).append(TAB);
-			sb.append(dateStr(createDate)).append(TAB);
+			sb.append(DateTimeUtil.toString(createDate)).append(TAB);
 			sb.append(updateDate).append(TAB);
-			sb.append(dateStr(updateDate));
+			sb.append(DateTimeUtil.toString(updateDate));
 			return sb.toString();
 		}
 
@@ -254,8 +253,8 @@ public class MainPositions {
 						// 本来はhigh,lowのどちらかしか更新されないはずだが、念のため両方チェック
 						if (profit < pi.profitLow) {
 							int delta = profit - pi.profitLow;
-							String msg = "update " + key + " " + name + ": curPrice=" + curPrice + " profitLowDelta=" + delta
-									+ " (" + profit + " <- " + pi.profitLow + ")";
+							String msg = "update " + key + " " + name + ": curPrice=" + curPrice + " profitLowDelta="
+									+ delta + " (" + profit + " <- " + pi.profitLow + ")";
 							System.out.println("  > " + msg);
 							printLog("main", msg);
 							pi.profitLow = profit;
@@ -389,11 +388,6 @@ public class MainPositions {
 		}
 	}
 
-	static String dateStr(long time) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
-		return sdf.format(time);
-	}
-
 	/**
 	 * 建玉情報ログに追記する。
 	 * 
@@ -401,10 +395,9 @@ public class MainPositions {
 	 * @param msg    メッセージ文字列。
 	 */
 	static void printLog(String method, String msg) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS ");
-		String time = sdf.format(new Date());
+		String now = DateTimeUtil.nowToString();
 		try (PrintWriter pw = FileUtil.writer(LOG_FILEPATH, FileUtil.UTF8, true)) {
-			pw.println(time + method + "(): " + msg);
+			pw.println(now + " " + method + "(): " + msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

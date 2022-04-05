@@ -1,11 +1,9 @@
 package v4;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import io.swagger.client.ApiException;
 import io.swagger.client.api.InfoApi;
 import io.swagger.client.model.BoardSuccess;
+import util.DateTimeUtil;
 
 public class Main {
 	private static InfoApi infoApi = new InfoApi();
@@ -36,9 +34,8 @@ public class Main {
 	}
 
 	private static void println(String msg) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS ");
-		String time = sdf.format(new Date());
-        System.out.println(time + msg);
+		String now = DateTimeUtil.nowToString();
+        System.out.println(now + " " + msg);
 	}
 
 }

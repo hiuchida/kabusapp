@@ -2,8 +2,6 @@ package v4;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import io.swagger.client.ApiException;
 import io.swagger.client.api.AuthApi;
@@ -11,6 +9,7 @@ import io.swagger.client.api.InfoApi;
 import io.swagger.client.model.ApiSoftLimitResponse;
 import io.swagger.client.model.RequestToken;
 import io.swagger.client.model.TokenSuccess;
+import util.DateTimeUtil;
 import util.FileLockUtil;
 import util.FileUtil;
 
@@ -152,10 +151,9 @@ public class LockedAuthorizedToken {
 	 * @param msg    メッセージ文字列。
 	 */
 	private void printLog(String method, String msg) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS ");
-		String time = sdf.format(new Date());
+		String now = DateTimeUtil.nowToString();
 		try (PrintWriter pw = FileUtil.writer(LOG_FILEPATH, FileUtil.UTF8, true)) {
-	        pw.println(time + method + "(): " + msg);
+	        pw.println(now + " " + method + "(): " + msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
