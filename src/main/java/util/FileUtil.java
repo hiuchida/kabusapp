@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ファイルに関するユーティリティクラス。
@@ -87,6 +89,47 @@ public class FileUtil {
 	public static void writeOneLine(String filepath, String line) {
 		try (PrintWriter pw = writer(filepath, FileUtil.UTF8)) {
 			pw.print(line);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * ファイルのすべての行を取得する。
+	 * 
+	 * @param filepath ファイルパス。
+	 * @return ファイルのすべての行のリスト。ファイルが存在しない場合は0件のリストを返す。
+	 */
+	public static List<String> readAllLines(String filepath) {
+		List<String> list = new ArrayList<>();
+		if (!new File(filepath).exists()) {
+			return list;
+		}
+		try (BufferedReader br = reader(filepath, FileUtil.UTF8)) {
+			while (true) {
+				String line = br.readLine();
+				if (line == null) {
+					break;
+				}
+				list.add(line);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	/**
+	 * ファイルの先頭1行を保存する。
+	 * 
+	 * @param filepath ファイルパス。
+	 * @param lines    ファイルのすべての行のリスト。
+	 */
+	public static void writeAllLines(String filepath, List<String> lines) {
+		try (PrintWriter pw = writer(filepath, FileUtil.UTF8)) {
+			for (String s : lines) {
+				pw.println(s);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
