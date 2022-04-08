@@ -7,9 +7,12 @@ import io.swagger.client.ApiException;
  */
 public class MainLogin {
 	public static void main(String[] args) throws ApiException {
-        String X_API_KEY = LockedAuthorizedToken.lockToken();
-        System.out.println("Token: " + X_API_KEY);
-        LockedAuthorizedToken.unlockToken();
+		String X_API_KEY = LockedAuthorizedToken.lockToken();
+		try {
+			System.out.println("Token: " + X_API_KEY);
+		} finally {
+			LockedAuthorizedToken.unlockToken();
+		}
 	}
 
 }
