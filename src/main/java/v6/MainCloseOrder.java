@@ -19,7 +19,50 @@ public class MainCloseOrder {
 	private static String X_API_KEY;
     private static OrderApi orderApi = new OrderApi();
 
+	/**
+	 * 逆指値に成行を指定
+	 */
 	public static void main(String[] args) throws ApiException {
+		X_API_KEY = LockedAuthorizedToken.lockToken();
+		try {
+	        RequestSendOrderDerivFuture body = new RequestSendOrderDerivFuture();
+	        body.setPassword(TRADE_PASSWORD);
+	        body.setSymbol("167060019"); // 日経225mini 22/06
+	        body.setExchange(23); // 日中
+	        body.setTradeType(2); // 返済
+	        body.setTimeInForce(2); // FAK
+	        body.setSide("1"); // 売
+	        body.setQty(1); // 注文数量
+	        List<PositionsDeriv> pdl = new ArrayList<>();
+	        {
+	        	PositionsDeriv pd = new PositionsDeriv();
+	        	pd.setHoldID("E2022040601ZS8"); // 返済建玉ID
+	        	pd.setQty(1); // 返済建玉数量
+	        	pdl.add(pd);
+	        }
+	        body.setClosePositions(pdl);
+	        body.setFrontOrderType(30); // 逆指値
+	        body.setPrice(0.0); // 注文価格
+	        body.setExpireDay(0); // 注文有効期限
+			RequestSendOrderDerivFutureReverseLimitOrder rlo = new RequestSendOrderDerivFutureReverseLimitOrder();
+			{ // 値段が25000円以下になったら、MO(FAK)で注文発注
+				rlo.setTriggerPrice(25000.0); // トリガー価格
+				rlo.setUnderOver(1); // 以下
+				rlo.setAfterHitOrderType(1); // 成行
+				rlo.setAfterHitPrice(0.0); // 成行は0円
+			}
+			body.setReverseLimitOrder(rlo);
+	        OrderSuccess response = orderApi.sendoderFuturePost(body, X_API_KEY);
+	        System.out.println(response);        
+		} finally {
+			LockedAuthorizedToken.unlockToken();
+		}
+	}
+
+	/**
+	 * 逆指値に指値を指定
+	 */
+	public static void sample1(String[] args) throws ApiException {
 		X_API_KEY = LockedAuthorizedToken.lockToken();
 		try {
 	        RequestSendOrderDerivFuture body = new RequestSendOrderDerivFuture();
