@@ -46,7 +46,7 @@ import org.threeten.bp.OffsetDateTime;
  * 下記にあるBIDとASKとは、トレーダー目線から見た場合の値であるため、BidPrice&#x3D;Sell1のPrice、AskPrice&#x3D;Buy1のPriceという数値となります。
  */
 @Schema(description = "下記にあるBIDとASKとは、トレーダー目線から見た場合の値であるため、BidPrice=Sell1のPrice、AskPrice=Buy1のPriceという数値となります。")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-03-15T02:55:13.412Z[GMT]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-09T08:07:59.802Z[GMT]")
 public class BoardSuccess {
   @SerializedName("Symbol")
   private String symbol = null;

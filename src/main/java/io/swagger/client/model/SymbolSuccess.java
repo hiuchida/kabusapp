@@ -25,7 +25,7 @@ import java.io.IOException;
  * SymbolSuccess
  */
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-03-15T02:55:13.412Z[GMT]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2022-04-09T08:07:59.802Z[GMT]")
 public class SymbolSuccess {
   @SerializedName("Symbol")
   private String symbol = null;
@@ -303,10 +303,10 @@ public class SymbolSuccess {
   }
 
    /**
-   * 一般信用買建フラグ&lt;br&gt;※trueのとき一般信用買建可能&lt;br&gt;※株式銘柄の場合のみ
+   * 一般信用買建フラグ&lt;br&gt;※trueのとき、一般信用(長期)または一般信用(デイトレ)が買建可能&lt;br&gt;※株式銘柄の場合のみ
    * @return kcMarginBuy
   **/
-  @Schema(description = "一般信用買建フラグ<br>※trueのとき一般信用買建可能<br>※株式銘柄の場合のみ")
+  @Schema(description = "一般信用買建フラグ<br>※trueのとき、一般信用(長期)または一般信用(デイトレ)が買建可能<br>※株式銘柄の場合のみ")
   public Boolean isKcMarginBuy() {
     return kcMarginBuy;
   }
@@ -321,10 +321,10 @@ public class SymbolSuccess {
   }
 
    /**
-   * 一般信用売建フラグ&lt;br&gt;※trueのとき一般信用売建可能&lt;br&gt;※株式銘柄の場合のみ
+   * 一般信用売建フラグ&lt;br&gt;※trueのとき、一般信用(長期)または一般信用(デイトレ)が売建可能&lt;br&gt;※株式銘柄の場合のみ
    * @return kcMarginSell
   **/
-  @Schema(description = "一般信用売建フラグ<br>※trueのとき一般信用売建可能<br>※株式銘柄の場合のみ")
+  @Schema(description = "一般信用売建フラグ<br>※trueのとき、一般信用(長期)または一般信用(デイトレ)が売建可能<br>※株式銘柄の場合のみ")
   public Boolean isKcMarginSell() {
     return kcMarginSell;
   }

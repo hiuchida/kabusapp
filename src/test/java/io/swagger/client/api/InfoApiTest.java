@@ -117,7 +117,7 @@ public class InfoApiTest {
     @Test
     public void ordersGetTest() throws Exception {
         String X_API_KEY = AuthorizedToken.getToken();
-        String product = "3";
+        String product = null;
         String id = null;
         String updtime = null;
         String details = null;
