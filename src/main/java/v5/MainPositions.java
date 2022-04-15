@@ -49,7 +49,7 @@ public class MainPositions {
 		/**
 		 * 建玉情報ファイルのカラム数。
 		 */
-		public static final int MAX_COLS = 9;
+		public static final int MAX_COLS = 10;
 		/**
 		 * 銘柄コード(Symbol)。
 		 */
@@ -86,6 +86,10 @@ public class MainPositions {
 		 * 更新日時。
 		 */
 		public long updateDate;
+		/**
+		 * 約定番号(ExecutionID)の配列をカンマ区切り。
+		 */
+		public String executionIds;
 
 		/**
 		 * コンストラクタ（新規作成）。
@@ -101,6 +105,7 @@ public class MainPositions {
 			this.price = price;
 			this.side = side;
 			this.createDate = System.currentTimeMillis();
+			this.executionIds = "?";
 		}
 
 		/**
@@ -119,6 +124,7 @@ public class MainPositions {
 			this.profitLow = parseInt(cols[i++]);
 			this.createDate = parseLong(cols[i++]);
 			this.updateDate = parseLong(cols[i++]);
+			this.executionIds = "?";
 		}
 
 		/**
@@ -150,6 +156,7 @@ public class MainPositions {
 			sb.append("profitLow").append(TAB);
 			sb.append("createDate").append(TAB);
 			sb.append("updateDate").append(TAB);
+			sb.append("executionIds");
 			return sb.toString();
 		}
 
@@ -177,7 +184,8 @@ public class MainPositions {
 			sb.append(profitHigh).append(TAB);
 			sb.append(profitLow).append(TAB);
 			sb.append(createDate).append("(").append(DateTimeUtil.toString(createDate)).append(")").append(TAB);
-			sb.append(updateDate).append("(").append(DateTimeUtil.toString(updateDate)).append(")");
+			sb.append(updateDate).append("(").append(DateTimeUtil.toString(updateDate)).append(")").append(TAB);
+			sb.append(executionIds);
 			return sb.toString();
 		}
 
@@ -213,6 +221,7 @@ public class MainPositions {
 			System.out.println("main(): response.size=" + response.size());
 			for (int i = 0; i < response.size(); i++) {
 				PositionsSuccess pos = response.get(i);
+				String id = pos.getExecutionID();
 				String code = pos.getSymbol();
 				String name = pos.getSymbolName();
 				String side = pos.getSide();
@@ -231,6 +240,7 @@ public class MainPositions {
 						pi = new PosInfo(code, name, price, side);
 						pi.profitHigh = profit;
 						pi.profitLow = profit;
+						pi.executionIds = id;
 						posMap.put(key, pi);
 						String msg = "create " + key + " " + name + ": curPrice=" + curPrice + " profit=" + profit;
 						System.out.println("  > " + msg);
@@ -252,6 +262,11 @@ public class MainPositions {
 							System.out.println("  > " + msg);
 							printLog("main", msg);
 							pi.profitLow = profit;
+						}
+						if (pi.executionIds.equals("?")) {
+							pi.executionIds = id;
+						} else {
+							pi.executionIds = pi.executionIds + "," + id;
 						}
 					}
 					pi.curPrice = curPrice;
