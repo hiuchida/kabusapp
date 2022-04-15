@@ -226,7 +226,9 @@ public class MainPositions {
 				String name = pos.getSymbolName();
 				String side = pos.getSide();
 				int sign = sign(side);
-				int qty = (int) (sign * pos.getLeavesQty());
+				int leaves = (int) (double) pos.getLeavesQty();
+				int hold = (int) (double) pos.getHoldQty();
+				int qty = (int) (sign * leaves);
 				int price = (int) (double) pos.getPrice();
 				int curPrice = (int) (double) pos.getCurrentPrice();
 				Integer type = pos.getSecurityType();
@@ -240,7 +242,7 @@ public class MainPositions {
 						pi = new PosInfo(code, name, price, side);
 						pi.profitHigh = profit;
 						pi.profitLow = profit;
-						pi.executionIds = id;
+						pi.executionIds = id + "(" + leaves + "-" + hold + ")";
 						posMap.put(key, pi);
 						String msg = "create " + key + " " + name + ": curPrice=" + curPrice + " profit=" + profit;
 						System.out.println("  > " + msg);
@@ -264,9 +266,9 @@ public class MainPositions {
 							pi.profitLow = profit;
 						}
 						if (pi.executionIds.equals("?")) {
-							pi.executionIds = id;
+							pi.executionIds = id + "(" + leaves + "-" + hold + ")";
 						} else {
-							pi.executionIds = pi.executionIds + "," + id;
+							pi.executionIds = pi.executionIds + "," + id + "(" + leaves + "-" + hold + ")";
 						}
 					}
 					pi.curPrice = curPrice;
