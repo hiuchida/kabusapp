@@ -147,15 +147,15 @@ public class MainPositions {
 		public static String toHeaderString() {
 			StringBuilder sb = new StringBuilder();
 			sb.append("# ");
-			sb.append("code").append(TAB);
-			sb.append("name").append(TAB);
+			sb.append("code   ").append(TAB);
+			sb.append("name             ").append(TAB);
 			sb.append("price").append(TAB);
 			sb.append("side").append(TAB);
-			sb.append("curPrice").append(TAB);
-			sb.append("profitHigh").append(TAB);
-			sb.append("profitLow").append(TAB);
-			sb.append("createDate").append(TAB);
-			sb.append("updateDate").append(TAB);
+			sb.append("curPric").append(TAB);
+			sb.append("high").append(TAB);
+			sb.append("low").append(TAB);
+			sb.append("createDate                            ").append(TAB);
+			sb.append("updateDate                            ").append(TAB);
 			sb.append("executionIds");
 			return sb.toString();
 		}
