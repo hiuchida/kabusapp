@@ -113,7 +113,7 @@ public class MainPositions {
 			this.code = cols[i++];
 			this.name = cols[i++];
 			this.price = parseInt(cols[i++]);
-			this.side = cols[i++];
+			this.side = "" + parseInt(cols[i++]);
 			this.curPrice = parseInt(cols[i++]);
 			this.profitHigh = parseInt(cols[i++]);
 			this.profitLow = parseInt(cols[i++]);
@@ -176,7 +176,7 @@ public class MainPositions {
 			sb.append(code).append(TAB);
 			sb.append(name).append(TAB);
 			sb.append(price).append(TAB);
-			sb.append(side).append(TAB);
+			sb.append(side).append("(").append(sideStr(side)).append(")").append(TAB);
 			sb.append(curPrice).append(TAB);
 			sb.append(profitHigh).append(TAB);
 			sb.append(profitLow).append(TAB);
