@@ -227,7 +227,7 @@ public class MainPositions {
 				int price = (int) (double) pos.getPrice();
 				int curPrice = (int) (double) pos.getCurrentPrice();
 				Integer type = pos.getSecurityType();
-				if (type != null && type == 901 && qty != 0) {
+				if (type != null && type == 901 && qty != 0 && curPrice != 0) {
 					int profit = ((curPrice - price) * sign);
 					String key = PosInfo.getKey(code, price, side);
 					System.out.println("  " + index(i + 1) + ": " + key + " " + type + " " + code + " " + name + " "
