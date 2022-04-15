@@ -366,9 +366,19 @@ public class MainPositions {
 		return String.format("%02d", idx);
 	}
 
+	/**
+	 * "("以降を除外して、数値文字列を数値に変換する。
+	 * 
+	 * @param s 数値文字列。
+	 * @return 数値。
+	 */
 	static int parseInt(String s) {
 		if (s == null) {
 			return 0;
+		}
+		int idx = s.indexOf("(");
+		if (idx >= 0) {
+			s = s.substring(0, idx);
 		}
 		try {
 			return Integer.parseInt(s);
@@ -377,9 +387,19 @@ public class MainPositions {
 		}
 	}
 
+	/**
+	 * "("以降を除外して、数値文字列を数値に変換する。
+	 * 
+	 * @param s 数値文字列。
+	 * @return 数値。
+	 */
 	static long parseLong(String s) {
 		if (s == null) {
 			return 0;
+		}
+		int idx = s.indexOf("(");
+		if (idx >= 0) {
+			s = s.substring(0, idx);
 		}
 		try {
 			return Long.parseLong(s);
