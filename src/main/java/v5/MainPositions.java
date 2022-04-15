@@ -49,7 +49,7 @@ public class MainPositions {
 		/**
 		 * 建玉情報ファイルのカラム数。
 		 */
-		public static final int MAX_COLS = 11;
+		public static final int MAX_COLS = 9;
 		/**
 		 * 銘柄コード(Symbol)。
 		 */
@@ -118,9 +118,7 @@ public class MainPositions {
 			this.profitHigh = parseInt(cols[i++]);
 			this.profitLow = parseInt(cols[i++]);
 			this.createDate = parseLong(cols[i++]);
-			i++;
 			this.updateDate = parseLong(cols[i++]);
-			i++;
 		}
 
 		/**
@@ -151,9 +149,7 @@ public class MainPositions {
 			sb.append("profitHigh").append(TAB);
 			sb.append("profitLow").append(TAB);
 			sb.append("createDate").append(TAB);
-			sb.append("createDateStr").append(TAB);
 			sb.append("updateDate").append(TAB);
-			sb.append("updateDateStr");
 			return sb.toString();
 		}
 
@@ -180,10 +176,8 @@ public class MainPositions {
 			sb.append(curPrice).append(TAB);
 			sb.append(profitHigh).append(TAB);
 			sb.append(profitLow).append(TAB);
-			sb.append(createDate).append(TAB);
-			sb.append(DateTimeUtil.toString(createDate)).append(TAB);
-			sb.append(updateDate).append(TAB);
-			sb.append(DateTimeUtil.toString(updateDate));
+			sb.append(createDate).append("(").append(DateTimeUtil.toString(createDate)).append(")").append(TAB);
+			sb.append(updateDate).append("(").append(DateTimeUtil.toString(updateDate)).append(")");
 			return sb.toString();
 		}
 
