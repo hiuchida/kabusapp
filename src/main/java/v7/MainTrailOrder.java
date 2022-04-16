@@ -1,7 +1,6 @@
 package v7;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import io.swagger.client.ApiException;
@@ -10,6 +9,7 @@ import io.swagger.client.model.PositionsDeriv;
 import io.swagger.client.model.PositionsSuccess;
 import io.swagger.client.model.RequestSendOrderDerivFuture;
 import io.swagger.client.model.RequestSendOrderDerivFutureReverseLimitOrder;
+import util.ExchangeUtil;
 import util.FileUtil;
 import util.StringUtil;
 import v7.PositionsLogic.ExecutionInfo;
@@ -85,7 +85,7 @@ public class MainTrailOrder {
 	public void execute() throws ApiException {
 		orderLogic.execute();
 		List<PosInfo> highList = posLogic.execute();
-		int exchange = exchange();
+		int exchange = ExchangeUtil.now();
 		if (exchange > 0) {
 			for (PosInfo pi : highList) {
 				if (pi.profitHigh < 100) { // TODO 200円以上でトリガー
@@ -218,44 +218,6 @@ public class MainTrailOrder {
 		int sign = StringUtil.sign(pi.side);
 		int price = pi.price + (pi.profitHigh - 50) * sign; // TODO 逆指値100円
 		return price;
-	}
-
-	/**
-	 * 現在時刻の市場コード（Exchange）を取得する。
-	 * 
-	 * @return 市場コード（Exchange）。
-	 */
-	private int exchange() {
-		int ret = 0;
-		Calendar now = Calendar.getInstance();
-		int hour = now.get(Calendar.HOUR_OF_DAY);
-		int min = now.get(Calendar.MINUTE);
-		if (hour == 8 && 45 <= min) {
-			ret = 23; // 日中
-		} else if (9 <= hour && hour <= 14) {
-			ret = 23; // 日中
-		} else if (hour == 15 && min < 10 - 5) {
-			ret = 23; // 日中
-		}
-		if (ret > 0) {
-			System.out.println("Order of Day. hour=" + hour + ", min=" + min);
-			return ret;
-		}
-		if (hour == 16 && 30 <= min) {
-			ret = 24; // 夜間
-		} else if (17 <= hour && hour <= 23) {
-			ret = 24; // 夜間
-		} else if (0 <= hour && hour <= 4) {
-			ret = 24; // 夜間
-		} else if (hour == 5 && min < 55 - 5) {
-			ret = 24; // 夜間
-		}
-		if (ret > 0) {
-			System.out.println("Order of Night. hour=" + hour + ", min=" + min);
-			return ret;
-		}
-		System.out.println("Out of Order. hour=" + hour + ", min=" + min);
-		return -1;
 	}
 
 }
