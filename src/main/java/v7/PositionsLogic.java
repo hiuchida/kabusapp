@@ -13,7 +13,6 @@ import io.swagger.client.model.PositionsSuccess;
 import util.DateTimeUtil;
 import util.FileUtil;
 import util.StringUtil;
-import v4.LockedAuthorizedToken;
 
 /**
  * 建玉情報を管理するツール。
@@ -210,15 +209,6 @@ public class PositionsLogic {
 
 	public PositionsLogic(String X_API_KEY) {
 		this.X_API_KEY = X_API_KEY;
-	}
-
-	public static void main(String[] args) throws ApiException {
-		String X_API_KEY = LockedAuthorizedToken.lockToken();
-		try {
-			new PositionsLogic(X_API_KEY).execute();
-		} finally {
-			LockedAuthorizedToken.unlockToken();
-		}
 	}
 
 	public void execute() throws ApiException {
