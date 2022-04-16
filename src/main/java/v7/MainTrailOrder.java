@@ -52,6 +52,16 @@ public class MainTrailOrder {
 	 * 認証済TOKEN。
 	 */
 	private String X_API_KEY;
+	
+	/**
+	 * 注文約定情報を管理する。
+	 */
+	private OrdersLogic orderLogic;
+
+	/**
+	 * 建玉情報を管理する。
+	 */
+	private PositionsLogic posLogic;
 
 	/**
 	 * 情報API。
@@ -65,16 +75,16 @@ public class MainTrailOrder {
 	 */
 	public MainTrailOrder(String X_API_KEY) {
 		this.X_API_KEY = X_API_KEY;
+		orderLogic = new OrdersLogic(X_API_KEY);
+		posLogic = new PositionsLogic(X_API_KEY);
 	}
 
 	/**
 	 * トレイル注文。
 	 */
 	public void execute() throws ApiException {
-		OrdersLogic ol = new OrdersLogic(X_API_KEY);
-		ol.execute();
-		PositionsLogic pl = new PositionsLogic(X_API_KEY);
-		List<PosInfo> highList = pl.execute();
+		orderLogic.execute();
+		List<PosInfo> highList = posLogic.execute();
 		int exchange = exchange();
 		if (exchange > 0) {
 			for (PosInfo pi : highList) {
@@ -84,7 +94,7 @@ public class MainTrailOrder {
 				for (ExecutionInfo ei : pi.executionList) {
 					String holdId = ei.executionId;
 					if (ei.holdQty > 0) {
-						String orderId = ol.getOrderId(holdId);
+						String orderId = orderLogic.getOrderId(holdId);
 						if (orderId == null) {
 							String msg = "not found " + pi.name + " " + holdId;
 							System.out.println("  > " + msg);
@@ -92,7 +102,7 @@ public class MainTrailOrder {
 							continue;
 						}
 						try {
-							cancelOrder(ol, orderId, pi, holdId, ei.holdQty);
+							cancelOrder(orderId, pi, holdId, ei.holdQty);
 						} catch (ApiException e) {
 							e.printStackTrace();
 							String msg = "cancelOrder ERROR";
@@ -115,41 +125,39 @@ public class MainTrailOrder {
 							continue;
 						}
 					}
-					sendCloseOrder(ol, pi, ei, exchange, holdId);
+					sendCloseOrder(pi, ei, exchange, holdId);
 				}
 			}
-			ol.writeOrders();
+			orderLogic.writeOrders();
 		}
 	}
 
 	/**
 	 * 注文取消を実行する。
 	 * 
-	 * @param ol      注文約定情報を管理するツール。
 	 * @param orderId 注文番号(ID)。
 	 * @param pi      建玉情報。
 	 * @param holdId  返済建玉ID(HoldID=ExecutionID)。
 	 * @param holdQty 拘束数量（返済のために拘束されている数量）(HoldQty)。
 	 * @throws ApiException
 	 */
-	private void cancelOrder(OrdersLogic ol, String orderId, PosInfo pi, String holdId, int holdQty) throws ApiException {
+	private void cancelOrder(String orderId, PosInfo pi, String holdId, int holdQty) throws ApiException {
 		String msg = "orderId=" + orderId + ", name=" + pi.name + ", holdId=" + holdId + ", holdQty=" + holdQty;
 		System.out.println("  > " + msg);
 		FileUtil.printLog(LOG_FILEPATH, "cancelOrder", msg);
-		ol.cancelOrder(orderId, msg);
+		orderLogic.cancelOrder(orderId, msg);
 	}
 
 	/**
 	 * 返済注文を実行する。
 	 * 
-	 * @param ol       注文約定情報を管理するツール。
 	 * @param pi       建玉情報。
 	 * @param ei       約定数量情報。
 	 * @param exchange 市場コード（Exchange）。
 	 * @param holdId   約定番号（ExecutionID）。
 	 * @throws ApiException 
 	 */
-	private void sendCloseOrder(OrdersLogic ol, PosInfo pi, ExecutionInfo ei, int exchange, String holdId) throws ApiException {
+	private void sendCloseOrder(PosInfo pi, ExecutionInfo ei, int exchange, String holdId) throws ApiException {
 		RequestSendOrderDerivFuture body = new RequestSendOrderDerivFuture();
 		body.setSymbol(pi.code);
 		body.setExchange(exchange);
@@ -181,7 +189,7 @@ public class MainTrailOrder {
 				+ StringUtil.sideStr(body.getSide()) + ", qty=" + body.getQty() + ", holdId=" + holdId;
 		System.out.println("  > " + msg);
 		FileUtil.printLog(LOG_FILEPATH, "sendCloseOrder", msg);
-		ol.sendOrder(body, holdId);
+		orderLogic.sendOrder(body, holdId);
 	}
 
 	/**
