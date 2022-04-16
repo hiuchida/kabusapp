@@ -264,7 +264,7 @@ public class PositionsLogic {
 		String sideParam = null;
 		String addinfo = null;
 		List<PositionsSuccess> response = infoApi.positionsGet(X_API_KEY, product, symbol, sideParam, addinfo);
-		System.out.println("main(): response.size=" + response.size());
+		System.out.println("PositionsLogic.execute(): response.size=" + response.size());
 		for (int i = 0; i < response.size(); i++) {
 			PositionsSuccess pos = response.get(i);
 			String id = pos.getExecutionID();
@@ -272,18 +272,16 @@ public class PositionsLogic {
 			String name = pos.getSymbolName();
 			String side = pos.getSide();
 			int sign = sign(side);
-			int leaves = (int) (double) pos.getLeavesQty();
-			int hold = (int) (double) pos.getHoldQty();
-			int qty = (int) (sign * leaves);
+			ExecutionInfo ei = new ExecutionInfo(id, pos.getLeavesQty(), pos.getHoldQty());
+			int qty = (int) (sign * ei.leavesQty);
 			int price = (int) (double) pos.getPrice();
 			int curPrice = (int) (double) pos.getCurrentPrice();
 			Integer type = pos.getSecurityType();
 			if (type != null && type == 901 && qty != 0 && curPrice != 0) {
-				ExecutionInfo ei = new ExecutionInfo(id, pos.getLeavesQty(), pos.getHoldQty());
 				int profit = ((curPrice - price) * sign);
 				String key = PosInfo.getKey(code, price, side);
 				System.out.println("  " + index(i + 1) + ": " + key + " " + type + " " + code + " " + name + " "
-						+ qty + " " + price + " " + curPrice + " " + profit);
+						+ qty + " " + price + " " + StringUtil.sideStr(side) + " " + curPrice + " " + profit + " " + ei);
 				PosInfo pi = posMap.get(key);
 				if (pi == null) {
 					pi = new PosInfo(code, name, price, side);
@@ -318,7 +316,7 @@ public class PositionsLogic {
 				posKeySet.remove(key);
 			} else {
 				System.out.println("  " + index(i + 1) + ": SKIP " + type + " " + code + " " + name + " " + qty
-						+ " " + price + " " + curPrice);
+						+ " " + price + " " + StringUtil.sideStr(side) + " " + curPrice + " " + ei);
 			}
 		}
 		writePositions();
@@ -345,7 +343,7 @@ public class PositionsLogic {
 			posMap.put(key, pi);
 			posKeySet.add(key);
 		}
-		System.out.println("readPositions(): posMap.size=" + posMap.size());
+		System.out.println("PositionsLogic.readPositions(): posMap.size=" + posMap.size());
 		for (String key : posMap.keySet()) {
 			PosInfo pi = posMap.get(key);
 			System.out.println("  " + key + ": " + pi);
@@ -356,7 +354,7 @@ public class PositionsLogic {
 	 * 建玉情報ファイルを書き込む。決済済の建玉は削除される。
 	 */
 	private void writePositions() {
-		System.out.println("writePositions(): posKeySet.size=" + posKeySet.size());
+		System.out.println("PositionsLogic.writePositions(): posKeySet.size=" + posKeySet.size());
 		for (String key : posKeySet) {
 			PosInfo pi = posMap.get(key);
 			String msg = "delete " + key + " " + pi.name;
@@ -364,7 +362,7 @@ public class PositionsLogic {
 			FileUtil.printLog(LOG_FILEPATH, "writePositions", msg);
 			posMap.remove(key);
 		}
-		System.out.println("writePositions(): posMap.size=" + posMap.size());
+		System.out.println("PositionsLogic.writePositions(): posMap.size=" + posMap.size());
 		for (String key : posMap.keySet()) {
 			PosInfo pi = posMap.get(key);
 			System.out.println("  " + key + ": " + pi);
