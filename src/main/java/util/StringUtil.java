@@ -6,6 +6,23 @@ package util;
 public class StringUtil {
 
 	/**
+	 * 数量の符号を取得する。
+	 * 
+	 * @param side 売買区分(Side)。
+	 * @return 符号
+	 */
+	public static int sign(String side) {
+		switch (side) {
+		case "1":
+			return -1;
+		case "2":
+			return 1;
+		default:
+			throw new RuntimeException();
+		}
+	}
+
+	/**
 	 * ポジション文字列(L or S)を取得する。
 	 * 
 	 * @param side 売買区分(Side)。

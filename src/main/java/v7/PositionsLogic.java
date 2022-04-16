@@ -289,7 +289,7 @@ public class PositionsLogic {
 			String code = pos.getSymbol();
 			String name = pos.getSymbolName();
 			String side = pos.getSide();
-			int sign = sign(side);
+			int sign = StringUtil.sign(side);
 			ExecutionInfo ei = new ExecutionInfo(id, pos.getLeavesQty(), pos.getHoldQty());
 			int qty = (int) (sign * ei.leavesQty);
 			int price = (int) (double) pos.getPrice();
@@ -399,23 +399,6 @@ public class PositionsLogic {
 			lines.add(pi.toLineString());
 		}
 		FileUtil.writeAllLines(TXT_FILEPATH, lines);
-	}
-
-	/**
-	 * 数量の符号を取得する。
-	 * 
-	 * @param side 売買区分(Side)。
-	 * @return 符号
-	 */
-	private int sign(String side) {
-		switch (side) {
-		case "1":
-			return -1;
-		case "2":
-			return 1;
-		default:
-			throw new RuntimeException();
-		}
 	}
 
 	private String index(int idx) {

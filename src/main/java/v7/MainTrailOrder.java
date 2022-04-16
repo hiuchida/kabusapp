@@ -209,23 +209,6 @@ public class MainTrailOrder {
 	}
 
 	/**
-	 * 数量の符号を取得する。
-	 * 
-	 * @param side 売買区分(Side)。
-	 * @return 符号
-	 */
-	private int sign(String side) {
-		switch (side) {
-		case "1":
-			return -1;
-		case "2":
-			return 1;
-		default:
-			throw new RuntimeException();
-		}
-	}
-
-	/**
 	 * 反対売買を取得する。
 	 * 
 	 * @param side 売買区分(Side)。
@@ -249,7 +232,7 @@ public class MainTrailOrder {
 	 * @return トリガ価格。
 	 */
 	private int triggerPrice(PosInfo pi) {
-		int sign = sign(pi.side);
+		int sign = StringUtil.sign(pi.side);
 		int price = pi.price + (pi.profitHigh - 50) * sign; // TODO 逆指値100円
 		return price;
 	}
