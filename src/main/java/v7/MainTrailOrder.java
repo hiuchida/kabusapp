@@ -163,7 +163,7 @@ public class MainTrailOrder {
 		body.setExchange(exchange);
 		body.setTradeType(2); // 返済
 		body.setTimeInForce(2); // FAK
-		body.setSide(sideReturn(pi.side));
+		body.setSide(StringUtil.sideReturn(pi.side));
 		body.setQty(ei.leavesQty - ei.holdQty);
 		List<PositionsDeriv> pdl = new ArrayList<>();
 		{
@@ -208,23 +208,6 @@ public class MainTrailOrder {
 		return response;
 	}
 
-	/**
-	 * 反対売買を取得する。
-	 * 
-	 * @param side 売買区分(Side)。
-	 * @return 反対の売買区分(1 or 2)。
-	 */
-	private String sideReturn(String side) {
-		switch (side) {
-		case "1":
-			return "2";
-		case "2":
-			return "1";
-		default:
-			throw new RuntimeException();
-		}
-	}
-	
 	/**
 	 * トリガ価格を取得する。
 	 * 

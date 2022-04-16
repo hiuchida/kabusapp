@@ -50,6 +50,23 @@ public class StringUtil {
 	}
 
 	/**
+	 * 反対売買を取得する。
+	 * 
+	 * @param side 売買区分(Side)。
+	 * @return 反対の売買区分(1 or 2)。
+	 */
+	public static String sideReturn(String side) {
+		switch (side) {
+		case "1":
+			return "2";
+		case "2":
+			return "1";
+		default:
+			throw new RuntimeException();
+		}
+	}
+	
+	/**
 	 * "("以降を除外して、数値文字列を数値に変換する。
 	 * 
 	 * @param s 数値文字列。
