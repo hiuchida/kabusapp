@@ -298,8 +298,9 @@ public class PositionsLogic {
 			if (type != null && type == 901 && qty != 0 && curPrice != 0) {
 				int profit = ((curPrice - price) * sign);
 				String key = PosInfo.getKey(code, price, side);
-				System.out.println("  " + index(i + 1) + ": " + key + " " + type + " " + code + " " + name + " "
-						+ qty + " " + price + " " + StringUtil.sideStr(side) + " " + curPrice + " " + profit + " " + ei);
+				System.out.println("  " + StringUtil.index(i + 1) + ": " + key + " " + type + " " + code + " " + name
+						+ " " + qty + " " + price + " " + StringUtil.sideStr(side) + " " + curPrice + " " + profit + " "
+						+ ei);
 				PosInfo pi = posMap.get(key);
 				if (pi == null) {
 					pi = new PosInfo(code, name, price, side);
@@ -334,8 +335,8 @@ public class PositionsLogic {
 				pi.updateDate = System.currentTimeMillis();
 				posKeySet.remove(key);
 			} else {
-				System.out.println("  " + index(i + 1) + ": SKIP " + type + " " + code + " " + name + " " + qty
-						+ " " + price + " " + StringUtil.sideStr(side) + " " + curPrice + " " + ei);
+				System.out.println("  " + StringUtil.index(i + 1) + ": SKIP " + type + " " + code + " " + name + " "
+						+ qty + " " + price + " " + StringUtil.sideStr(side) + " " + curPrice + " " + ei);
 			}
 		}
 		writePositions();
@@ -399,10 +400,6 @@ public class PositionsLogic {
 			lines.add(pi.toLineString());
 		}
 		FileUtil.writeAllLines(TXT_FILEPATH, lines);
-	}
-
-	private String index(int idx) {
-		return String.format("%02d", idx);
 	}
 
 }

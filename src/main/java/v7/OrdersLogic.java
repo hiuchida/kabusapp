@@ -101,7 +101,7 @@ public class OrdersLogic {
 			int state = order.getState();
 			int exchange = order.getExchange();
 			int cashMargin = order.getCashMargin();
-			System.out.println("  " + index(i + 1) + ": " + id + " " + code + " " + name + " " + state + " "
+			System.out.println("  " + StringUtil.index(i + 1) + ": " + id + " " + code + " " + name + " " + state + " "
 					+ exchange + " " + cashMargin + " " + price + " " + StringUtil.sideStr(side) + " " + orderQty);
 			if (state == 5) { // 終了（発注エラー・取消済・全約定・失効・期限切れ）
 				continue;
@@ -240,10 +240,6 @@ public class OrdersLogic {
 			lines.add(key + TAB + val);
 		}
 		FileUtil.writeAllLines(TXT_FILEPATH, lines);
-	}
-
-	private String index(int idx) {
-		return String.format("%02d", idx);
 	}
 
 }

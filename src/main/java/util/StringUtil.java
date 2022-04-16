@@ -6,6 +6,16 @@ package util;
 public class StringUtil {
 
 	/**
+	 * インデックス番号から2桁の文字列を生成する。
+	 * 
+	 * @param idx インデックス番号。
+	 * @return 文字列。
+	 */
+	public static String index(int idx) {
+		return String.format("%02d", idx);
+	}
+
+	/**
 	 * 数量の符号を取得する。
 	 * 
 	 * @param side 売買区分(Side)。
