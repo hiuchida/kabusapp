@@ -81,9 +81,9 @@ public class PositionsLogic {
 		 */
 		public long updateDate;
 		/**
-		 * 約定番号(ExecutionID)の配列をカンマ区切り。
+		 * 約定数量情報のリスト。
 		 */
-		public String executionIds;
+		public List<ExecutionInfo> executionList;
 
 		/**
 		 * コンストラクタ（新規作成）。
@@ -99,7 +99,7 @@ public class PositionsLogic {
 			this.price = price;
 			this.side = side;
 			this.createDate = System.currentTimeMillis();
-			this.executionIds = "?";
+			this.executionList = new ArrayList<>();
 		}
 
 		/**
@@ -118,7 +118,7 @@ public class PositionsLogic {
 			this.profitLow = StringUtil.parseInt(cols[i++]);
 			this.createDate = StringUtil.parseLong(cols[i++]);
 			this.updateDate = StringUtil.parseLong(cols[i++]);
-			this.executionIds = "?";
+			this.executionList = new ArrayList<>();
 		}
 
 		/**
@@ -179,7 +179,12 @@ public class PositionsLogic {
 			sb.append(profitLow).append(TAB);
 			sb.append(createDate).append("(").append(DateTimeUtil.toString(createDate)).append(")").append(TAB);
 			sb.append(updateDate).append("(").append(DateTimeUtil.toString(updateDate)).append(")").append(TAB);
-			sb.append(executionIds);
+			for (int i = 0; i < executionList.size(); i++) {
+				if (i > 0) {
+					sb.append(",");
+				}
+				sb.append(executionList.get(i));
+			}
 			return sb.toString();
 		}
 
@@ -190,6 +195,47 @@ public class PositionsLogic {
 			sb.append(", profitHigh=").append(profitHigh);
 			sb.append(", profitLow=").append(profitLow);
 			sb.append("}");
+			return sb.toString();
+		}
+	}
+
+	/**
+	 * 約定数量情報クラス
+	 */
+	public static class ExecutionInfo {
+		/**
+		 * 約定番号（ExecutionID）。
+		 */
+		public String executionId;
+		/**
+		 * 残数量（保有数量）(LeavesQty)。
+		 */
+		public int leavesQty;
+		/**
+		 * 拘束数量（返済のために拘束されている数量）(HoldQty)。
+		 */
+		public int holdQty;
+
+		/**
+		 * コンストラクタ（新規作成）。
+		 * 
+		 * @param executionId 約定番号（ExecutionID）。
+		 * @param leavesQty   残数量（保有数量）(LeavesQty)。
+		 * @param holdQty     拘束数量（返済のために拘束されている数量）(HoldQty)。
+		 */
+		public ExecutionInfo(String executionId, Double leavesQty, Double holdQty) {
+			this.executionId = executionId;
+			this.leavesQty = (int) (double) leavesQty;
+			this.holdQty = (int) (double) holdQty;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append(executionId);
+			sb.append("(").append(leavesQty);
+			sb.append("-").append(holdQty);
+			sb.append(")");
 			return sb.toString();
 		}
 	}
@@ -233,6 +279,7 @@ public class PositionsLogic {
 			int curPrice = (int) (double) pos.getCurrentPrice();
 			Integer type = pos.getSecurityType();
 			if (type != null && type == 901 && qty != 0 && curPrice != 0) {
+				ExecutionInfo ei = new ExecutionInfo(id, pos.getLeavesQty(), pos.getHoldQty());
 				int profit = ((curPrice - price) * sign);
 				String key = PosInfo.getKey(code, price, side);
 				System.out.println("  " + index(i + 1) + ": " + key + " " + type + " " + code + " " + name + " "
@@ -242,7 +289,6 @@ public class PositionsLogic {
 					pi = new PosInfo(code, name, price, side);
 					pi.profitHigh = profit;
 					pi.profitLow = profit;
-					pi.executionIds = id + "(" + leaves + "-" + hold + ")";
 					posMap.put(key, pi);
 					String msg = "create " + key + " " + name + ": curPrice=" + curPrice + " profit=" + profit;
 					System.out.println("  > " + msg);
@@ -265,12 +311,8 @@ public class PositionsLogic {
 						FileUtil.printLog(LOG_FILEPATH, "execute", msg);
 						pi.profitLow = profit;
 					}
-					if (pi.executionIds.equals("?")) {
-						pi.executionIds = id + "(" + leaves + "-" + hold + ")";
-					} else {
-						pi.executionIds = pi.executionIds + "," + id + "(" + leaves + "-" + hold + ")";
-					}
 				}
+				pi.executionList.add(ei);
 				pi.curPrice = curPrice;
 				pi.updateDate = System.currentTimeMillis();
 				posKeySet.remove(key);
