@@ -18,7 +18,7 @@ import util.FileUtil;
 import util.StringUtil;
 
 /**
- * 注文約定情報を管理するツール。
+ * 注文約定情報を管理する。
  */
 public class OrdersLogic {
 	private static final String TRADE_PASSWORD = SendOrderConfig.getPassword();
@@ -41,11 +41,20 @@ public class OrdersLogic {
 	 */
 	private static final String LOG_FILEPATH = DIRPATH + "OrdersLogic.log";
 
+	/**
+	 * 認証済TOKEN。
+	 */
 	private String X_API_KEY;
 
-	private static InfoApi infoApi = new InfoApi();
+	/**
+	 * 情報API。
+	 */
+	private InfoApi infoApi = new InfoApi();
 
-	private static OrderApi orderApi = new OrderApi();
+	/**
+	 * 注文API。
+	 */
+	private OrderApi orderApi = new OrderApi();
 
 	/**
 	 * 注文約定情報のマップ。
@@ -56,10 +65,18 @@ public class OrdersLogic {
 	 */
 	private Set<String> orderKeySet;
 
+	/**
+	 * コンストラクタ。
+	 * 
+	 * @param X_API_KEY 認証済TOKEN。
+	 */
 	public OrdersLogic(String X_API_KEY) {
 		this.X_API_KEY = X_API_KEY;
 	}
 
+	/**
+	 * 注文約定情報を更新する。
+	 */
 	public void execute() throws ApiException {
 		readOrders();
 		String product = null;
@@ -225,7 +242,7 @@ public class OrdersLogic {
 		FileUtil.writeAllLines(TXT_FILEPATH, lines);
 	}
 
-	static String index(int idx) {
+	private String index(int idx) {
 		return String.format("%02d", idx);
 	}
 

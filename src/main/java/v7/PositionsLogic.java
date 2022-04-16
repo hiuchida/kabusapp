@@ -15,7 +15,7 @@ import util.FileUtil;
 import util.StringUtil;
 
 /**
- * 建玉情報を管理するツール。
+ * 建玉情報を管理する。
  */
 public class PositionsLogic {
 	/**
@@ -240,8 +240,14 @@ public class PositionsLogic {
 		}
 	}
 
+	/**
+	 * 認証済TOKEN。
+	 */
 	private String X_API_KEY;
 
+	/**
+	 * 情報API。
+	 */
 	private InfoApi infoApi = new InfoApi();
 
 	/**
@@ -253,6 +259,11 @@ public class PositionsLogic {
 	 */
 	private Set<String> posKeySet;
 
+	/**
+	 * コンストラクタ。
+	 * 
+	 * @param X_API_KEY 認証済TOKEN。
+	 */
 	public PositionsLogic(String X_API_KEY) {
 		this.X_API_KEY = X_API_KEY;
 	}

@@ -33,14 +33,12 @@ public class MainTrailOrder {
 	 */
 	private static final String LOG_FILEPATH = DIRPATH + "MainTrailOrder.log";
 
-	private String X_API_KEY;
-
-	private static InfoApi infoApi = new InfoApi();
-
-	public MainTrailOrder(String X_API_KEY) {
-		this.X_API_KEY = X_API_KEY;
-	}
-
+	/**
+	 * トレイル注文ツール。
+	 * 
+	 * @param args 起動パラメータ。
+	 * @throws ApiException
+	 */
 	public static void main(String[] args) throws ApiException {
 		String X_API_KEY = LockedAuthorizedToken.lockToken();
 		try {
@@ -50,6 +48,28 @@ public class MainTrailOrder {
 		}
 	}
 
+	/**
+	 * 認証済TOKEN。
+	 */
+	private String X_API_KEY;
+
+	/**
+	 * 情報API。
+	 */
+	private InfoApi infoApi = new InfoApi();
+
+	/**
+	 * コンストラクタ。
+	 * 
+	 * @param X_API_KEY 認証済TOKEN。
+	 */
+	public MainTrailOrder(String X_API_KEY) {
+		this.X_API_KEY = X_API_KEY;
+	}
+
+	/**
+	 * トレイル注文。
+	 */
 	public void execute() throws ApiException {
 		OrdersLogic ol = new OrdersLogic(X_API_KEY);
 		ol.execute();
