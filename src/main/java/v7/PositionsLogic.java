@@ -257,7 +257,13 @@ public class PositionsLogic {
 		this.X_API_KEY = X_API_KEY;
 	}
 
-	public void execute() throws ApiException {
+	/**
+	 * 建玉情報を更新し、含み益を更新したリストを返す。
+	 * 
+	 * @return 含み益を更新した建玉情報リスト。
+	 * @throws ApiException
+	 */
+	public List<PosInfo> execute() throws ApiException {
 		readPositions();
 		String product = null;
 		String symbol = null;
@@ -265,6 +271,7 @@ public class PositionsLogic {
 		String addinfo = null;
 		List<PositionsSuccess> response = infoApi.positionsGet(X_API_KEY, product, symbol, sideParam, addinfo);
 		System.out.println("PositionsLogic.execute(): response.size=" + response.size());
+		Set<String> highSet = new TreeSet<>();
 		for (int i = 0; i < response.size(); i++) {
 			PositionsSuccess pos = response.get(i);
 			String id = pos.getExecutionID();
@@ -299,6 +306,7 @@ public class PositionsLogic {
 						System.out.println("  > " + msg);
 						FileUtil.printLog(LOG_FILEPATH, "execute", msg);
 						pi.profitHigh = profit;
+						highSet.add(key);
 					}
 					// 本来はhigh,lowのどちらかしか更新されないはずだが、念のため両方チェック
 					if (profit < pi.profitLow) {
@@ -320,6 +328,12 @@ public class PositionsLogic {
 			}
 		}
 		writePositions();
+		List<PosInfo> highList = new ArrayList<>();
+		for (String key : highSet) {
+			PosInfo pi = posMap.get(key);
+			highList.add(pi);
+		}
+		return highList;
 	}
 
 	/**
