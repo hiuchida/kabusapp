@@ -25,33 +25,49 @@ public class ExchangeUtil {
 	 */
 	public static int exchange(Calendar now) {
 		int ret = 0;
-		int hour = now.get(Calendar.HOUR_OF_DAY);
-		int min = now.get(Calendar.MINUTE);
-		if (hour == 8 && 45 <= min) {
+		String s = TimeUtil.toString(now.getTime());
+		if ("08:45".compareTo(s) <= 0 && s.compareTo("15:05") < 0) {
 			ret = 23; // 日中
-		} else if (9 <= hour && hour <= 14) {
-			ret = 23; // 日中
-		} else if (hour == 15 && min < 10 - 5) {
-			ret = 23; // 日中
-		}
-		if (ret > 0) {
-			System.out.println("Order of Day. hour=" + hour + ", min=" + min);
+			System.out.println("Order of Day. " + s);
 			return ret;
 		}
-		if (hour == 16 && 30 <= min) {
+		if ("16:30".compareTo(s) <= 0 && s.compareTo("23:59") <= 0) {
 			ret = 24; // 夜間
-		} else if (17 <= hour && hour <= 23) {
-			ret = 24; // 夜間
-		} else if (0 <= hour && hour <= 4) {
-			ret = 24; // 夜間
-		} else if (hour == 5 && min < 55 - 5) {
+		} else if ("00:00".compareTo(s) <= 0 && s.compareTo("05:50") < 0) {
 			ret = 24; // 夜間
 		}
 		if (ret > 0) {
-			System.out.println("Order of Night. hour=" + hour + ", min=" + min);
+			System.out.println("Order of Night. " + s);
 			return ret;
 		}
-		System.out.println("Out of Order. hour=" + hour + ", min=" + min);
+		System.out.println("Out of Order. " + s);
+//		int hour = now.get(Calendar.HOUR_OF_DAY);
+//		int min = now.get(Calendar.MINUTE);
+//		if (hour == 8 && 45 <= min) {
+//			ret = 23; // 日中
+//		} else if (9 <= hour && hour <= 14) {
+//			ret = 23; // 日中
+//		} else if (hour == 15 && min < 10 - 5) {
+//			ret = 23; // 日中
+//		}
+//		if (ret > 0) {
+//			System.out.println("Order of Day. hour=" + hour + ", min=" + min);
+//			return ret;
+//		}
+//		if (hour == 16 && 30 <= min) {
+//			ret = 24; // 夜間
+//		} else if (17 <= hour && hour <= 23) {
+//			ret = 24; // 夜間
+//		} else if (0 <= hour && hour <= 4) {
+//			ret = 24; // 夜間
+//		} else if (hour == 5 && min < 55 - 5) {
+//			ret = 24; // 夜間
+//		}
+//		if (ret > 0) {
+//			System.out.println("Order of Night. hour=" + hour + ", min=" + min);
+//			return ret;
+//		}
+//		System.out.println("Out of Order. hour=" + hour + ", min=" + min);
 		return -1;
 	}
 
