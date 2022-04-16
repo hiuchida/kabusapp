@@ -179,7 +179,7 @@ public class MainTrailOrder {
 		RequestSendOrderDerivFutureReverseLimitOrder rlo = new RequestSendOrderDerivFutureReverseLimitOrder();
 		{
 			rlo.setTriggerPrice((double) triggerPrice(pi));
-			rlo.setUnderOver(underOver(body.getSide()));
+			rlo.setUnderOver(StringUtil.underOver(body.getSide()));
 			rlo.setAfterHitOrderType(1); // 成行
 			rlo.setAfterHitPrice(0.0); // 成行時0円
 		}
@@ -218,23 +218,6 @@ public class MainTrailOrder {
 		int sign = StringUtil.sign(pi.side);
 		int price = pi.price + (pi.profitHigh - 50) * sign; // TODO 逆指値100円
 		return price;
-	}
-
-	/**
-	 * 以上／以下を取得する。
-	 * 
-	 * @param side 売買区分(Side)。
-	 * @return 以上／以下(1 or 2)。
-	 */
-	private int underOver(String side) {
-		switch (side) {
-		case "1":
-			return 1;
-		case "2":
-			return 2;
-		default:
-			throw new RuntimeException();
-		}
 	}
 
 	/**

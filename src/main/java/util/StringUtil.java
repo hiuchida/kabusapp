@@ -67,6 +67,23 @@ public class StringUtil {
 	}
 	
 	/**
+	 * 以上／以下を取得する。
+	 * 
+	 * @param side 売買区分(Side)。
+	 * @return 以上／以下(1 or 2)。
+	 */
+	public static int underOver(String side) {
+		switch (side) {
+		case "1":
+			return 1;
+		case "2":
+			return 2;
+		default:
+			throw new RuntimeException();
+		}
+	}
+
+	/**
 	 * "("以降を除外して、数値文字列を数値に変換する。
 	 * 
 	 * @param s 数値文字列。
