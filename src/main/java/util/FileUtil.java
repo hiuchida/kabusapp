@@ -135,6 +135,22 @@ public class FileUtil {
 		}
 	}
 
+	/**
+	 * ログファイルに追記する。
+	 * 
+	 * @param filepath ログファイルパス。
+	 * @param method   メソッド名。
+	 * @param msg      メッセージ文字列。
+	 */
+	public static void printLog(String filepath, String method, String msg) {
+		String now = DateTimeUtil.nowToString();
+		try (PrintWriter pw = FileUtil.writer(filepath, FileUtil.UTF8, true)) {
+			pw.println(now + " " + method + "(): " + msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private FileUtil() {
 	}
 

@@ -1,7 +1,5 @@
 package v7;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -258,14 +256,14 @@ public class PositionsLogic {
 					posMap.put(key, pi);
 					String msg = "create " + key + " " + name + ": curPrice=" + curPrice + " profit=" + profit;
 					System.out.println("  > " + msg);
-					printLog("main", msg);
+					FileUtil.printLog(LOG_FILEPATH, "execute", msg);
 				} else {
 					if (pi.profitHigh < profit) {
 						int delta = profit - pi.profitHigh;
 						String msg = "update " + key + " " + name + ": curPrice=" + curPrice + " profitHighDelta="
 								+ delta + " (" + profit + " <- " + pi.profitHigh + ")";
 						System.out.println("  > " + msg);
-						printLog("main", msg);
+						FileUtil.printLog(LOG_FILEPATH, "execute", msg);
 						pi.profitHigh = profit;
 					}
 					// 本来はhigh,lowのどちらかしか更新されないはずだが、念のため両方チェック
@@ -274,7 +272,7 @@ public class PositionsLogic {
 						String msg = "update " + key + " " + name + ": curPrice=" + curPrice + " profitLowDelta="
 								+ delta + " (" + profit + " <- " + pi.profitLow + ")";
 						System.out.println("  > " + msg);
-						printLog("main", msg);
+						FileUtil.printLog(LOG_FILEPATH, "execute", msg);
 						pi.profitLow = profit;
 					}
 					if (pi.executionIds.equals("?")) {
@@ -331,7 +329,7 @@ public class PositionsLogic {
 			PosInfo pi = posMap.get(key);
 			String msg = "delete " + key + " " + pi.name;
 			System.out.println("  > " + msg);
-			printLog("writePositions", msg);
+			FileUtil.printLog(LOG_FILEPATH, "writePositions", msg);
 			posMap.remove(key);
 		}
 		System.out.println("writePositions(): posMap.size=" + posMap.size());
@@ -367,21 +365,6 @@ public class PositionsLogic {
 
 	private String index(int idx) {
 		return String.format("%02d", idx);
-	}
-
-	/**
-	 * 建玉情報ログに追記する。
-	 * 
-	 * @param method メソッド名。
-	 * @param msg    メッセージ文字列。
-	 */
-	private void printLog(String method, String msg) {
-		String now = DateTimeUtil.nowToString();
-		try (PrintWriter pw = FileUtil.writer(LOG_FILEPATH, FileUtil.UTF8, true)) {
-			pw.println(now + " " + method + "(): " + msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 }
