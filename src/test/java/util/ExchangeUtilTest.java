@@ -10,6 +10,7 @@ public class ExchangeUtilTest {
 
 	@Test
 	public void exchangeTest() {
+		int i = 0;
 		Calendar c = Calendar.getInstance();
 		for (int h = 0; h <= 4; h++) {
 			for (int m = 0; m <= 59; m++) {
@@ -17,6 +18,7 @@ public class ExchangeUtilTest {
 				c.set(Calendar.MINUTE, m);
 				int v = ExchangeUtil.exchange(c);
 				assertEquals(24, v); // 夜間
+				i++;
 			}
 		}
 		{
@@ -30,6 +32,7 @@ public class ExchangeUtilTest {
 				} else {
 					assertEquals(-1, v); // 時間外
 				}
+				i++;
 			}
 		}
 		for (int h = 6; h <= 7; h++) {
@@ -38,6 +41,7 @@ public class ExchangeUtilTest {
 				c.set(Calendar.MINUTE, m);
 				int v = ExchangeUtil.exchange(c);
 				assertEquals(-1, v); // 時間外
+				i++;
 			}
 		}
 		{
@@ -51,6 +55,7 @@ public class ExchangeUtilTest {
 				} else {
 					assertEquals(23, v); // 日中
 				}
+				i++;
 			}
 		}
 		for (int h = 9; h <= 14; h++) {
@@ -59,6 +64,7 @@ public class ExchangeUtilTest {
 				c.set(Calendar.MINUTE, m);
 				int v = ExchangeUtil.exchange(c);
 				assertEquals(23, v); // 日中
+				i++;
 			}
 		}
 		{
@@ -72,6 +78,7 @@ public class ExchangeUtilTest {
 				} else {
 					assertEquals(-1, v); // 時間外
 				}
+				i++;
 			}
 		}
 		{
@@ -85,6 +92,7 @@ public class ExchangeUtilTest {
 				} else {
 					assertEquals(24, v); // 夜間
 				}
+				i++;
 			}
 		}
 		for (int h = 17; h <= 23; h++) {
@@ -93,8 +101,10 @@ public class ExchangeUtilTest {
 				c.set(Calendar.MINUTE, m);
 				int v = ExchangeUtil.exchange(c);
 				assertEquals(24, v); // 夜間
+				i++;
 			}
 		}
+		assertEquals(24 * 60, i); // テスト件数
 	}
 
 }
