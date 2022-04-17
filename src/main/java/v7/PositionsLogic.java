@@ -339,6 +339,7 @@ public class PositionsLogic {
 						+ qty + " " + price + " " + StringUtil.sideStr(side) + " " + curPrice + " " + ei);
 			}
 		}
+		deletePositions();
 		writePositions();
 		List<PosInfo> highList = new ArrayList<>();
 		for (String key : highSet) {
@@ -391,17 +392,25 @@ public class PositionsLogic {
 	}
 
 	/**
-	 * 建玉情報ファイルを書き込む。決済済の建玉は削除される。
+	 * 決済済の建玉を削除する。
+	 */
+	private void deletePositions() {
+		if (posKeySet.size() > 0) {
+			System.out.println("PositionsLogic.deletePositions(): posKeySet.size=" + posKeySet.size());
+			for (String key : posKeySet) {
+				PosInfo pi = posMap.get(key);
+				String msg = "delete " + key + " " + pi.name;
+				System.out.println("  > " + msg);
+				FileUtil.printLog(LOG_FILEPATH, "writePositions", msg);
+				posMap.remove(key);
+			}
+		}
+	}
+
+	/**
+	 * 建玉情報ファイルを書き込む。
 	 */
 	private void writePositions() {
-		System.out.println("PositionsLogic.writePositions(): posKeySet.size=" + posKeySet.size());
-		for (String key : posKeySet) {
-			PosInfo pi = posMap.get(key);
-			String msg = "delete " + key + " " + pi.name;
-			System.out.println("  > " + msg);
-			FileUtil.printLog(LOG_FILEPATH, "writePositions", msg);
-			posMap.remove(key);
-		}
 		System.out.println("PositionsLogic.writePositions(): posMap.size=" + posMap.size());
 		for (String key : posMap.keySet()) {
 			PosInfo pi = posMap.get(key);

@@ -123,6 +123,7 @@ public class OrdersLogic {
 			}
 			orderKeySet.remove(id);
 		}
+		deleteOrders();
 		writeOrders();
 	}
 
@@ -212,11 +213,11 @@ public class OrdersLogic {
 	}
 
 	/**
-	 * 注文約定情報ファイルを書き込む。決済済の注文は削除される。
+	 * 決済済の注文を削除する。
 	 */
-	public void writeOrders() {
+	private void deleteOrders() {
 		if (orderKeySet.size() > 0) {
-			System.out.println("OrdersLogic.writeOrders(): orderKeySet.size=" + orderKeySet.size());
+			System.out.println("OrdersLogic.deleteOrders(): orderKeySet.size=" + orderKeySet.size());
 			for (String key : orderKeySet) {
 				String val = orderMap.get(key);
 				String msg = "delete " + key + " " + val;
@@ -225,6 +226,12 @@ public class OrdersLogic {
 				orderMap.remove(key);
 			}
 		}
+	}
+
+	/**
+	 * 注文約定情報ファイルを書き込む。
+	 */
+	public void writeOrders() {
 		System.out.println("OrdersLogic.writeOrders(): orderMap.size=" + orderMap.size());
 		for (String key : orderMap.keySet()) {
 			String val = orderMap.get(key);
