@@ -434,7 +434,7 @@ public class PositionsLogic {
 				PosInfo pi = posMap.get(key);
 				String msg = "delete " + key + " " + pi.name;
 				System.out.println("  > " + msg);
-				FileUtil.printLog(LOG_FILEPATH, "writePositions", msg);
+				FileUtil.printLog(LOG_FILEPATH, "deletePositions", msg);
 				posMap.remove(key);
 			}
 		}

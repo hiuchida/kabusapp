@@ -246,9 +246,9 @@ public class OrdersLogic {
 			System.out.println("OrdersLogic.deleteOrders(): orderKeySet.size=" + orderKeySet.size());
 			for (String key : orderKeySet) {
 				String val = orderMap.get(key);
-				String msg = "delete " + key + " " + val;
+				String msg = "delete orderId=" + key + ", holdId=" + val;
 				System.out.println("  > " + msg);
-				FileUtil.printLog(LOG_FILEPATH, "writeOrders", msg);
+				FileUtil.printLog(LOG_FILEPATH, "deleteOrders", msg);
 				orderMap.remove(key);
 			}
 		}
