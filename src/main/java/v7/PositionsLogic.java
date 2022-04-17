@@ -1,6 +1,7 @@
 package v7;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,7 +40,7 @@ public class PositionsLogic {
 	/**
 	 * 建玉情報クラス
 	 */
-	public static class PosInfo {
+	public static class PosInfo implements Comparable<PosInfo> {
 		/**
 		 * 建玉情報ファイルのカラム数。
 		 */
@@ -211,6 +212,13 @@ public class PositionsLogic {
 				sb.append(executionList.get(i));
 			}
 			return sb.toString();
+		}
+
+		@Override
+		public int compareTo(PosInfo that) {
+			String key1 = code + "_" + price + "_" + StringUtil.sideStr(side);
+			String key2 = that.code + "_" + that.price + "_" + StringUtil.sideStr(that.side);
+			return key1.compareTo(key2);
 		}
 
 		@Override
@@ -436,15 +444,14 @@ public class PositionsLogic {
 	 * 建玉情報ファイルを書き込む。
 	 */
 	private void writePositions() {
-		System.out.println("PositionsLogic.writePositions(): posMap.size=" + posMap.size());
-		for (String key : posMap.keySet()) {
-			PosInfo pi = posMap.get(key);
-			System.out.println("  " + key + ": " + pi);
-		}
 		List<String> lines = new ArrayList<>();
 		lines.add(PosInfo.toHeaderString());
-		for (String key : posMap.keySet()) {
-			PosInfo pi = posMap.get(key);
+		System.out.println("PositionsLogic.writePositions(): posMap.size=" + posMap.size());
+		List<PosInfo> list = new ArrayList<>();
+		list.addAll(posMap.values());
+		Collections.sort(list);
+		for (PosInfo pi : list) {
+			System.out.println("  " + pi.getKey() + ": " + pi);
 			lines.add(pi.toLineString());
 		}
 		FileUtil.writeAllLines(TXT_FILEPATH, lines);
