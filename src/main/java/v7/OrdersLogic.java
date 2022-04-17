@@ -150,7 +150,6 @@ public class OrdersLogic {
 	 * @throws ApiException
 	 */
 	public void cancelOrder(String orderId, String msg) throws ApiException {
-		System.out.println("  > " + msg);
 		FileUtil.printLog(LOG_FILEPATH, "cancelOrder", msg);
 		
 		RequestCancelOrder body = new RequestCancelOrder();
@@ -170,12 +169,10 @@ public class OrdersLogic {
 	 * 
 	 * @param body   注文発注（先物）情報。
 	 * @param holdId 約定番号（ExecutionID）。
+	 * @param msg    ログメッセージ。
 	 * @throws ApiException
 	 */
-	public void sendOrder(RequestSendOrderDerivFuture body, String holdId) throws ApiException {
-		String msg = "code=" + body.getSymbol() + ", exchange=" + body.getExchange() + ", price=" + body.getPrice()
-				+ StringUtil.sideStr(body.getSide()) + ", qty=" + body.getQty() + ", holdId=" + holdId;
-		System.out.println("  > " + msg);
+	public void sendOrder(RequestSendOrderDerivFuture body, String holdId, String msg) throws ApiException {
 		FileUtil.printLog(LOG_FILEPATH, "sendOrder", msg);
 		
 		body.setPassword(TRADE_PASSWORD);

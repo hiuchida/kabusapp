@@ -152,7 +152,7 @@ public class MainTrailOrder {
 	 */
 	private void cancelOrder(String orderId, PosInfo pi, String holdId, int holdQty) throws ApiException {
 		String msg = "orderId=" + orderId + ", name=" + pi.name + ", holdId=" + holdId + ", holdQty=" + holdQty;
-		System.out.println("  > " + msg);
+		System.out.println("  > cancelOrder " + msg);
 		FileUtil.printLog(LOG_FILEPATH, "cancelOrder", msg);
 		orderLogic.cancelOrder(orderId, msg);
 	}
@@ -167,6 +167,7 @@ public class MainTrailOrder {
 	 * @throws ApiException 
 	 */
 	private void sendCloseOrder(PosInfo pi, ExecutionInfo ei, int exchange, String holdId) throws ApiException {
+		int triggerPrice = triggerPrice(pi);
 		RequestSendOrderDerivFuture body = new RequestSendOrderDerivFuture();
 		body.setSymbol(pi.code);
 		body.setExchange(exchange);
@@ -187,18 +188,18 @@ public class MainTrailOrder {
 		body.setExpireDay(0); // 当日
 		RequestSendOrderDerivFutureReverseLimitOrder rlo = new RequestSendOrderDerivFutureReverseLimitOrder();
 		{
-			rlo.setTriggerPrice((double) triggerPrice(pi));
+			rlo.setTriggerPrice((double) triggerPrice);
 			rlo.setUnderOver(StringUtil.underOver(body.getSide()));
 			rlo.setAfterHitOrderType(1); // 成行
 			rlo.setAfterHitPrice(0.0); // 成行時0円
 		}
 		body.setReverseLimitOrder(rlo);
 		
-		String msg = "sendOrder code=" + body.getSymbol() + ", exchange=" + body.getExchange() + ", price=" + body.getPrice()
+		String msg = "code=" + body.getSymbol() + ", exchange=" + body.getExchange() + ", price=" + triggerPrice
 				+ StringUtil.sideStr(body.getSide()) + ", qty=" + body.getQty() + ", holdId=" + holdId;
-		System.out.println("  > " + msg);
+		System.out.println("  > sendOrder " + msg);
 		FileUtil.printLog(LOG_FILEPATH, "sendCloseOrder", msg);
-		orderLogic.sendOrder(body, holdId);
+		orderLogic.sendOrder(body, holdId, msg);
 	}
 
 	/**
