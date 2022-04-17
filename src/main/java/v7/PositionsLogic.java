@@ -143,7 +143,7 @@ public class PositionsLogic {
 			sb.append("# ");
 			sb.append("code   ").append(TAB);
 			sb.append("name             ").append(TAB);
-			sb.append("price").append(TAB);
+			sb.append("price(qty)").append(TAB);
 			sb.append("side").append(TAB);
 			sb.append("curPric").append(TAB);
 			sb.append("high").append(TAB);
@@ -154,6 +154,31 @@ public class PositionsLogic {
 			return sb.toString();
 		}
 
+		/**
+		 * 残数量（保有数量）(LeavesQty)を集計する。
+		 * 
+		 * @return 残数量（保有数量）(LeavesQty)。
+		 */
+		public int getLeavesQty() {
+			int qty = 0;
+			for (ExecutionInfo ei : executionList) {
+				qty += ei.leavesQty;
+			}
+			return qty;
+		}
+		/**
+		 * 拘束数量（返済のために拘束されている数量）(HoldQty)を集計する。
+		 * 
+		 * @return 拘束数量（返済のために拘束されている数量）(HoldQty)。
+		 */
+		public int getHoldQty() {
+			int qty = 0;
+			for (ExecutionInfo ei : executionList) {
+				qty += ei.holdQty;
+			}
+			return qty;
+		}
+	
 		/**
 		 * インスタンスの主キー(code_price_sideStr)を生成する。
 		 * 
@@ -172,7 +197,7 @@ public class PositionsLogic {
 			StringBuilder sb = new StringBuilder();
 			sb.append(code).append(TAB);
 			sb.append(name).append(TAB);
-			sb.append(price).append(TAB);
+			sb.append(price).append("(").append(getLeavesQty()).append("-").append(getHoldQty()).append(")").append(TAB);
 			sb.append(side).append("(").append(StringUtil.sideStr(side)).append(")").append(TAB);
 			sb.append(curPrice).append(TAB);
 			sb.append(profitHigh).append(TAB);
