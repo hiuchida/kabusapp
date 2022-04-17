@@ -20,6 +20,15 @@ import v7.PositionsLogic.PosInfo;
  */
 public class MainTrailOrder {
 	/**
+	 * 含み益がこの値以上になった後に返済発注する。
+	 */
+	private static final int PROFIT_HIGH_THRESHOLD = 200; // TODO 200円以上でトリガー
+	/**
+	 * 含み益の最大値からの値幅。
+	 */
+	private static final int TRIGGER_PRICE_RANGE = 100; // TODO 逆指値100円
+
+	/**
 	 * タブ文字。
 	 */
 	public static final String TAB = "\t";
@@ -75,8 +84,8 @@ public class MainTrailOrder {
 	 */
 	public MainTrailOrder(String X_API_KEY) {
 		this.X_API_KEY = X_API_KEY;
-		orderLogic = new OrdersLogic(X_API_KEY);
-		posLogic = new PositionsLogic(X_API_KEY);
+		this.orderLogic = new OrdersLogic(X_API_KEY);
+		this.posLogic = new PositionsLogic(X_API_KEY);
 	}
 
 	/**
@@ -88,7 +97,7 @@ public class MainTrailOrder {
 		int exchange = ExchangeUtil.now();
 		if (exchange > 0) {
 			for (PosInfo pi : highList) {
-				if (pi.profitHigh < 100) { // TODO 200円以上でトリガー
+				if (pi.profitHigh < PROFIT_HIGH_THRESHOLD) {
 					continue;
 				}
 				for (ExecutionInfo ei : pi.executionList) {
@@ -216,7 +225,7 @@ public class MainTrailOrder {
 	 */
 	private int triggerPrice(PosInfo pi) {
 		int sign = StringUtil.sign(pi.side);
-		int price = pi.price + (pi.profitHigh - 50) * sign; // TODO 逆指値100円
+		int price = pi.price + (pi.profitHigh - TRIGGER_PRICE_RANGE) * sign;
 		return price;
 	}
 
