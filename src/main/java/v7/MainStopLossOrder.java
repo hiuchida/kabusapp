@@ -79,6 +79,8 @@ public class MainStopLossOrder {
 
 	/**
 	 * ストップロス注文。
+	 * 
+	 * @throws ApiException 
 	 */
 	public void execute() throws ApiException {
 		orderLogic.execute();

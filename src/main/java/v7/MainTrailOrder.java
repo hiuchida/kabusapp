@@ -90,6 +90,8 @@ public class MainTrailOrder {
 
 	/**
 	 * トレイル注文。
+	 * 
+	 * @throws ApiException 
 	 */
 	public void execute() throws ApiException {
 		orderLogic.execute();
