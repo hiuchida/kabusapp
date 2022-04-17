@@ -162,11 +162,11 @@ public class OrdersLogic {
         	Thread.sleep(240); // 4.2req/sec
         } catch (Exception e) {
         }
-		orderMap.remove(orderId);
+        unregisterOrder(orderId);
 	}
 
 	/**
-	 * 発注を実行する。
+	 * 注文発注を実行する。
 	 * 
 	 * @param body   注文発注（先物）情報。
 	 * @param holdId 約定番号（ExecutionID）。
@@ -183,7 +183,33 @@ public class OrdersLogic {
         	Thread.sleep(240); // 4.2req/sec
         } catch (Exception e) {
         }
-        orderMap.put(response.getOrderId(), holdId);
+        registerOrder(response.getOrderId(), holdId);
+	}
+
+	/**
+	 * 注文約定情報を登録する。
+	 * 
+	 * @param orderId 注文番号(ID)。
+	 * @param holdId  約定番号（ExecutionID）。
+	 */
+	public void registerOrder(String orderId, String holdId) {
+		String msg = "orderId=" + orderId + ", holdId=" + holdId;
+		FileUtil.printLog(LOG_FILEPATH, "registerOrder", msg);
+		System.out.println("  > registerOrder " + msg);
+
+        orderMap.put(orderId, holdId);
+	}
+
+	/**
+	 * 注文約定情報を登録解除する。
+	 * 
+	 * @param orderId 注文番号(ID)。
+	 */
+	public void unregisterOrder(String orderId) {
+		String msg = "orderId=" + orderId;
+		FileUtil.printLog(LOG_FILEPATH, "unregisterOrder", msg);
+
+		orderMap.remove(orderId);
 	}
 
 	/**
