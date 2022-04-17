@@ -349,6 +349,20 @@ public class PositionsLogic {
 	}
 
 	/**
+	 * メモリ上の建玉情報リストを返す。
+	 * 
+	 * @return 建玉情報リスト。
+	 * @throws ApiException
+	 */
+	public List<PosInfo> getList() {
+		List<PosInfo> list = new ArrayList<>();
+		for (PosInfo pi : posMap.values()) {
+			list.add(pi);
+		}
+		return list;
+	}
+
+	/**
 	 * 建玉情報ファイルを読み込む。不正なレコードは無視される。
 	 */
 	private void readPositions() {
