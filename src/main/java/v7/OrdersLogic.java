@@ -192,7 +192,7 @@ public class OrdersLogic {
 	 * @param orderId 注文番号(ID)。
 	 * @param holdId  約定番号（ExecutionID）。
 	 */
-	public void registerOrder(String orderId, String holdId) {
+	private void registerOrder(String orderId, String holdId) {
 		String msg = "orderId=" + orderId + ", holdId=" + holdId;
 		FileUtil.printLog(LOG_FILEPATH, "registerOrder", msg);
 		System.out.println("  > registerOrder " + msg);
@@ -205,7 +205,7 @@ public class OrdersLogic {
 	 * 
 	 * @param orderId 注文番号(ID)。
 	 */
-	public void unregisterOrder(String orderId) {
+	private void unregisterOrder(String orderId) {
 		String msg = "orderId=" + orderId;
 		FileUtil.printLog(LOG_FILEPATH, "unregisterOrder", msg);
 
