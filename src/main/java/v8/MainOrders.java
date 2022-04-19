@@ -49,7 +49,7 @@ public class MainOrders {
 		/**
 		 * 注文約定情報ファイルのカラム数。
 		 */
-		public static final int MAX_COLS = 10;
+		public static final int MAX_COLS = 11;
 		/**
 		 * 注文番号(ID)。
 		 */
@@ -78,6 +78,10 @@ public class MainOrders {
 		 * 売買区分(Side)。
 		 */
 		public String side;
+		/**
+		 * 取引区分(CashMargin)。
+		 */
+		public int cashMargin;
 		/**
 		 * 生成日時。
 		 */
@@ -119,6 +123,7 @@ public class MainOrders {
 			this.price = StringUtil.parseInt(cols[i++]);
 			this.orderQty = StringUtil.parseInt(cols[i++]);
 			this.side = "" + StringUtil.parseInt(cols[i++]);
+			this.cashMargin = StringUtil.parseInt(cols[i++]);
 			this.createDate = StringUtil.parseLong(cols[i++]);
 			this.updateDate = StringUtil.parseLong(cols[i++]);
 			this.executionIds = cols[i++];
@@ -139,6 +144,7 @@ public class MainOrders {
 			sb.append("price").append(TAB);
 			sb.append("qty").append(TAB);
 			sb.append("side").append(TAB);
+			sb.append("cashMar").append(TAB);
 			sb.append("createDate                            ").append(TAB);
 			sb.append("updateDate                            ").append(TAB);
 			sb.append("executionIds");
@@ -159,6 +165,7 @@ public class MainOrders {
 			sb.append(price).append(TAB);
 			sb.append(orderQty).append(TAB);
 			sb.append(side).append("(").append(StringUtil.sideStr(side)).append(")").append(TAB);
+			sb.append(cashMargin).append(TAB);
 			sb.append(createDate).append("(").append(DateTimeUtil.toString(createDate)).append(")").append(TAB);
 			sb.append(updateDate).append("(").append(DateTimeUtil.toString(updateDate)).append(")").append(TAB);
 			sb.append(executionIds);
@@ -248,6 +255,7 @@ public class MainOrders {
 				oi.price = price;
 				oi.orderQty = orderQty;
 				oi.side = side;
+				oi.cashMargin = cashMargin;
 				oi.updateDate = System.currentTimeMillis();
 				oi.executionIds = executionIds;
 				orderKeySet.remove(orderId);
