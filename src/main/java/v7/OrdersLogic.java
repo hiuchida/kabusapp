@@ -223,7 +223,7 @@ public class OrdersLogic {
 			if (s.startsWith("#")) {
 				continue;
 			}
-			String[] cols = s.split(TAB);
+			String[] cols = StringUtil.splitTab(s);
 			if (cols.length < 2) {
 				System.out.println("Warning SKIP cols.length=" + cols.length + ", line=" + s);
 				continue;

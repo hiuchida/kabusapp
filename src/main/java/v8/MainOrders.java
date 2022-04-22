@@ -278,7 +278,7 @@ public class MainOrders {
 			if (s.startsWith("#")) {
 				continue;
 			}
-			String[] cols = s.split(TAB);
+			String[] cols = StringUtil.splitTab(s);
 			if (cols.length < OrderInfo.MAX_COLS) {
 				System.out.println("Warning: SKIP cols.length=" + cols.length + ", line=" + s);
 				continue;

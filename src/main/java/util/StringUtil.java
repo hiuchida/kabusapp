@@ -1,5 +1,8 @@
 package util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 文字列に関するユーティリティクラス。
  */
@@ -123,6 +126,30 @@ public class StringUtil {
 		} catch (NumberFormatException e) {
 			return 0;
 		}
+	}
+
+	/**
+	 * タブ文字で分割する。String.split()と異なり、行末の空文字列にも対応する。
+	 * 
+	 * @param s 文字列。
+	 * @return 分割した文字列の配列。
+	 */
+	public static String[] splitTab(String s) {
+		List<String> list = new ArrayList<>();
+		while (true) {
+			int idx = s.indexOf('\t');
+			if (idx < 0) {
+				list.add(s);
+				break;
+			}
+			list.add(s.substring(0, idx));
+			s = s.substring(idx + 1);
+		}
+		String[] ary = new String[list.size()];
+		for (int i = 0; i < list.size(); i++) {
+			ary[i] = list.get(i);
+		}
+		return ary;
 	}
 
 	private StringUtil() {

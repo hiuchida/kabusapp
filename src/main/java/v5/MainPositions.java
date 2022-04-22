@@ -14,6 +14,7 @@ import io.swagger.client.api.InfoApi;
 import io.swagger.client.model.PositionsSuccess;
 import util.DateTimeUtil;
 import util.FileUtil;
+import util.StringUtil;
 import v4.LockedAuthorizedToken;
 
 /**
@@ -296,7 +297,7 @@ public class MainPositions {
 			if (s.startsWith("#")) {
 				continue;
 			}
-			String[] cols = s.split(TAB);
+			String[] cols = StringUtil.splitTab(s);
 			if (cols.length < PosInfo.MAX_COLS) {
 				System.out.println("Warning: SKIP cols.length=" + cols.length + ", line=" + s);
 				continue;
