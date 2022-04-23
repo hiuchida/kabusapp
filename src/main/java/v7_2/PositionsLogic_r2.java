@@ -415,7 +415,7 @@ public class PositionsLogic_r2 {
 				continue;
 			}
 			String[] cols = StringUtil.splitTab(s);
-			if (cols.length < PosInfo.MAX_COLS) {
+			if (cols.length != PosInfo.MAX_COLS) {
 				System.out.println("Warning: SKIP cols.length=" + cols.length + ", line=" + s);
 				continue;
 			}

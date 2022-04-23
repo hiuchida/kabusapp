@@ -279,7 +279,7 @@ public class MainOrders {
 				continue;
 			}
 			String[] cols = StringUtil.splitTab(s);
-			if (cols.length < OrderInfo.MAX_COLS) {
+			if (cols.length != OrderInfo.MAX_COLS) {
 				System.out.println("Warning: SKIP cols.length=" + cols.length + ", line=" + s);
 				continue;
 			}

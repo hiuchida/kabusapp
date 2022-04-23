@@ -40,6 +40,10 @@ public class OrdersLogic {
 	 * 返済注文情報ログのファイルパス。存在しなければ生成される。
 	 */
 	private static final String LOG_FILEPATH = DIRPATH + "OrdersLogic.log";
+	/**
+	 * 返済注文情報ファイルのカラム数。
+	 */
+	public static final int MAX_COLS = 2;
 
 	/**
 	 * 認証済TOKEN。
@@ -224,7 +228,7 @@ public class OrdersLogic {
 				continue;
 			}
 			String[] cols = StringUtil.splitTab(s);
-			if (cols.length < 2) {
+			if (cols.length != MAX_COLS) {
 				System.out.println("Warning SKIP cols.length=" + cols.length + ", line=" + s);
 				continue;
 			}
