@@ -61,7 +61,7 @@ public class MainTrailOrder {
 	 * 認証済TOKEN。
 	 */
 	private String X_API_KEY;
-	
+
 	/**
 	 * 注文約定情報を管理する。
 	 */

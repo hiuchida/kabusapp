@@ -52,11 +52,6 @@ public class MainStopLossOrder {
 	}
 
 	/**
-	 * 認証済TOKEN。
-	 */
-//	private String X_API_KEY;
-	
-	/**
 	 * 注文約定情報を管理する。
 	 */
 	private OrdersLogic orderLogic;
@@ -72,7 +67,6 @@ public class MainStopLossOrder {
 	 * @param X_API_KEY 認証済TOKEN。
 	 */
 	public MainStopLossOrder(String X_API_KEY) {
-//		this.X_API_KEY = X_API_KEY;
 		this.orderLogic = new OrdersLogic(X_API_KEY);
 		this.posLogic = new PositionsLogic(X_API_KEY);
 	}
