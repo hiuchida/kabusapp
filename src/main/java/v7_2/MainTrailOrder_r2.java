@@ -13,7 +13,6 @@ import util.ExchangeUtil;
 import util.FileUtil;
 import util.StringUtil;
 import v7.LockedAuthorizedToken;
-import v7.OrdersLogic;
 import v7_2.PositionsLogic_r2.ExecutionInfo;
 import v7_2.PositionsLogic_r2.PosInfo;
 
@@ -58,7 +57,7 @@ public class MainTrailOrder_r2 {
 	/**
 	 * 注文約定情報を管理する。
 	 */
-	private OrdersLogic orderLogic;
+	private CloseOrdersLogic_r2 closeOrderLogic;
 
 	/**
 	 * 建玉情報を管理する。
@@ -77,7 +76,7 @@ public class MainTrailOrder_r2 {
 	 */
 	public MainTrailOrder_r2(String X_API_KEY) {
 		this.X_API_KEY = X_API_KEY;
-		this.orderLogic = new OrdersLogic(X_API_KEY);
+		this.closeOrderLogic = new CloseOrdersLogic_r2(X_API_KEY);
 		this.posLogic = new PositionsLogic_r2(X_API_KEY);
 	}
 
@@ -87,7 +86,7 @@ public class MainTrailOrder_r2 {
 	 * @throws ApiException 
 	 */
 	public void execute() throws ApiException {
-		orderLogic.execute();
+		closeOrderLogic.execute();
 		List<PosInfo> highList = posLogic.execute();
 		int exchange = ExchangeUtil.now();
 		if (exchange > 0) {
@@ -112,7 +111,7 @@ public class MainTrailOrder_r2 {
 				for (ExecutionInfo ei : pi.executionList) {
 					String holdId = ei.executionId;
 					if (ei.holdQty > 0) {
-						String orderId = orderLogic.getOrderId(holdId);
+						String orderId = closeOrderLogic.getOrderId(holdId);
 						if (orderId == null) {
 							String msg = "not found " + pi.name + " " + holdId;
 							System.out.println("  > " + msg);
@@ -146,7 +145,7 @@ public class MainTrailOrder_r2 {
 					sendCloseOrder(pi, ei, exchange, holdId);
 				}
 			}
-			orderLogic.writeOrders();
+			closeOrderLogic.writeOrders();
 			posLogic.writePositions();
 		}
 	}
@@ -164,7 +163,7 @@ public class MainTrailOrder_r2 {
 		String msg = "orderId=" + orderId + ", name=" + pi.name + ", holdId=" + holdId + ", holdQty=" + holdQty;
 		System.out.println("  > cancelOrder " + msg);
 		FileUtil.printLog(LOG_FILEPATH, "cancelOrder", msg);
-		orderLogic.cancelOrder(orderId, msg);
+		closeOrderLogic.cancelOrder(orderId, msg);
 	}
 
 	/**
@@ -174,9 +173,11 @@ public class MainTrailOrder_r2 {
 	 * @param ei       約定数量情報。
 	 * @param exchange 市場コード（Exchange）。
 	 * @param holdId   約定番号（ExecutionID）。
+	 * @return 注文番号(ID)。
 	 * @throws ApiException 
 	 */
-	private void sendCloseOrder(PosInfo pi, ExecutionInfo ei, int exchange, String holdId) throws ApiException {
+	private String sendCloseOrder(PosInfo pi, ExecutionInfo ei, int exchange, String holdId) throws ApiException {
+		int triggerPrice = pi.triggerPrice;
 		RequestSendOrderDerivFuture body = new RequestSendOrderDerivFuture();
 		body.setSymbol(pi.code);
 		body.setExchange(exchange);
@@ -197,7 +198,7 @@ public class MainTrailOrder_r2 {
 		body.setExpireDay(0); // 当日
 		RequestSendOrderDerivFutureReverseLimitOrder rlo = new RequestSendOrderDerivFutureReverseLimitOrder();
 		{
-			rlo.setTriggerPrice((double) pi.triggerPrice);
+			rlo.setTriggerPrice((double) triggerPrice);
 			rlo.setUnderOver(StringUtil.underOver(body.getSide()));
 			rlo.setAfterHitOrderType(1); // 成行
 			rlo.setAfterHitPrice(0.0); // 成行時0円
@@ -208,7 +209,8 @@ public class MainTrailOrder_r2 {
 				+ StringUtil.sideStr(body.getSide()) + ", qty=" + body.getQty() + ", holdId=" + holdId;
 		System.out.println("  > sendOrder " + msg);
 		FileUtil.printLog(LOG_FILEPATH, "sendCloseOrder", msg);
-		orderLogic.sendOrder(body, holdId, msg);
+		String orderId = closeOrderLogic.sendOrder(body, holdId, msg);
+		return orderId;
 	}
 
 	/**

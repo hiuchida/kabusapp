@@ -187,7 +187,7 @@ public class PositionsLogic_r2 {
 		}
 	
 		/**
-		 * インスタンスの主キー(code_price_sideStr)を生成する。
+		 * インスタンスの主キー(code_price_sideStr)を取得する。
 		 * 
 		 * @return 主キー。
 		 */
@@ -458,8 +458,9 @@ public class PositionsLogic_r2 {
 		list.addAll(posMap.values());
 		Collections.sort(list);
 		for (PosInfo pi : list) {
-			System.out.println("  " + pi.getKey() + ": " + pi);
 			lines.add(pi.toLineString());
+			String key = pi.getKey();
+			System.out.println("  " + key + ": " + pi);
 		}
 		FileUtil.writeAllLines(TXT_FILEPATH, lines);
 	}
