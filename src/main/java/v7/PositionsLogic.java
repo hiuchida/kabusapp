@@ -181,7 +181,7 @@ public class PositionsLogic {
 		}
 	
 		/**
-		 * インスタンスの主キー(code_price_sideStr)を生成する。
+		 * インスタンスの主キー(code_price_sideStr)を取得する。
 		 * 
 		 * @return 主キー。
 		 */
