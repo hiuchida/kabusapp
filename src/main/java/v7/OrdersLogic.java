@@ -96,7 +96,7 @@ public class OrdersLogic {
 		System.out.println("OrdersLogic.execute(): response.size=" + response.size());
 		for (int i = 0; i < response.size(); i++) {
 			OrdersSuccess order = response.get(i);
-			String id = order.getID();
+			String orderId = order.getID();
 			String code = order.getSymbol();
 			String name = order.getSymbolName();
 			int price = (int) (double) order.getPrice();
@@ -105,7 +105,7 @@ public class OrdersLogic {
 			int state = order.getState();
 			int exchange = order.getExchange();
 			int cashMargin = order.getCashMargin();
-			System.out.println("  " + StringUtil.index(i + 1) + ": " + id + " " + code + " " + name + " " + state + " "
+			System.out.println("  " + StringUtil.index(i + 1) + ": " + orderId + " " + code + " " + name + " " + state + " "
 					+ exchange + " " + cashMargin + " " + price + " " + StringUtil.sideStr(side) + " " + orderQty);
 			if (state == 5) { // 終了（発注エラー・取消済・全約定・失効・期限切れ）
 				continue;
@@ -116,16 +116,16 @@ public class OrdersLogic {
 			if (cashMargin != 3) { // 返済以外
 				continue;
 			}
-			String val = orderMap.get(id);
+			String val = orderMap.get(orderId);
 			if (val == null) {
 				val = "?";
-				orderMap.put(id, val);
-				String msg = "create " + id + " " + code + " " + name;
+				orderMap.put(orderId, val);
+				String msg = "create " + orderId + " " + code + " " + name;
 				System.out.println("  > " + msg);
 				FileUtil.printLog(LOG_FILEPATH, "execute", msg);
 			} else {
 			}
-			orderKeySet.remove(id);
+			orderKeySet.remove(orderId);
 		}
 		deleteOrders();
 		writeOrders();
