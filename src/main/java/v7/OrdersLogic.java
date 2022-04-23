@@ -266,15 +266,12 @@ public class OrdersLogic {
 	 */
 	public void writeOrders() {
 		System.out.println("OrdersLogic.writeOrders(): orderMap.size=" + orderMap.size());
-		for (String key : orderMap.keySet()) {
-			String val = orderMap.get(key);
-			System.out.println("  " + key + ": " + val);
-		}
 		List<String> lines = new ArrayList<>();
 		lines.add("# orderId           " + TAB + "executionId");
 		for (String key : orderMap.keySet()) {
 			String val = orderMap.get(key);
 			lines.add(key + TAB + val);
+			System.out.println("  " + key + ": " + val);
 		}
 		FileUtil.writeAllLines(TXT_FILEPATH, lines);
 	}

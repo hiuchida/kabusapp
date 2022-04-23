@@ -451,8 +451,9 @@ public class PositionsLogic {
 		list.addAll(posMap.values());
 		Collections.sort(list);
 		for (PosInfo pi : list) {
-			System.out.println("  " + pi.getKey() + ": " + pi);
 			lines.add(pi.toLineString());
+			String key = pi.getKey();
+			System.out.println("  " + key + ": " + pi);
 		}
 		FileUtil.writeAllLines(TXT_FILEPATH, lines);
 	}
