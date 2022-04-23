@@ -175,9 +175,10 @@ public class OrdersLogic {
 	 * @param body   注文発注（先物）情報。
 	 * @param holdId 約定番号（ExecutionID）。
 	 * @param msg    ログメッセージ。
+	 * @return 注文番号(ID)。
 	 * @throws ApiException
 	 */
-	public void sendOrder(RequestSendOrderDerivFuture body, String holdId, String msg) throws ApiException {
+	public String sendOrder(RequestSendOrderDerivFuture body, String holdId, String msg) throws ApiException {
 		FileUtil.printLog(LOG_FILEPATH, "sendOrder", msg);
 		
 		body.setPassword(TRADE_PASSWORD);
@@ -187,7 +188,9 @@ public class OrdersLogic {
         	Thread.sleep(240); // 4.2req/sec
         } catch (Exception e) {
         }
-        registerOrder(response.getOrderId(), holdId);
+        String orderId = response.getOrderId();
+        registerOrder(orderId, holdId);
+        return orderId;
 	}
 
 	/**
