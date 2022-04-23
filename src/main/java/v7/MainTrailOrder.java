@@ -166,9 +166,10 @@ public class MainTrailOrder {
 	 * @param ei       約定数量情報。
 	 * @param exchange 市場コード（Exchange）。
 	 * @param holdId   約定番号（ExecutionID）。
+	 * @return 注文番号(ID)。
 	 * @throws ApiException 
 	 */
-	private void sendCloseOrder(PosInfo pi, ExecutionInfo ei, int exchange, String holdId) throws ApiException {
+	private String sendCloseOrder(PosInfo pi, ExecutionInfo ei, int exchange, String holdId) throws ApiException {
 		int triggerPrice = triggerPrice(pi);
 		RequestSendOrderDerivFuture body = new RequestSendOrderDerivFuture();
 		body.setSymbol(pi.code);
@@ -201,7 +202,8 @@ public class MainTrailOrder {
 				+ StringUtil.sideStr(body.getSide()) + ", qty=" + body.getQty() + ", holdId=" + holdId;
 		System.out.println("  > sendOrder " + msg);
 		FileUtil.printLog(LOG_FILEPATH, "sendCloseOrder", msg);
-		orderLogic.sendOrder(body, holdId, msg);
+		String orderId = orderLogic.sendOrder(body, holdId, msg);
+		return orderId;
 	}
 
 	/**
