@@ -76,32 +76,29 @@ public class MainEntryOrder {
 	 * @throws ApiException 
 	 */
 	public void execute() throws ApiException {
-		entryOrdersLogic.readEntryOrders();
-		List<OrderInfo> entryList = entryOrdersLogic.getList();
+		List<OrderInfo> entryList = entryOrdersLogic.execute();
 		int exchange = ExchangeUtil.now();
 		if (exchange > 0) {
 			for (OrderInfo oi : entryList) {
-				if (oi.state < 0) {
-					String orderId = sendEntryOrder(oi.price, exchange, oi.side, oi.orderQty);
+				if (oi.state < OrderInfo.STATE_ORDERED) {
+					String orderId = sendEntryOrder(oi, exchange);
 					oi.orderId = orderId;
 					oi.state = OrderInfo.STATE_ORDERED;
 				}
 			}
 		}
-		entryOrdersLogic.writeEntryOrders();
+		entryOrdersLogic.writeOrders();
 	}
 
 	/**
 	 * 新規注文を実行する。
 	 * 
-	 * @param price    値段(Price)。
+	 * @param oi       新規注文情報。
 	 * @param exchange 市場コード(Exchange)。
-	 * @param side     売買区分(Side)。
-	 * @param qty      注文数量(Qty)。
 	 * @return 注文番号(ID)。
 	 * @throws ApiException 
 	 */
-	private String sendEntryOrder(int price, int exchange, String side, int qty) throws ApiException {
+	private String sendEntryOrder(OrderInfo oi, int exchange) throws ApiException {
 		exchange = 2; // 日通し
 		int expireDay = EXPIRE_DAY;
 		RequestSendOrderDerivFuture body = new RequestSendOrderDerivFuture();
@@ -109,10 +106,10 @@ public class MainEntryOrder {
 		body.setExchange(exchange);
 		body.setTradeType(1); // 新規
 		body.setTimeInForce(1); // FAS
-		body.setSide(side);
-		body.setQty(qty);
+		body.setSide(oi.side);
+		body.setQty(oi.orderQty);
 		body.setFrontOrderType(20); // 指値
-		body.setPrice((double) price);
+		body.setPrice((double) oi.price);
 		body.setExpireDay(expireDay);
 
 		String msg;
@@ -121,14 +118,14 @@ public class MainEntryOrder {
 			sb.append("ENTRY:{").append(SYMBOL).append(" ").append(SYMBOL_NAME).append(" ");
 			sb.append(StringUtil.exchangeStr(exchange));
 			sb.append(" ").append(expireDay);
-			sb.append(" price=").append(price).append(StringUtil.sideStr(side));
-			sb.append(", qty=").append(qty);
+			sb.append(" price=").append(oi.price).append(StringUtil.sideStr(oi.side));
+			sb.append(", qty=").append(oi.orderQty);
 			sb.append("}");
 			msg = sb.toString();
 			System.out.println("  > sendEntryOrder " + msg);
 			FileUtil.printLog(LOG_FILEPATH, "sendEntryOrder", msg);
 		}
-		String orderId = entryOrdersLogic.sendOrder(body, msg);
+		String orderId = entryOrdersLogic.sendOrder(oi.uniqId, body, msg);
 		return orderId;
 	}
 

@@ -7,8 +7,11 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import io.swagger.client.ApiException;
+import io.swagger.client.api.InfoApi;
 import io.swagger.client.api.OrderApi;
 import io.swagger.client.model.OrderSuccess;
+import io.swagger.client.model.OrdersSuccess;
+import io.swagger.client.model.OrdersSuccessDetails;
 import io.swagger.client.model.RequestSendOrderDerivFuture;
 import util.DateTimeUtil;
 import util.FileUtil;
@@ -40,7 +43,7 @@ public class EntryOrdersLogic {
 	private static final String LOG_FILEPATH = DIRPATH + "EntryOrdersLogic.log";
 
 	/**
-	 * 新規注文情報クラス
+	 * 新規注文情報クラス。
 	 */
 	public static class OrderInfo implements Comparable<OrderInfo> {
 		/**
@@ -203,6 +206,15 @@ public class EntryOrdersLogic {
 	 * 新規注文情報のマップ。
 	 */
 	private Map<String, OrderInfo> orderMap;
+	/**
+	 * orderIdとuniqIdのマップ。
+	 */
+	private Map<String, String> idMap;
+
+	/**
+	 * 情報API。
+	 */
+	private InfoApi infoApi = new InfoApi();
 
 	/**
 	 * 注文API。
@@ -219,12 +231,69 @@ public class EntryOrdersLogic {
 	}
 
 	/**
-	 * メモリ上の新規注文情報リストを返す。
+	 * 新規注文情報を更新する。
 	 * 
 	 * @return 新規注文情報リスト。
 	 * @throws ApiException
 	 */
-	public List<OrderInfo> getList() {
+	public List<OrderInfo> execute() throws ApiException {
+		readOrders();
+		String product = null;
+		String idParam = null;
+		String updtime = null;
+		String details = null;
+		String symbol = null;
+		String stateParam = null;
+		String sideParam = null;
+		String cashmargin = null;
+		List<OrdersSuccess> response = infoApi.ordersGet(X_API_KEY, product, idParam, updtime, details, symbol,
+				stateParam, sideParam, cashmargin);
+		System.out.println("EntryOrdersLogic.execute(): response.size=" + response.size());
+		for (int i = 0; i < response.size(); i++) {
+			OrdersSuccess order = response.get(i);
+			String orderId = order.getID();
+			String code = order.getSymbol();
+			String name = order.getSymbolName();
+			int price = (int) (double) order.getPrice();
+			int orderQty = (int) (double) order.getOrderQty();
+			String side = order.getSide();
+			int state = order.getState();
+			int exchange = order.getExchange();
+			int cashMargin = order.getCashMargin();
+			String executionIds = "";
+			for (OrdersSuccessDetails osd : order.getDetails()) {
+				String executionId = osd.getExecutionID();
+				if (executionId != null) {
+					int executionPrice = (int) (double) osd.getPrice();
+					int executionQty = (int) (double) osd.getQty();
+					if (executionIds.length() > 0) {
+						executionIds = executionIds + ",";
+					}
+					executionIds = executionIds + executionId + ":" + executionPrice + "x" + executionQty;
+				}
+			}
+			System.out.println("  " + StringUtil.index(i + 1) + ": " + orderId + " " + code + " " + name + " " + state
+					+ " " + exchange + " " + cashMargin + " " + price + StringUtil.sideStr(side) + " x" + orderQty + " " + executionIds);
+			if (exchange != 2 && exchange != 23 && exchange != 24) { // 先物OP以外
+				continue;
+			}
+			if (cashMargin != 2) { // 新規以外
+				continue;
+			}
+			String uniqId = idMap.get(orderId);
+			if (uniqId == null) {
+				continue;
+			}
+			OrderInfo oi = orderMap.get(uniqId);
+			if (oi != null) {
+				if (oi.state >= OrderInfo.STATE_ORDERED) {
+					oi.state = state;
+					oi.executionIds = executionIds;
+					oi.updateDate = System.currentTimeMillis();
+				}
+			}
+		}
+		writeOrders();
 		List<OrderInfo> list = new ArrayList<>();
 		for (OrderInfo oi : orderMap.values()) {
 			list.add(oi);
@@ -235,12 +304,13 @@ public class EntryOrdersLogic {
 	/**
 	 * 注文発注を実行する。
 	 * 
-	 * @param body 注文発注（先物）情報。
-	 * @param msg  ログメッセージ。
+	 * @param uniqId ユニークID。
+	 * @param body   注文発注（先物）情報。
+	 * @param msg    ログメッセージ。
 	 * @return 注文番号(ID)。
 	 * @throws ApiException
 	 */
-	public String sendOrder(RequestSendOrderDerivFuture body, String msg) throws ApiException {
+	public String sendOrder(String uniqId, RequestSendOrderDerivFuture body, String msg) throws ApiException {
 		FileUtil.printLog(LOG_FILEPATH, "sendOrder", msg);
 		
 		body.setPassword(TRADE_PASSWORD);
@@ -251,14 +321,16 @@ public class EntryOrdersLogic {
         } catch (Exception e) {
         }
         String orderId = response.getOrderId();
+        idMap.put(orderId, uniqId);
         return orderId;
 	}
 
 	/**
 	 * 新規注文情報ファイルを読み込む。不正なレコードは無視される。
 	 */
-	public void readEntryOrders() {
+	public void readOrders() {
 		orderMap = new TreeMap<>();
+		idMap = new TreeMap<>();
 		List<String> lines = FileUtil.readAllLines(TXT_FILEPATH);
 		List<String> newLines = new ArrayList<>();
 		for (String s : lines) {
@@ -280,6 +352,9 @@ public class EntryOrdersLogic {
 			OrderInfo oi = new OrderInfo(cols);
 			String key = oi.getKey();
 			orderMap.put(key, oi);
+			if (oi.state >= OrderInfo.STATE_ORDERED) {
+				idMap.put(oi.orderId, oi.uniqId);
+			}
 		}
 		for (String s : newLines) {
 			String[] flds = s.split(",");
@@ -293,8 +368,11 @@ public class EntryOrdersLogic {
 			String key = "" + tim;
 			OrderInfo oi = new OrderInfo(key, flds);
 			orderMap.put(key, oi);
+			if (oi.state >= OrderInfo.STATE_ORDERED) {
+				idMap.put(oi.orderId, oi.uniqId);
+			}
 		}
-		System.out.println("EntryOrdersLogic.readEntryOrders(): orderMap.size=" + orderMap.size());
+		System.out.println("EntryOrdersLogic.readOrders(): orderMap.size=" + orderMap.size());
 		for (String key : orderMap.keySet()) {
 			OrderInfo oi = orderMap.get(key);
 			System.out.println("  " + key + ": " + oi);
@@ -304,8 +382,8 @@ public class EntryOrdersLogic {
 	/**
 	 * 新規注文情報ファイルを書き込む。
 	 */
-	public void writeEntryOrders() {
-		System.out.println("EntryOrdersLogic.writeEntryOrders(): orderMap.size=" + orderMap.size());
+	public void writeOrders() {
+		System.out.println("EntryOrdersLogic.writeOrders(): orderMap.size=" + orderMap.size());
 		List<String> lines = new ArrayList<>();
 		lines.add(OrderInfo.toHeaderString());
 		List<OrderInfo> list = new ArrayList<>();
