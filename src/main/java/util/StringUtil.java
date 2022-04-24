@@ -19,6 +19,25 @@ public class StringUtil {
 	}
 
 	/**
+	 * 市場名を取得する。
+	 * 
+	 * @param exchange 市場コード(Exchange)。
+	 * @return 市場名。
+	 */
+	public static String exchangeStr(int exchange) {
+		switch (exchange) {
+		case 2:
+			return "日通し";
+		case 23:
+			return " 日中 ";
+		case 24:
+			return " 夜間 ";
+		default:
+			throw new RuntimeException();
+		}
+	}
+
+	/**
 	 * 数量の符号を取得する。
 	 * 
 	 * @param side 売買区分(Side)。

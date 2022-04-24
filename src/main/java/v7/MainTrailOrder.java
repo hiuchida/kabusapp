@@ -197,11 +197,24 @@ public class MainTrailOrder {
 			rlo.setAfterHitPrice(0.0); // 成行時0円
 		}
 		body.setReverseLimitOrder(rlo);
-		
-		String msg = "code=" + body.getSymbol() + ", exchange=" + body.getExchange() + ", price=" + triggerPrice
-				+ StringUtil.sideStr(body.getSide()) + ", qty=" + body.getQty() + ", holdId=" + holdId;
-		System.out.println("  > sendOrder " + msg);
-		FileUtil.printLog(LOG_FILEPATH, "sendCloseOrder", msg);
+
+		int sign = StringUtil.sign(pi.side);
+		int delta = (triggerPrice - pi.price) * sign;
+		String msg;
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.append("CLOSE:{").append(pi.code).append(" ").append(pi.name).append(" ");
+			sb.append(StringUtil.exchangeStr(exchange));
+			sb.append(" price=").append(pi.price).append(StringUtil.sideStr(pi.side));
+			sb.append(", qty=").append(body.getQty());
+			sb.append(", trigger=").append(triggerPrice).append(StringUtil.sideStr(body.getSide()));
+			sb.append("(").append(delta).append(")");
+			sb.append(", holdId=").append(holdId);
+			sb.append("}");
+			msg = sb.toString();
+			System.out.println("  > sendCloseOrder " + msg);
+			FileUtil.printLog(LOG_FILEPATH, "sendCloseOrder", msg);
+		}
 		String orderId = orderLogic.sendOrder(body, holdId, msg);
 		return orderId;
 	}
