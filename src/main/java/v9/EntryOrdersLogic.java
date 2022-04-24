@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import io.swagger.client.ApiException;
 import io.swagger.client.api.InfoApi;
@@ -58,6 +60,10 @@ public class EntryOrdersLogic {
 		 * 注文ステータス終了。
 		 */
 		public static final int STATE_FINISH = 5;
+		/**
+		 * 注文情報から削除済。
+		 */
+		public static final int STATE_DELETE = 6;
 		/**
 		 * 新規注文情報ファイルのカラム数。
 		 */
@@ -216,6 +222,10 @@ public class EntryOrdersLogic {
 	 * orderIdとuniqIdのマップ。
 	 */
 	private Map<String, String> idMap;
+	/**
+	 * 削除対象の新規注文情報キーのセット。
+	 */
+	private Set<String> orderKeySet;
 
 	/**
 	 * 情報API。
@@ -297,8 +307,10 @@ public class EntryOrdersLogic {
 					oi.executionIds = executionIds;
 					oi.updateDate = System.currentTimeMillis();
 				}
+				orderKeySet.remove(uniqId);
 			}
 		}
+		deleteOrders();
 		writeOrders();
 		List<OrderInfo> list = new ArrayList<>();
 		for (OrderInfo oi : orderMap.values()) {
@@ -326,6 +338,7 @@ public class EntryOrdersLogic {
 		if (oi.state >= OrderInfo.STATE_ORDERED) {
 			idMap.put(oi.orderId, oi.uniqId);
 		}
+		orderKeySet.add(key);
 		String msg = "add " + key + " " + oi.orderId;
 		System.out.println("  > " + msg);
 		FileUtil.printLog(LOG_FILEPATH, "addOrder", msg);
@@ -362,6 +375,7 @@ public class EntryOrdersLogic {
 	public void readOrders() {
 		orderMap = new TreeMap<>();
 		idMap = new TreeMap<>();
+		orderKeySet = new TreeSet<>();
 		List<String> lines = FileUtil.readAllLines(TXT_FILEPATH);
 		List<String> newLines = new ArrayList<>();
 		for (String s : lines) {
@@ -386,6 +400,7 @@ public class EntryOrdersLogic {
 			if (oi.state >= OrderInfo.STATE_ORDERED) {
 				idMap.put(oi.orderId, oi.uniqId);
 			}
+			orderKeySet.add(key);
 		}
 		for (String s : newLines) {
 			String[] flds = s.split(",");
@@ -402,6 +417,24 @@ public class EntryOrdersLogic {
 		for (String key : orderMap.keySet()) {
 			OrderInfo oi = orderMap.get(key);
 			System.out.println("  " + key + ": " + oi);
+		}
+	}
+
+	/**
+	 * 終了済の注文を論理削除する。
+	 */
+	private void deleteOrders() {
+		if (orderKeySet.size() > 0) {
+			System.out.println("EntryOrdersLogic.deleteOrders(): orderKeySet.size=" + orderKeySet.size());
+			for (String key : orderKeySet) {
+				OrderInfo oi = orderMap.get(key);
+				if (OrderInfo.STATE_ORDERED < oi.state && oi.state <= OrderInfo.STATE_FINISH) {
+					oi.state = OrderInfo.STATE_DELETE;
+//					String msg = "delete " + key + " " + oi.orderId;
+//					System.out.println("  > " + msg);
+//					FileUtil.printLog(LOG_FILEPATH, "deleteOrders", msg);
+				}
+			}
 		}
 	}
 
