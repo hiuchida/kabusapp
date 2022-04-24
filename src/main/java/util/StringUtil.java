@@ -72,6 +72,23 @@ public class StringUtil {
 	}
 
 	/**
+	 * ポジション(1 or 2)を取得する。
+	 * 
+	 * @param side ポジション(L or S)。
+	 * @return 売買区分(Side)。
+	 */
+	public static String sideCode(String side) {
+		switch (side) {
+		case "S":
+			return "1";
+		case "L":
+			return "2";
+		default:
+			throw new RuntimeException();
+		}
+	}
+
+	/**
 	 * 反対売買を取得する。
 	 * 
 	 * @param side 売買区分(Side)。
