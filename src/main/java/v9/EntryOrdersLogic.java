@@ -326,6 +326,9 @@ public class EntryOrdersLogic {
 		if (oi.state >= OrderInfo.STATE_ORDERED) {
 			idMap.put(oi.orderId, oi.uniqId);
 		}
+		String msg = "add " + key + " " + oi.orderId;
+		System.out.println("  > " + msg);
+		FileUtil.printLog(LOG_FILEPATH, "addOrder", msg);
 		return oi.uniqId;
 	}
 
