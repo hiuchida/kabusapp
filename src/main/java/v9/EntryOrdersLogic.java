@@ -55,6 +55,10 @@ public class EntryOrdersLogic {
 		 */
 		public static final int STATE_ORDERED = 0;
 		/**
+		 * 注文ステータス終了。
+		 */
+		public static final int STATE_FINISH = 5;
+		/**
 		 * 新規注文情報ファイルのカラム数。
 		 */
 		public static final int MAX_COLS = 9;
@@ -99,15 +103,17 @@ public class EntryOrdersLogic {
 		 * コンストラクタ（新規作成）。
 		 * 
 		 * @param uniqId ユニークID。
-		 * @param flds   フィールド配列。
+		 * @param price  値段(Price)。
+		 * @param qty    発注数量(OrderQty)。
+		 * @param side   売買区分(Side)。
 		 */
-		public OrderInfo(String uniqId, String[] flds) {
+		public OrderInfo(String uniqId, int price, int qty, String side) {
 			this.uniqId = uniqId;
 			this.orderId = "????????????????????";
 			this.state = STATE_NOT_ORDER;
-			this.price = StringUtil.parseInt(flds[0]);
-			this.side = StringUtil.sideCode(flds[1]);
-			this.orderQty = StringUtil.parseInt(flds[2]);
+			this.price = price;
+			this.orderQty = qty;
+			this.side = side;
 			this.createDate = System.currentTimeMillis();
 			this.updateDate = System.currentTimeMillis();
 			this.executionIds = "";
@@ -286,7 +292,7 @@ public class EntryOrdersLogic {
 			}
 			OrderInfo oi = orderMap.get(uniqId);
 			if (oi != null) {
-				if (oi.state >= OrderInfo.STATE_ORDERED) {
+				if (OrderInfo.STATE_ORDERED <= oi.state && oi.state < OrderInfo.STATE_FINISH) {
 					oi.state = state;
 					oi.executionIds = executionIds;
 					oi.updateDate = System.currentTimeMillis();
@@ -299,6 +305,28 @@ public class EntryOrdersLogic {
 			list.add(oi);
 		}
 		return list;
+	}
+
+	/**
+	 * 注文依頼を追加する。
+	 * 
+	 * @param price 値段(Price)。
+	 * @param qty   発注数量(OrderQty)。
+	 * @param side  売買区分(Side)。
+	 * @return ユニークID。
+	 */
+	public String addOrder(int price, int qty, String side) {
+		long tim = System.currentTimeMillis();
+		while (orderMap.containsKey("" + tim)) {
+			tim++;
+		}
+		String key = "" + tim;
+		OrderInfo oi = new OrderInfo(key, price, qty, side);
+		orderMap.put(key, oi);
+		if (oi.state >= OrderInfo.STATE_ORDERED) {
+			idMap.put(oi.orderId, oi.uniqId);
+		}
+		return oi.uniqId;
 	}
 
 	/**
@@ -360,17 +388,12 @@ public class EntryOrdersLogic {
 			String[] flds = s.split(",");
 			if (flds.length != 3) {
 				System.out.println("Warning: SKIP new order=" + s);
+				continue;
 			}
-			long tim = System.currentTimeMillis();
-			while (orderMap.containsKey("" + tim)) {
-				tim++;
-			}
-			String key = "" + tim;
-			OrderInfo oi = new OrderInfo(key, flds);
-			orderMap.put(key, oi);
-			if (oi.state >= OrderInfo.STATE_ORDERED) {
-				idMap.put(oi.orderId, oi.uniqId);
-			}
+			int price = StringUtil.parseInt(flds[0]);
+			String side = StringUtil.sideCode(flds[1]);
+			int qty = StringUtil.parseInt(flds[2]);
+			addOrder(price, qty, side);
 		}
 		System.out.println("EntryOrdersLogic.readOrders(): orderMap.size=" + orderMap.size());
 		for (String key : orderMap.keySet()) {
