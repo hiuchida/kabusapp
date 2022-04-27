@@ -14,6 +14,7 @@ import io.swagger.client.api.OrderApi;
 import io.swagger.client.model.OrderSuccess;
 import io.swagger.client.model.OrdersSuccess;
 import io.swagger.client.model.OrdersSuccessDetails;
+import io.swagger.client.model.RequestCancelOrder;
 import io.swagger.client.model.RequestSendOrderDerivFuture;
 import util.DateTimeUtil;
 import util.FileUtil;
@@ -390,6 +391,38 @@ public class EntryOrdersLogic_r3 {
 		System.out.println("  > " + msg);
 		FileUtil.printLog(LOG_FILEPATH, "addOrder", msg);
 		return oi.uniqId;
+	}
+
+	/**
+	 * メモリ上の新規注文情報を返す。
+	 * 
+	 * @param uniqId ユニークID。
+	 * @return 新規注文情報。
+	 * @throws ApiException
+	 */
+	public OrderInfo getOrder(String uniqId) {
+		return orderMap.get(uniqId);
+	}
+
+	/**
+	 * 注文取消を実行する。
+	 * 
+	 * @param orderId 注文番号(ID)。
+	 * @param msg     ログメッセージ。
+	 * @throws ApiException
+	 */
+	public void cancelOrder(String orderId, String msg) throws ApiException {
+		FileUtil.printLog(LOG_FILEPATH, "cancelOrder", msg);
+		
+		RequestCancelOrder body = new RequestCancelOrder();
+		body.setPassword(TRADE_PASSWORD);
+		body.setOrderId(orderId);
+		OrderSuccess response = orderApi.cancelorderPut(body, X_API_KEY);
+		try {
+			Thread.sleep(240); // 4.2req/sec
+		} catch (Exception e) {
+		}
+		System.out.println(response);
 	}
 
 	/**
