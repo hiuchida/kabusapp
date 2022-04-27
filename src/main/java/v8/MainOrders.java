@@ -316,15 +316,12 @@ public class MainOrders {
 	 */
 	private static void writeOrders() {
 		System.out.println("writeOrders(): orderMap.size=" + orderMap.size());
-		for (String key : orderMap.keySet()) {
-			OrderInfo oi = orderMap.get(key);
-			System.out.println("  " + key + ": " + oi);
-		}
 		List<String> lines = new ArrayList<>();
 		lines.add(OrderInfo.toHeaderString());
 		for (String key : orderMap.keySet()) {
 			OrderInfo oi = orderMap.get(key);
 			lines.add(oi.toLineString());
+			System.out.println("  " + key + ": " + oi);
 		}
 		FileUtil.writeAllLines(TXT_FILEPATH, lines);
 	}
