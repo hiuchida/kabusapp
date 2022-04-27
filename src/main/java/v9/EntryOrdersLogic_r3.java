@@ -281,6 +281,7 @@ public class EntryOrdersLogic_r3 {
 	 */
 	public EntryOrdersLogic_r3(String X_API_KEY) {
 		this.X_API_KEY = X_API_KEY;
+		this.posLogic = new PositionsLogic_r3(X_API_KEY);
 	}
 
 	/**
