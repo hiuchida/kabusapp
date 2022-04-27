@@ -7,7 +7,6 @@ import io.swagger.client.model.RequestSendOrderDerivFuture;
 import util.ExchangeUtil;
 import util.FileUtil;
 import util.StringUtil;
-import v7.LockedAuthorizedToken;
 import v9.EntryOrdersLogic_r3.OrderInfo;
 
 /**
@@ -48,11 +47,11 @@ public class MainEntryOrder_r3 {
 	 * @throws ApiException
 	 */
 	public static void main(String[] args) throws ApiException {
-		String X_API_KEY = LockedAuthorizedToken.lockToken();
+		String X_API_KEY = LockedAuthorizedToken_r3.lockToken();
 		try {
 			new MainEntryOrder_r3(X_API_KEY).execute();
 		} finally {
-			LockedAuthorizedToken.unlockToken();
+			LockedAuthorizedToken_r3.unlockToken();
 		}
 	}
 
