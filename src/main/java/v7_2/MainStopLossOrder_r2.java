@@ -35,7 +35,7 @@ public class MainStopLossOrder_r2 {
 	/**
 	 * ストップロス注文ログのファイルパス。存在しなければ生成される。
 	 */
-	private static final String LOG_FILEPATH = DIRPATH + "MainStopLossOrder.log";
+	private static final String LOG_FILEPATH = DIRPATH + "MainStopLossOrder_r2.log";
 
 	/**
 	 * ストップロス注文ツール。
