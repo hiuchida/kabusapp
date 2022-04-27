@@ -23,7 +23,7 @@ import v7.SendOrderConfig;
 /**
  * 新規注文情報を管理する。
  */
-public class EntryOrdersLogic {
+public class EntryOrdersLogic_r3 {
 	private static final String TRADE_PASSWORD = SendOrderConfig.getPassword();
 
 	/**
@@ -38,11 +38,11 @@ public class EntryOrdersLogic {
 	/**
 	 * 新規注文情報を保存したファイルパス。事前に準備し、uniqIdが振られて更新される。
 	 */
-	private static final String TXT_FILEPATH = DIRPATH + "EntryOrdersLogic.txt";
+	private static final String TXT_FILEPATH = DIRPATH + "EntryOrdersLogic_r3.txt";
 	/**
 	 * 新規注文ログのファイルパス。存在しなければ生成される。
 	 */
-	private static final String LOG_FILEPATH = DIRPATH + "EntryOrdersLogic.log";
+	private static final String LOG_FILEPATH = DIRPATH + "EntryOrdersLogic_r3.log";
 
 	/**
 	 * 新規注文情報クラス。
@@ -242,7 +242,7 @@ public class EntryOrdersLogic {
 	 * 
 	 * @param X_API_KEY 認証済TOKEN。
 	 */
-	public EntryOrdersLogic(String X_API_KEY) {
+	public EntryOrdersLogic_r3(String X_API_KEY) {
 		this.X_API_KEY = X_API_KEY;
 	}
 
@@ -264,7 +264,7 @@ public class EntryOrdersLogic {
 		String cashmargin = null;
 		List<OrdersSuccess> response = infoApi.ordersGet(X_API_KEY, product, idParam, updtime, details, symbol,
 				stateParam, sideParam, cashmargin);
-		System.out.println("EntryOrdersLogic.execute(): response.size=" + response.size());
+		System.out.println("EntryOrdersLogic_r3.execute(): response.size=" + response.size());
 		for (int i = 0; i < response.size(); i++) {
 			OrdersSuccess order = response.get(i);
 			String orderId = order.getID();
@@ -413,7 +413,7 @@ public class EntryOrdersLogic {
 			int qty = StringUtil.parseInt(flds[2]);
 			addOrder(price, qty, side);
 		}
-		System.out.println("EntryOrdersLogic.readOrders(): orderMap.size=" + orderMap.size());
+		System.out.println("EntryOrdersLogic_r3.readOrders(): orderMap.size=" + orderMap.size());
 		for (String key : orderMap.keySet()) {
 			OrderInfo oi = orderMap.get(key);
 			System.out.println("  " + key + ": " + oi);
@@ -425,7 +425,7 @@ public class EntryOrdersLogic {
 	 */
 	private void deleteOrders() {
 		if (orderKeySet.size() > 0) {
-			System.out.println("EntryOrdersLogic.deleteOrders(): orderKeySet.size=" + orderKeySet.size());
+			System.out.println("EntryOrdersLogic_r3.deleteOrders(): orderKeySet.size=" + orderKeySet.size());
 			for (String key : orderKeySet) {
 				OrderInfo oi = orderMap.get(key);
 				if (OrderInfo.STATE_ORDERED < oi.state && oi.state <= OrderInfo.STATE_FINISH) {
@@ -442,7 +442,7 @@ public class EntryOrdersLogic {
 	 * 新規注文情報ファイルを書き込む。
 	 */
 	public void writeOrders() {
-		System.out.println("EntryOrdersLogic.writeOrders(): orderMap.size=" + orderMap.size());
+		System.out.println("EntryOrdersLogic_r3.writeOrders(): orderMap.size=" + orderMap.size());
 		List<String> lines = new ArrayList<>();
 		lines.add(OrderInfo.toHeaderString());
 		List<OrderInfo> list = new ArrayList<>();

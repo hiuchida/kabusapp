@@ -8,12 +8,12 @@ import util.ExchangeUtil;
 import util.FileUtil;
 import util.StringUtil;
 import v7.LockedAuthorizedToken;
-import v9.EntryOrdersLogic.OrderInfo;
+import v9.EntryOrdersLogic_r3.OrderInfo;
 
 /**
  * 新規注文ツール。
  */
-public class MainEntryOrder {
+public class MainEntryOrder_r3 {
 	/**
 	 * 銘柄コード(Symbol)。 
 	 */
@@ -39,7 +39,7 @@ public class MainEntryOrder {
 	/**
 	 * 新規注文ログのファイルパス。存在しなければ生成される。
 	 */
-	private static final String LOG_FILEPATH = DIRPATH + "MainEntryOrder.log";
+	private static final String LOG_FILEPATH = DIRPATH + "MainEntryOrder_r3.log";
 
 	/**
 	 * 新規注文ツール。
@@ -50,7 +50,7 @@ public class MainEntryOrder {
 	public static void main(String[] args) throws ApiException {
 		String X_API_KEY = LockedAuthorizedToken.lockToken();
 		try {
-			new MainEntryOrder(X_API_KEY).execute();
+			new MainEntryOrder_r3(X_API_KEY).execute();
 		} finally {
 			LockedAuthorizedToken.unlockToken();
 		}
@@ -59,15 +59,15 @@ public class MainEntryOrder {
 	/**
 	 * 新規注文情報を管理する。
 	 */
-	private EntryOrdersLogic entryOrdersLogic;
+	private EntryOrdersLogic_r3 entryOrdersLogic;
 
 	/**
 	 * コンストラクタ。
 	 * 
 	 * @param X_API_KEY 認証済TOKEN。
 	 */
-	public MainEntryOrder(String X_API_KEY) {
-		this.entryOrdersLogic = new EntryOrdersLogic(X_API_KEY);
+	public MainEntryOrder_r3(String X_API_KEY) {
+		this.entryOrdersLogic = new EntryOrdersLogic_r3(X_API_KEY);
 	}
 
 	/**
