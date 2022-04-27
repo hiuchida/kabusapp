@@ -173,6 +173,7 @@ public class PositionsLogic_r3 {
 			}
 			return qty;
 		}
+
 		/**
 		 * 拘束数量（返済のために拘束されている数量）(HoldQty)を集計する。
 		 * 
@@ -185,7 +186,7 @@ public class PositionsLogic_r3 {
 			}
 			return qty;
 		}
-	
+
 		/**
 		 * インスタンスの主キー(code_price_sideStr)を取得する。
 		 * 
@@ -401,6 +402,45 @@ public class PositionsLogic_r3 {
 			list.add(pi);
 		}
 		return list;
+	}
+
+	/**
+	 * メモリ上の建玉に指定した約定番号が含まれるか？
+	 * 
+	 * @param executionIds　約定番号の列挙。
+	 * @return true:含まれる、false:含まれない。
+	 */
+	public boolean isValidExecutionId(String executionIds) {
+		String[] flds = executionIds.split(",");
+		for (String s : flds) {
+			if (s.length() == 0) {
+				continue;
+			}
+			String id = StringUtil.parseString(s, ":");
+			PosInfo pos = this.getByExecutionId(id);
+			if (pos != null) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * メモリ上の建玉情報を返す。
+	 * 
+	 * @param executionId 約定番号（ExecutionID）。
+	 * @return 建玉情報。
+	 * @throws ApiException
+	 */
+	public PosInfo getByExecutionId(String executionId) {
+		for (PosInfo pi : posMap.values()) {
+			for (ExecutionInfo ei : pi.executionList) {
+				if (ei.executionId.equals(executionId)) {
+					return pi;
+				}
+			}
+		}
+		return null;
 	}
 
 	/**

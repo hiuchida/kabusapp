@@ -165,6 +165,24 @@ public class StringUtil {
 	}
 
 	/**
+	 * 指定した文字以降を除外して、文字列を取得する。
+	 * 
+	 * @param s 文字列。
+	 * @param d 区切り文字列。
+	 * @return 文字列。
+	 */
+	public static String parseString(String s, String d) {
+		if (s == null) {
+			return s;
+		}
+		int idx = s.indexOf(d);
+		if (idx >= 0) {
+			s = s.substring(0, idx);
+		}
+		return s;
+	}
+
+	/**
 	 * タブ文字で分割する。String.split()と異なり、行末の空文字列にも対応する。
 	 * 
 	 * @param s 文字列。

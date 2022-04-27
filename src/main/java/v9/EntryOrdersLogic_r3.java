@@ -55,15 +55,47 @@ public class EntryOrdersLogic_r3 {
 		/**
 		 * 発注済、注文ステータス不明。
 		 */
-		public static final int STATE_ORDERED = 0;
+		public static final int STATE_UNKNOWN = 0;
 		/**
-		 * 注文ステータス終了。
+		 * 発注済。API:待機（発注待機）。
+		 */
+		public static final int STATE_WAIT = 1;
+		/**
+		 * 発注済。API:処理中（発注送信中）。
+		 */
+		public static final int STATE_SEND_ORDER = 2;
+		/**
+		 * 発注済。API:処理済（発注済・訂正済）。
+		 */
+		public static final int STATE_ORDER = 3;
+		/**
+		 * 発注済。API:訂正取消送信中。
+		 */
+		public static final int STATE_SEND_CANCEL = 4;
+		/**
+		 * 約定済。API:終了（発注エラー・取消済・全約定・失効・期限切れ）。
 		 */
 		public static final int STATE_FINISH = 5;
 		/**
-		 * 注文情報から削除済。
+		 * 注文情報からキャンセル済。
 		 */
-		public static final int STATE_DELETE = 6;
+		public static final int STATE_CANCEL = 6;
+		/**
+		 * 注文情報から返済済。
+		 */
+		public static final int STATE_CLOSE = 7;
+		/**
+		 * 注文情報から削除済（終了）。
+		 */
+		public static final int STATE_FINISH_DELETE = 95;
+		/**
+		 * 注文情報から削除済（キャンセル）。
+		 */
+		public static final int STATE_CANCEL_DELETE = 96;
+		/**
+		 * 注文情報から削除済（返済）。
+		 */
+		public static final int STATE_CLOSE_DELETE = 97;
 		/**
 		 * 新規注文情報ファイルのカラム数。
 		 */
@@ -228,6 +260,11 @@ public class EntryOrdersLogic_r3 {
 	private Set<String> orderKeySet;
 
 	/**
+	 * 建玉情報を管理する。
+	 */
+	private PositionsLogic_r3 posLogic;
+
+	/**
 	 * 情報API。
 	 */
 	private InfoApi infoApi = new InfoApi();
@@ -253,6 +290,7 @@ public class EntryOrdersLogic_r3 {
 	 * @throws ApiException
 	 */
 	public List<OrderInfo> execute() throws ApiException {
+		posLogic.execute();
 		readOrders();
 		String product = null;
 		String idParam = null;
@@ -302,10 +340,18 @@ public class EntryOrdersLogic_r3 {
 			}
 			OrderInfo oi = orderMap.get(uniqId);
 			if (oi != null) {
-				if (OrderInfo.STATE_ORDERED <= oi.state && oi.state < OrderInfo.STATE_FINISH) {
+				if (OrderInfo.STATE_UNKNOWN <= oi.state && oi.state < OrderInfo.STATE_FINISH) {
 					oi.state = state;
 					oi.executionIds = executionIds;
 					oi.updateDate = System.currentTimeMillis();
+				} else if (oi.state == OrderInfo.STATE_FINISH) {
+					if (oi.executionIds.length() == 0) {
+						oi.state = OrderInfo.STATE_CANCEL;
+					} else {
+						if (!posLogic.isValidExecutionId(executionIds)) {
+							oi.state = OrderInfo.STATE_CLOSE;
+						}
+					}
 				}
 				orderKeySet.remove(uniqId);
 			}
@@ -335,7 +381,7 @@ public class EntryOrdersLogic_r3 {
 		String key = "" + tim;
 		OrderInfo oi = new OrderInfo(key, price, qty, side);
 		orderMap.put(key, oi);
-		if (oi.state >= OrderInfo.STATE_ORDERED) {
+		if (oi.state != OrderInfo.STATE_NOT_ORDER) {
 			idMap.put(oi.orderId, oi.uniqId);
 		}
 		orderKeySet.add(key);
@@ -348,13 +394,13 @@ public class EntryOrdersLogic_r3 {
 	/**
 	 * 注文発注を実行する。
 	 * 
-	 * @param uniqId ユニークID。
+	 * @param oi     新規注文情報。
 	 * @param body   注文発注（先物）情報。
 	 * @param msg    ログメッセージ。
 	 * @return 注文番号(ID)。
 	 * @throws ApiException
 	 */
-	public String sendOrder(String uniqId, RequestSendOrderDerivFuture body, String msg) throws ApiException {
+	public String sendOrder(OrderInfo oi, RequestSendOrderDerivFuture body, String msg) throws ApiException {
 		FileUtil.printLog(LOG_FILEPATH, "sendOrder", msg);
 		
 		body.setPassword(TRADE_PASSWORD);
@@ -365,7 +411,11 @@ public class EntryOrdersLogic_r3 {
         } catch (Exception e) {
         }
         String orderId = response.getOrderId();
-        idMap.put(orderId, uniqId);
+		oi.orderId = orderId;
+		if (oi.state == OrderInfo.STATE_NOT_ORDER) {
+			oi.state = OrderInfo.STATE_UNKNOWN;
+		}
+        idMap.put(orderId, oi.uniqId);
         return orderId;
 	}
 
@@ -397,7 +447,7 @@ public class EntryOrdersLogic_r3 {
 			OrderInfo oi = new OrderInfo(cols);
 			String key = oi.getKey();
 			orderMap.put(key, oi);
-			if (oi.state >= OrderInfo.STATE_ORDERED) {
+			if (oi.state != OrderInfo.STATE_NOT_ORDER) {
 				idMap.put(oi.orderId, oi.uniqId);
 			}
 			orderKeySet.add(key);
@@ -428,12 +478,28 @@ public class EntryOrdersLogic_r3 {
 			System.out.println("EntryOrdersLogic_r3.deleteOrders(): orderKeySet.size=" + orderKeySet.size());
 			for (String key : orderKeySet) {
 				OrderInfo oi = orderMap.get(key);
-				if (OrderInfo.STATE_ORDERED < oi.state && oi.state <= OrderInfo.STATE_FINISH) {
-					oi.state = OrderInfo.STATE_DELETE;
-//					String msg = "delete " + key + " " + oi.orderId;
-//					System.out.println("  > " + msg);
-//					FileUtil.printLog(LOG_FILEPATH, "deleteOrders", msg);
+				if (OrderInfo.STATE_UNKNOWN < oi.state && oi.state <= OrderInfo.STATE_FINISH) {
+					oi.state = OrderInfo.STATE_FINISH_DELETE;
+				} else if (oi.state == OrderInfo.STATE_FINISH_DELETE) {
+					if (oi.executionIds.length() == 0) {
+						oi.state = OrderInfo.STATE_CANCEL_DELETE;
+					} else {
+						if (!posLogic.isValidExecutionId(oi.executionIds)) {
+							oi.state = OrderInfo.STATE_CLOSE_DELETE;
+						} else {
+							continue;
+						}
+					}
+				} else if (oi.state == OrderInfo.STATE_CANCEL) {
+					oi.state = OrderInfo.STATE_CANCEL_DELETE;
+				} else if (oi.state == OrderInfo.STATE_CLOSE) {
+					oi.state = OrderInfo.STATE_CLOSE_DELETE;
+				} else {
+					continue;
 				}
+				String msg = "change " + key + " " + oi.orderId + " " + oi.state;
+				System.out.println("  > deleteOrders " + msg);
+				FileUtil.printLog(LOG_FILEPATH, "deleteOrders", msg);
 			}
 		}
 	}

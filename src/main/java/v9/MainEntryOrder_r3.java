@@ -79,10 +79,8 @@ public class MainEntryOrder_r3 {
 		int exchange = ExchangeUtil.now();
 		if (exchange > 0) {
 			for (OrderInfo oi : entryList) {
-				if (oi.state < OrderInfo.STATE_ORDERED) {
-					String orderId = sendEntryOrder(oi, exchange);
-					oi.orderId = orderId;
-					oi.state = OrderInfo.STATE_ORDERED;
+				if (oi.state == OrderInfo.STATE_NOT_ORDER) {
+					sendEntryOrder(oi, exchange);
 				}
 			}
 		}
@@ -124,7 +122,7 @@ public class MainEntryOrder_r3 {
 			System.out.println("  > sendEntryOrder " + msg);
 			FileUtil.printLog(LOG_FILEPATH, "sendEntryOrder", msg);
 		}
-		String orderId = entryOrdersLogic.sendOrder(oi.uniqId, body, msg);
+		String orderId = entryOrdersLogic.sendOrder(oi, body, msg);
 		return orderId;
 	}
 
