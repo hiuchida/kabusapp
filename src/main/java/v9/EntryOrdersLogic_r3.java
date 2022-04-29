@@ -19,13 +19,12 @@ import io.swagger.client.model.RequestSendOrderDerivFuture;
 import util.DateTimeUtil;
 import util.FileUtil;
 import util.StringUtil;
-import v7.SendOrderConfig;
 
 /**
  * 新規注文情報を管理する。
  */
 public class EntryOrdersLogic_r3 {
-	private static final String TRADE_PASSWORD = SendOrderConfig.getPassword();
+	private static final String TRADE_PASSWORD = SendOrderConfig_r3.getPassword();
 
 	/**
 	 * タブ文字。

@@ -16,13 +16,12 @@ import io.swagger.client.model.RequestCancelOrder;
 import io.swagger.client.model.RequestSendOrderDerivFuture;
 import util.FileUtil;
 import util.StringUtil;
-import v7.SendOrderConfig;
 
 /**
  * 返済注文約定情報を管理する。
  */
 public class CloseOrdersLogic_r3 {
-	private static final String TRADE_PASSWORD = SendOrderConfig.getPassword();
+	private static final String TRADE_PASSWORD = SendOrderConfig_r3.getPassword();
 
 	/**
 	 * タブ文字。
