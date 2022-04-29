@@ -20,7 +20,7 @@ public class MainStopLossOrder_r3 {
 	/**
 	 * 建玉の価格からの値幅。
 	 */
-	private static final int TRIGGER_PRICE_RANGE = 1000; // TODO 逆指値1000円
+	private static final int STOP_LOSS_PRICE_RANGE = 1000;
 
 	/**
 	 * タブ文字。
@@ -163,7 +163,7 @@ public class MainStopLossOrder_r3 {
 	 */
 	private int triggerPrice(PosInfo pi) {
 		int sign = StringUtil.sign(pi.side);
-		int price = pi.price + -1 * TRIGGER_PRICE_RANGE * sign;
+		int price = pi.price + -1 * STOP_LOSS_PRICE_RANGE * sign;
 		return price;
 	}
 
