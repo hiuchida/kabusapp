@@ -381,7 +381,7 @@ public class MainEntryOrder_r3 {
 		configMap = new TreeMap<>();
 		List<String> lines = FileUtil.readAllLines(CFG_FILEPATH);
 		System.out.println("--- " + CFG_FILEPATH + " ---");
-		System.out.println("ToolPositions.readConfig(): lines.size=" + lines.size());
+		System.out.println("MainEntryOrder_r3.readConfig(): lines.size=" + lines.size());
 		for (String s : lines) {
 			if (s.startsWith("#")) {
 				continue;
@@ -413,7 +413,7 @@ public class MainEntryOrder_r3 {
 			}
 			orderMap.put(cols[0], cols[1]);
 		}
-		System.out.println("ToolPositions.readOrders(): orderMap.size=" + orderMap.size());
+		System.out.println("MainEntryOrder_r3.readOrders(): orderMap.size=" + orderMap.size());
 		for (String key : orderMap.keySet()) {
 			String val = orderMap.get(key);
 			System.out.println("  " + key + ": " + val);
@@ -424,7 +424,7 @@ public class MainEntryOrder_r3 {
 	 * 注文約定情報ファイルを書き込む。
 	 */
 	private void writeOrders() {
-		System.out.println("ToolPositions.writeOrders(): orderMap.size=" + orderMap.size());
+		System.out.println("MainEntryOrder_r3.writeOrders(): orderMap.size=" + orderMap.size());
 		List<String> lines = new ArrayList<>();
 		lines.add("# orderId   " + TAB + "value");
 		lines.add("");
