@@ -341,6 +341,7 @@ public class EntryOrdersLogic_r3 {
 			}
 			OrderInfo oi = orderMap.get(uniqId);
 			if (oi != null) {
+				int oldState = oi.state;
 				if (OrderInfo.STATE_UNKNOWN <= oi.state && oi.state < OrderInfo.STATE_FINISH) {
 					oi.state = state;
 					oi.executionIds = executionIds;
@@ -353,6 +354,11 @@ public class EntryOrdersLogic_r3 {
 							oi.state = OrderInfo.STATE_CLOSE;
 						}
 					}
+				}
+				if (oldState != oi.state) {
+					String msg = "changeState " + oi.uniqId + " " + oi.orderId + " " + oldState + "->" + oi.state;
+					System.out.println("  > execute " + msg);
+					FileUtil.printLog(LOG_FILEPATH, "execute", msg);
 				}
 				orderKeySet.remove(uniqId);
 			}
@@ -386,8 +392,8 @@ public class EntryOrdersLogic_r3 {
 			idMap.put(oi.orderId, oi.uniqId);
 		}
 		orderKeySet.add(key);
-		String msg = "add " + key + " " + oi.orderId;
-		System.out.println("  > " + msg);
+		String msg = "create " + key + " " + oi.orderId + " " + oi.state;
+		System.out.println("  > addOrder " + msg);
 		FileUtil.printLog(LOG_FILEPATH, "addOrder", msg);
 		return oi.uniqId;
 	}
@@ -444,11 +450,17 @@ public class EntryOrdersLogic_r3 {
         } catch (Exception e) {
         }
         String orderId = response.getOrderId();
+        int oldState = oi.state;
 		oi.orderId = orderId;
 		if (oi.state == OrderInfo.STATE_NOT_ORDER) {
 			oi.state = OrderInfo.STATE_UNKNOWN;
 		}
         idMap.put(orderId, oi.uniqId);
+        if (oldState != oi.state) {
+        	msg = "changeState " + oi.uniqId + " " + oi.orderId + " " + oldState + "->" + oi.state;
+        	System.out.println("  > sendOrder " + msg);
+        	FileUtil.printLog(LOG_FILEPATH, "sendOrder", msg);
+        }
         return orderId;
 	}
 
@@ -511,7 +523,8 @@ public class EntryOrdersLogic_r3 {
 			System.out.println("EntryOrdersLogic_r3.deleteOrders(): orderKeySet.size=" + orderKeySet.size());
 			for (String key : orderKeySet) {
 				OrderInfo oi = orderMap.get(key);
-				if (OrderInfo.STATE_UNKNOWN < oi.state && oi.state <= OrderInfo.STATE_FINISH) {
+				int oldState = oi.state;
+				if (OrderInfo.STATE_WAIT <= oi.state && oi.state <= OrderInfo.STATE_FINISH) {
 					oi.state = OrderInfo.STATE_FINISH_DELETE;
 				} else if (oi.state == OrderInfo.STATE_FINISH_DELETE) {
 					if (oi.executionIds.length() == 0) {
@@ -530,9 +543,11 @@ public class EntryOrdersLogic_r3 {
 				} else {
 					continue;
 				}
-				String msg = "change " + key + " " + oi.orderId + " " + oi.state;
-				System.out.println("  > deleteOrders " + msg);
-				FileUtil.printLog(LOG_FILEPATH, "deleteOrders", msg);
+				if (oldState != oi.state) {
+					String msg = "changeState " + oi.uniqId + " " + oi.orderId + " " + oldState + "->" + oi.state;
+					System.out.println("  > deleteOrders " + msg);
+					FileUtil.printLog(LOG_FILEPATH, "deleteOrders", msg);
+				}
 			}
 		}
 	}
