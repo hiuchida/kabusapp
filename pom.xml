@@ -206,6 +206,12 @@
       <version>${junit-version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.glassfish.tyrus.bundles/tyrus-standalone-client -->
+    <dependency>
+        <groupId>org.glassfish.tyrus.bundles</groupId>
+        <artifactId>tyrus-standalone-client</artifactId>
+        <version>1.15</version>
+    </dependency>
   </dependencies>
   <properties>
     <java.version>1.7</java.version>
