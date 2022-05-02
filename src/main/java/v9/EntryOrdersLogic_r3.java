@@ -196,7 +196,7 @@ public class EntryOrdersLogic_r3 {
 		}
 
 		/**
-		 * インスタンスの主キー(orderId)を取得する。
+		 * インスタンスの主キー(uniqId)を取得する。
 		 * 
 		 * @return 主キー。
 		 */
