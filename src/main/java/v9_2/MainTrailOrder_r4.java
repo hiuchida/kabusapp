@@ -257,24 +257,25 @@ public class MainTrailOrder_r4 {
 		if (high < 50) {
 			return 0;
 		}
+		int base = 200;
 		int range;
-		if (high < 100) {
+		if (high < base) {
 			range = 25;
-		} else if (high < 150) {
+		} else if (high < 50 + base) {
 			range = 50;
-		} else if (high < 200) {
+		} else if (high < 100 + base) {
 			range = 75;
-		} else if (high < 300) {
+		} else if (high < 200 + base) {
 			range = 100;
-		} else if (high < 400) {
+		} else if (high < 300 + base) {
 			range = 125;
-		} else if (high < 500) {
+		} else if (high < 400 + base) {
 			range = 150;
-		} else if (high < 600) {
+		} else if (high < 500 + base) {
 			range = 175;
-		} else if (high < 800) {
+		} else if (high < 700 + base) {
 			range = 200;
-		} else if (high < 1000) {
+		} else if (high < 900 + base) {
 			range = 225;
 		} else {
 			range = 250;
