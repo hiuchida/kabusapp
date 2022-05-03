@@ -143,12 +143,22 @@ public class FileUtil {
 	 * @param msg      メッセージ文字列。
 	 */
 	public static void printLog(String filepath, String method, String msg) {
-		String now = DateTimeUtil.nowToString();
 		try (PrintWriter pw = FileUtil.writer(filepath, FileUtil.UTF8, true)) {
-			pw.println(now + " " + method + "(): " + msg);
+			printLogLine(pw, method + "(): " + msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * ログ行を追記する。
+	 * 
+	 * @param pw  出力ファイル。
+	 * @param msg メッセージ文字列。
+	 */
+	public static void printLogLine(PrintWriter pw, String msg) {
+		String now = DateTimeUtil.nowToString();
+		pw.println(now + " " + msg);
 	}
 
 	private FileUtil() {
