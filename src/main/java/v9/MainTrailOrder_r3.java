@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.swagger.client.ApiException;
-import io.swagger.client.api.InfoApi;
 import io.swagger.client.model.PositionsDeriv;
 import io.swagger.client.model.PositionsSuccess;
 import io.swagger.client.model.RequestSendOrderDerivFuture;
@@ -49,11 +48,6 @@ public class MainTrailOrder_r3 {
 	}
 
 	/**
-	 * 認証済TOKEN。
-	 */
-	private String X_API_KEY;
-
-	/**
 	 * 注文約定情報を管理する。
 	 */
 	private CloseOrdersLogic_r3 closeOrderLogic;
@@ -64,17 +58,11 @@ public class MainTrailOrder_r3 {
 	private PositionsLogic_r3 posLogic;
 
 	/**
-	 * 情報API。
-	 */
-	private InfoApi infoApi = new InfoApi();
-
-	/**
 	 * コンストラクタ。
 	 * 
 	 * @param X_API_KEY 認証済TOKEN。
 	 */
 	public MainTrailOrder_r3(String X_API_KEY) {
-		this.X_API_KEY = X_API_KEY;
 		this.closeOrderLogic = new CloseOrdersLogic_r3(X_API_KEY);
 		this.posLogic = new PositionsLogic_r3(X_API_KEY);
 	}
@@ -126,7 +114,7 @@ public class MainTrailOrder_r3 {
 							FileUtil.printLog(LOG_FILEPATH, "execute", msg);
 							continue;
 						}
-						List<PositionsSuccess> psList = getPosition(pi.code);
+						List<PositionsSuccess> psList = posLogic.getPosition(pi.code);
 						for (PositionsSuccess ps : psList) {
 							String id = ps.getExecutionID();
 							if (holdId.equals(id)) {
@@ -223,22 +211,6 @@ public class MainTrailOrder_r3 {
 		}
 		String orderId = closeOrderLogic.sendOrder(body, holdId, msg);
 		return orderId;
-	}
-
-	/**
-	 * 指定した残高照会を行う。
-	 * 
-	 * @param code 銘柄コード(Symbol)。
-	 * @return 残高情報のリスト。
-	 * @throws ApiException 
-	 */
-	private List<PositionsSuccess> getPosition(String code) throws ApiException {
-		String product = null;
-		String symbol = code;
-		String sideParam = null;
-		String addinfo = null;
-		List<PositionsSuccess> response = infoApi.positionsGet(X_API_KEY, product, symbol, sideParam, addinfo);
-		return response;
 	}
 
 	/**

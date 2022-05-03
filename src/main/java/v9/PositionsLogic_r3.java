@@ -405,6 +405,26 @@ public class PositionsLogic_r3 {
 	}
 
 	/**
+	 * 指定した残高照会を行う。
+	 * 
+	 * @param code 銘柄コード(Symbol)。
+	 * @return 残高情報のリスト。
+	 * @throws ApiException 
+	 */
+	public List<PositionsSuccess> getPosition(String code) throws ApiException {
+		String product = null;
+		String symbol = code;
+		String sideParam = null;
+		String addinfo = null;
+		List<PositionsSuccess> response = infoApi.positionsGet(X_API_KEY, product, symbol, sideParam, addinfo);
+		try {
+			Thread.sleep(120); // 8.3req/sec
+		} catch (Exception e) {
+		}
+		return response;
+	}
+
+	/**
 	 * メモリ上の建玉に指定した約定番号が含まれるか？
 	 * 
 	 * @param executionIds　約定番号の列挙。
