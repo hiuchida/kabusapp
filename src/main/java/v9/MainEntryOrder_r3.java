@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import io.swagger.client.ApiException;
-import io.swagger.client.api.InfoApi;
-import io.swagger.client.model.BoardSuccess;
 import io.swagger.client.model.RequestSendOrderDerivFuture;
 import util.ExchangeUtil;
 import util.FileUtil;
@@ -86,6 +84,11 @@ public class MainEntryOrder_r3 {
 	private String X_API_KEY;
 
 	/**
+	 * 時価情報・板情報を管理する。
+	 */
+	private BoardLogic_r3 boardLogic;
+
+	/**
 	 * 建玉情報を管理する。
 	 */
 	private PositionsLogic_r3 posLogic;
@@ -106,17 +109,12 @@ public class MainEntryOrder_r3 {
 	private Map<String, String> orderMap;
 
 	/**
-	 * 情報API。
-	 */
-	private InfoApi infoApi = new InfoApi();
-
-	/**
 	 * コンストラクタ。
 	 * 
 	 * @param X_API_KEY 認証済TOKEN。
 	 */
 	public MainEntryOrder_r3(String X_API_KEY) {
-		this.X_API_KEY = X_API_KEY;
+		this.boardLogic = new BoardLogic_r3(X_API_KEY);
 		this.posLogic = new PositionsLogic_r3(X_API_KEY);
 		this.entryOrdersLogic = new EntryOrdersLogic_r3(X_API_KEY);
 	}
@@ -149,16 +147,7 @@ public class MainEntryOrder_r3 {
 	 * @throws ApiException 
 	 */
 	private void openOrder(int exchange) throws ApiException {
-		BoardSuccess bs = infoApi.boardGet(X_API_KEY, SYMBOL + "@2");
-		try {
-			Thread.sleep(120); // 8.3req/sec
-		} catch (Exception e) {
-		}
-		int curPrice = 0;
-		Double d = bs.getCurrentPrice();
-		if (d != null) {
-			curPrice = (int) (double) d;
-		}
+		int curPrice = boardLogic.getCurPrice(SYMBOL + "@2");
 		for (String key : orderMap.keySet()) {
 			// Price,Side,Qty
 			// 26745,S,1
