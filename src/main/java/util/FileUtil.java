@@ -22,6 +22,16 @@ public class FileUtil {
 	public static final String UTF8 = "UTF-8";
 
 	/**
+	 * ファイル単体を削除する。
+	 * 
+	 * @param file ファイルパス。
+	 */
+	public static void deleteFile(String file) {
+		File f = new File(file);
+		f.delete();
+	}
+
+	/**
 	 * 入力ファイルを開く。
 	 * 
 	 * @param filepath ファイルパス。

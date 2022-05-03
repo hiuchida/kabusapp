@@ -13,6 +13,7 @@ import io.swagger.client.model.RequestSendOrderDerivFutureReverseLimitOrder;
 import util.Consts;
 import util.ExchangeUtil;
 import util.FileUtil;
+import util.SendMailUtil;
 import util.StringUtil;
 import v9_2.PositionsLogic_r4.ExecutionInfo;
 import v9_2.PositionsLogic_r4.PosInfo;
@@ -38,6 +39,10 @@ public class MainTrailOrder_r4 {
 	 * トレイル注文ログのファイルパス。存在しなければ生成される。
 	 */
 	private static final String LOG_FILEPATH = DIRPATH + "MainTrailOrder_r4.log";
+	/**
+	 * メール本文を保存したファイルパス。存在しなければ生成される。
+	 */
+	private static final String MAIL_FILEPATH = DIRPATH + "MainTrailOrder_r4.mail";
 
 	/**
 	 * トレイル注文ツール。
@@ -66,6 +71,11 @@ public class MainTrailOrder_r4 {
 	private PositionsLogic_r4 posLogic;
 
 	/**
+	 * メール送信を管理する。
+	 */
+	private SendMailUtil sendMailUtil;
+
+	/**
 	 * コンストラクタ。
 	 * 
 	 * @param X_API_KEY 認証済TOKEN。
@@ -73,6 +83,7 @@ public class MainTrailOrder_r4 {
 	public MainTrailOrder_r4(String X_API_KEY) {
 		this.closeOrderLogic = new CloseOrdersLogic_r4(X_API_KEY);
 		this.posLogic = new PositionsLogic_r4(X_API_KEY);
+		this.sendMailUtil = new SendMailUtil(MAIL_FILEPATH);
 	}
 
 	/**
@@ -81,6 +92,7 @@ public class MainTrailOrder_r4 {
 	 * @throws ApiException 
 	 */
 	public void execute() throws ApiException {
+		sendMailUtil.deleteMailFile();
 		closeOrderLogic.execute();
 		List<PosInfo> highList = posLogic.execute();
 		int exchange = ExchangeUtil.now();
@@ -143,6 +155,7 @@ public class MainTrailOrder_r4 {
 			closeOrderLogic.writeOrders();
 			posLogic.writePositions();
 		}
+		sendMailUtil.writeMailFile("TrailOrder");
 	}
 
 	/**
@@ -218,6 +231,18 @@ public class MainTrailOrder_r4 {
 			FileUtil.printLog(LOG_FILEPATH, "sendCloseOrder", msg);
 		}
 		String orderId = closeOrderLogic.sendOrder(body, holdId, msg);
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.append("CLOSE:{").append(pi.name).append(" ").append(StringUtil.exchangeStr(exchange));
+			sb.append(" price=").append(pi.price).append(StringUtil.sideStr(pi.side));
+			sb.append(", qty=").append(body.getQty());
+			sb.append(", trigger=").append(triggerPrice).append(StringUtil.sideStr(body.getSide()));
+			sb.append("(").append(delta).append(")");
+			sb.append(", holdId=").append(holdId);
+			sb.append("}");
+			String msgMail = sb.toString();
+			sendMailUtil.addLine(msgMail);
+		}
 		return orderId;
 	}
 

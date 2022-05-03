@@ -12,6 +12,7 @@ import io.swagger.client.model.RequestSendOrderDerivFuture;
 import util.Consts;
 import util.ExchangeUtil;
 import util.FileUtil;
+import util.SendMailUtil;
 import util.StringUtil;
 import v9_2.EntryOrdersLogic_r4.OrderInfo;
 
@@ -62,6 +63,10 @@ public class MainEntryOrder_r4 {
 	 */
 	private static final String LOG_FILEPATH = DIRPATH + "MainEntryOrder_r4.log";
 	/**
+	 * メール本文を保存したファイルパス。存在しなければ生成される。
+	 */
+	private static final String MAIL_FILEPATH = DIRPATH + "MainEntryOrder_r4.mail";
+	/**
 	 * 新規注文設定ファイルのカラム数。
 	 */
 	public static final int MAX_COLS = 2;
@@ -98,6 +103,11 @@ public class MainEntryOrder_r4 {
 	private EntryOrdersLogic_r4 entryOrdersLogic;
 
 	/**
+	 * メール送信を管理する。
+	 */
+	private SendMailUtil sendMailUtil;
+
+	/**
 	 * 新規注文設定のマップ。
 	 */
 	private Map<String, String> configMap;
@@ -116,6 +126,7 @@ public class MainEntryOrder_r4 {
 		this.boardLogic = new BoardLogic_r4(X_API_KEY);
 		this.posLogic = new PositionsLogic_r4(X_API_KEY);
 		this.entryOrdersLogic = new EntryOrdersLogic_r4(X_API_KEY);
+		this.sendMailUtil = new SendMailUtil(MAIL_FILEPATH);
 	}
 
 	/**
@@ -124,6 +135,7 @@ public class MainEntryOrder_r4 {
 	 * @throws ApiException 
 	 */
 	public void execute() throws ApiException {
+		sendMailUtil.deleteMailFile();
 		initConfig();
 		refreshOrders();
 		List<OrderInfo> entryList = entryOrdersLogic.execute();
@@ -137,6 +149,7 @@ public class MainEntryOrder_r4 {
 			}
 		}
 		entryOrdersLogic.writeOrders();
+		sendMailUtil.writeMailFile("EntryOrder");
 	}
 
 	/**
@@ -287,6 +300,16 @@ public class MainEntryOrder_r4 {
 			FileUtil.printLog(LOG_FILEPATH, "sendEntryOrder", msg);
 		}
 		String orderId = entryOrdersLogic.sendOrder(oi, body, msg);
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.append("ENTRY:{").append(SYMBOL_NAME).append(" ").append(StringUtil.exchangeStr(exchange));
+			sb.append(" ").append(expireDay);
+			sb.append(" price=").append(oi.price).append(StringUtil.sideStr(oi.side));
+			sb.append(", qty=").append(oi.orderQty);
+			sb.append("}");
+			String msgMail = sb.toString();
+			sendMailUtil.addLine(msgMail);
+		}
 		return orderId;
 	}
 
