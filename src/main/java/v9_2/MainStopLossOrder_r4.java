@@ -12,6 +12,7 @@ import io.swagger.client.model.RequestSendOrderDerivFutureReverseLimitOrder;
 import util.Consts;
 import util.ExchangeUtil;
 import util.FileUtil;
+import util.GlobalConfigUtil;
 import util.SendMailUtil;
 import util.StringUtil;
 import v9_2.PositionsLogic_r4.ExecutionInfo;
@@ -24,7 +25,7 @@ public class MainStopLossOrder_r4 {
 	/**
 	 * 建玉の価格からの値幅。
 	 */
-	private static final int STOP_LOSS_PRICE_RANGE = 1000;
+	private static final int STOP_LOSS_PRICE_RANGE = GlobalConfigUtil.getInt("StopLossPriceRange", 1000);
 
 	/**
 	 * タブ文字。

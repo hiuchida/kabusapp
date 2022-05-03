@@ -12,6 +12,7 @@ import io.swagger.client.model.RequestSendOrderDerivFuture;
 import util.Consts;
 import util.ExchangeUtil;
 import util.FileUtil;
+import util.GlobalConfigUtil;
 import util.SendMailUtil;
 import util.StringUtil;
 import v9_2.EntryOrdersLogic_r4.OrderInfo;
@@ -23,23 +24,23 @@ public class MainEntryOrder_r4 {
 	/**
 	 * 銘柄コード(Symbol)。 
 	 */
-	private static final String SYMBOL = "167060019";
+	private static final String SYMBOL = GlobalConfigUtil.get("Symbol"); // "167060019";
 	/**
 	 * 銘柄名(SymbolName)。
 	 */
-	private static final String SYMBOL_NAME = "日経225mini 22/06";
+	private static final String SYMBOL_NAME = GlobalConfigUtil.get("SymbolName"); // "日経225mini 22/06";
 	/**
 	 * 有効期限(ExpireDay)。
 	 */
-	private static final int EXPIRE_DAY = 20220506;
+	private static final int EXPIRE_DAY = GlobalConfigUtil.getInt("ExpireDay", 0); // 当日0
 	/**
 	 * スキップする天井の値幅（curPrice-basePrice）。
 	 */
-	private static final int SKIP_PRICE_DELTA_CEIL = 100;
+	private static final int SKIP_PRICE_DELTA_CEIL = GlobalConfigUtil.getInt("SkipPriceDeltaCeil", 100); // 100
 	/**
 	 * スキップする床の値幅（curPrice-basePrice）。
 	 */
-	private static final int SKIP_PRICE_DELTA_FLOOR = -100;
+	private static final int SKIP_PRICE_DELTA_FLOOR = GlobalConfigUtil.getInt("SkipPriceDeltaFloor", -100); // -100
 
 	/**
 	 * タブ文字。
