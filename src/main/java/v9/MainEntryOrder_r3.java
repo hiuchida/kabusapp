@@ -79,11 +79,6 @@ public class MainEntryOrder_r3 {
 	}
 
 	/**
-	 * 認証済TOKEN。
-	 */
-	private String X_API_KEY;
-
-	/**
 	 * 時価情報・板情報を管理する。
 	 */
 	private BoardLogic_r3 boardLogic;
