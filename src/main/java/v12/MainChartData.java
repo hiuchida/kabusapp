@@ -76,6 +76,11 @@ public class MainChartData {
 	private List<String> dataList = new ArrayList<>();
 
 	/**
+	 * バッファリングされた最新の価格。
+	 */
+	private String lastPrice = "";
+
+	/**
 	 * コンストラクタ。
 	 * 
 	 * @param X_API_KEY 認証済TOKEN。
@@ -113,18 +118,18 @@ public class MainChartData {
 	 * チャートデータファイルを書き込む。成功したらバッファをクリアする。メッセージの解析はスレッド同期せずに行う。
 	 */
 	private void writeChartData() {
-		List<String> list = getAndClearChartData();
-		if (list.size() > 0) {
+		List<String> bufList = getAndClearChartData();
+		if (bufList.size() > 0) {
 			int writeCnt = 0;
 			try (PrintWriter pw = FileUtil.writer(DB_FILEPATH, FileUtil.UTF8, true)) {
-				for (String s : list) {
+				for (String s : bufList) {
 					String data = parseChartData(s);
 					if (data != null) {
 						pw.println(data);
 						writeCnt++;
 					}
 				}
-				System.out.println("MainChartData.writeChartData(): list.size=" + list.size() + ", writeCnt=" + writeCnt);
+				System.out.println("MainChartData.writeChartData(): bufList.size=" + bufList.size() + ", writeCnt=" + writeCnt);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -137,12 +142,14 @@ public class MainChartData {
 	 * @param message 受信したメッセージ。
 	 * @return 出力文字列。対象外はnull。
 	 */
-	private String parseChartData(String message) {		
+	private String parseChartData(String message) {
+		// 銘柄コードを比較する
 		int idx = message.indexOf("\"Symbol\":\"" + SYMBOL + "\"");
 		if (idx < 0) {
 			return null;
 		}
-		
+
+		// 価格を切り出す
 		String str2 = "\"CurrentPrice\":";
 		int idx2 = message.indexOf(str2);
 		if (idx2 < 0) {
@@ -154,6 +161,13 @@ public class MainChartData {
 		}
 		String price = message.substring(idx2 + str2.length(), idx3);
 		
+		// バッファリングされた最新の価格と同じ場合はスキップする
+		if (price.equals(lastPrice)) {
+			return null;
+		}
+		lastPrice = price;
+		
+		// 日時を切り出す
 		String str4 = "\"CurrentPriceTime\":\"";
 		int idx4 = message.indexOf(str4);
 		if (idx4 < 0) {
@@ -165,7 +179,7 @@ public class MainChartData {
 		}
 		String date = message.substring(idx4 + str4.length(), idx5);
 		
-		// "T"と"+09:00"を取る
+		// 日時から"T"と"+09:00"を取る
 		date = date.substring(0, 10) + " " + date.substring(11, 19);
 		
 		return date + "," + price;
