@@ -10,11 +10,11 @@ public class SendMailUtil {
 	/**
 	 * メール送信先。
 	 */
-	private static final String MAIL_TO = "mail_to@example.com";
+	private static final String MAIL_TO = GlobalConfigUtil.get("MailTo");
 	/**
 	 * メール送信元。
 	 */
-	private static final String MAIL_FROM = "mail_from@example.com";
+	private static final String MAIL_FROM = GlobalConfigUtil.get("MailFrom");
 
 	/**
 	 * メール本文を保存したファイルパス。
