@@ -17,7 +17,10 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
+import com.google.gson.Gson;
+
 import api.ApiErrorLog;
+import api.BoardBean;
 import api.RegisterEtcApi;
 import io.swagger.client.ApiException;
 import util.Consts;
@@ -123,6 +126,8 @@ public class MainChartData {
 			int writeCnt = 0;
 			try (PrintWriter pw = FileUtil.writer(DB_FILEPATH, FileUtil.UTF8, true)) {
 				for (String s : bufList) {
+//					BoardBean bb = parseJson(s);
+//					System.out.println(bb);
 					String data = parseChartData(s);
 					if (data != null) {
 						pw.println(data);
@@ -183,6 +188,18 @@ public class MainChartData {
 		date = date.substring(0, 10) + " " + date.substring(11, 19);
 		
 		return date + "," + price;
+	}
+
+	/**
+	 * 受信したメッセージJSONを解析し、時価情報Beanを生成する。
+	 * 
+	 * @param message 受信したメッセージ。
+	 * @return 時価情報Bean。
+	 */
+	private BoardBean parseJson(String message) {
+		Gson gson = new Gson();
+		BoardBean bb = gson.fromJson(message, BoardBean.class);
+		return bb;
 	}
 
 	/**
