@@ -414,7 +414,7 @@ public class PositionsLogic_r4 {
 	 * @return true:含まれる、false:含まれない。
 	 */
 	public boolean isValidExecutionId(String executionIds) {
-		String[] flds = executionIds.split(",");
+		String[] flds = StringUtil.splitComma(executionIds);
 		for (String s : flds) {
 			if (s.length() == 0) {
 				continue;

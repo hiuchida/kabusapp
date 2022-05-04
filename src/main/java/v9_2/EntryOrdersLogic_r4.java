@@ -484,7 +484,7 @@ public class EntryOrdersLogic_r4 {
 			orderKeySet.add(key);
 		}
 		for (String s : newLines) {
-			String[] flds = s.split(",");
+			String[] flds = StringUtil.splitComma(s);
 			if (flds.length != 3) {
 				System.out.println("Warning: SKIP new order=" + s);
 				continue;

@@ -147,7 +147,7 @@ public class MainEntryOrder_r3 {
 			// Price,Side,Qty
 			// 26745,S,1
 			String val = orderMap.get(key);
-			String[] cols = key.split(",");
+			String[] cols = StringUtil.splitComma(key);
 			int basePrice = StringUtil.parseInt(cols[0]);
 			String side = StringUtil.sideCode(cols[1]);
 			int qty = StringUtil.parseInt(cols[2]);
@@ -156,7 +156,7 @@ public class MainEntryOrder_r3 {
 			System.out.println("  > openOrder " + msg);
 			FileUtil.printLog(LOG_FILEPATH, "openOrder", msg);
 
-			String[] flds = val.split(",");
+			String[] flds = StringUtil.splitComma(val);
 			if (flds.length == 1) {
 				if ("R".equals(flds[0])) {
 					if (checkOpenOrder(basePrice, side, curPrice)) {

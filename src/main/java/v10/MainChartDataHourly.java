@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import util.FileUtil;
+import util.StringUtil;
 
 /**
  * チャートデータのＤＢを作成するツール。
@@ -188,8 +189,8 @@ public class MainChartDataHourly {
 				dbMap.put(key, nval);
 				addCnt++;
 			} else if (!oval.equals(nval)) {
-				String[] cols1 = oval.split(",");
-				String[] cols2 = nval.split(",");
+				String[] cols1 = StringUtil.splitComma(oval);
+				String[] cols2 = StringUtil.splitComma(nval);
 				int vol1 = Integer.parseInt(cols1[5]);
 				int vol2 = Integer.parseInt(cols2[5]);
 				if (vol1 < vol2) {
