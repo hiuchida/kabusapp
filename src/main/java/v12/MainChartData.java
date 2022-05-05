@@ -37,11 +37,6 @@ public class MainChartData {
 	public static final String WEBSOCKET_URI = "ws://localhost:18080/kabusapi/websocket";
 
 	/**
-	 * タブ文字。
-	 */
-	public static final String TAB = "\t";
-
-	/**
 	 * 基準パス。
 	 */
 	private static final String DIRPATH = "/tmp/";

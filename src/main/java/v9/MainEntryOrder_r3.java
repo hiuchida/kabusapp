@@ -38,11 +38,6 @@ public class MainEntryOrder_r3 {
 	private static final int SKIP_PRICE_DELTA_FLOOR = -100;
 
 	/**
-	 * タブ文字。
-	 */
-	public static final String TAB = "\t";
-
-	/**
 	 * 基準パス。
 	 */
 	private static final String DIRPATH = "/tmp/";
@@ -410,7 +405,8 @@ public class MainEntryOrder_r3 {
 	private void writeOrders() {
 		System.out.println("MainEntryOrder_r3.writeOrders(): orderMap.size=" + orderMap.size());
 		List<String> lines = new ArrayList<>();
-		lines.add("# orderId   " + TAB + "value");
+		String line = StringUtil.joinTab("orderId   ", "value");
+		lines.add("# " + line);
 		lines.add("");
 		for (int i = 0; i < 2; i++) {
 			for (String key : orderMap.keySet()) {
@@ -424,7 +420,8 @@ public class MainEntryOrder_r3 {
 					}
 				}
 				String val = orderMap.get(key);
-				lines.add(key + TAB + val);
+				line = StringUtil.joinTab(key, val);
+				lines.add(line);
 				System.out.println("  " + key + ": " + val);
 			}
 			lines.add("");

@@ -28,11 +28,6 @@ public class EntryOrdersLogic_r4 {
 	private static final String TRADE_PASSWORD = SendOrderConfig_r4.getPassword();
 
 	/**
-	 * タブ文字。
-	 */
-	public static final String TAB = "\t";
-
-	/**
 	 * 基準パス。
 	 */
 	private static final String DIRPATH = "/tmp/";
@@ -182,18 +177,19 @@ public class EntryOrdersLogic_r4 {
 		 * @return ヘッダ文字列。
 		 */
 		public static String toHeaderString() {
-			StringBuilder sb = new StringBuilder();
-			sb.append("# ");
-			sb.append("uniqId     ").append(TAB);
-			sb.append("orderId             ").append(TAB);
-			sb.append("state").append(TAB);
-			sb.append("price").append(TAB);
-			sb.append("qty").append(TAB);
-			sb.append("side").append(TAB);
-			sb.append("createDate                            ").append(TAB);
-			sb.append("updateDate                            ").append(TAB);
-			sb.append("executionIds");
-			return sb.toString();
+			String[] sa = new String[MAX_COLS];
+			int i = 0;
+			sa[i++] = "uniqId     ";
+			sa[i++] = "orderId             ";
+			sa[i++] = "state";
+			sa[i++] = "price";
+			sa[i++] = "qty";
+			sa[i++] = "side";
+			sa[i++] = "createDate                            ";
+			sa[i++] = "updateDate                            ";
+			sa[i++] = "executionIds";
+			String val = "# " + StringUtil.joinTab(sa);
+			return val;
 		}
 
 		/**
@@ -211,17 +207,19 @@ public class EntryOrdersLogic_r4 {
 		 * @return レコード文字列。
 		 */
 		public String toLineString() {
-			StringBuilder sb = new StringBuilder();
-			sb.append(uniqId).append(TAB);
-			sb.append(orderId).append(TAB);
-			sb.append(state).append(TAB);
-			sb.append(price).append(TAB);
-			sb.append(orderQty).append(TAB);
-			sb.append(side).append("(").append(StringUtil.sideStr(side)).append(")").append(TAB);
-			sb.append(createDate).append("(").append(DateTimeUtil.toString(createDate)).append(")").append(TAB);
-			sb.append(updateDate).append("(").append(DateTimeUtil.toString(updateDate)).append(")").append(TAB);
-			sb.append(executionIds);
-			return sb.toString();
+			String[] sa = new String[MAX_COLS];
+			int i = 0;
+			sa[i++] = uniqId;
+			sa[i++] = orderId;
+			sa[i++] = "" + state;
+			sa[i++] = "" + price;
+			sa[i++] = "" + orderQty;
+			sa[i++] = side + "(" + StringUtil.sideStr(side) + ")";
+			sa[i++] = createDate + "(" + DateTimeUtil.toString(createDate) + ")";
+			sa[i++] = updateDate + "(" + DateTimeUtil.toString(updateDate) + ")";
+			sa[i++] = executionIds;
+			String val = StringUtil.joinTab(sa);
+			return val;
 		}
 
 		@Override

@@ -23,11 +23,6 @@ public class MainStopLossOrder_r3 {
 	private static final int STOP_LOSS_PRICE_RANGE = 1000;
 
 	/**
-	 * タブ文字。
-	 */
-	public static final String TAB = "\t";
-
-	/**
 	 * 基準パス。
 	 */
 	private static final String DIRPATH = "/tmp/";

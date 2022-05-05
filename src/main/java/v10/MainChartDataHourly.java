@@ -14,11 +14,6 @@ import util.StringUtil;
  */
 public class MainChartDataHourly {
 	/**
-	 * タブ文字。
-	 */
-	public static final String TAB = "\t";
-
-	/**
 	 * 基準パス。
 	 */
 	private static final String DIRPATH = "/tmp/";

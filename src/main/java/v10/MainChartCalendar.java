@@ -17,11 +17,6 @@ import util.FileUtil;
  */
 public class MainChartCalendar {
 	/**
-	 * タブ文字。
-	 */
-	public static final String TAB = "\t";
-
-	/**
 	 * 基準パス。
 	 */
 	private static final String DIRPATH = "/tmp/";

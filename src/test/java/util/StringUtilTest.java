@@ -74,6 +74,34 @@ public class StringUtilTest {
 	}
 
 	@Test
+	public void joinTabATest() {
+		String s1 = "ab";
+		String s2 = "cd";
+		String a1 = StringUtil.joinTab(s1, s2);
+		String a2 = StringUtil.joinTab("", s2);
+		String a3 = StringUtil.joinTab(s1, "");
+		assertEquals("ab\tcd", a1);
+		assertEquals("\tcd", a2);
+		assertEquals("ab\t", a3);
+	}
+
+	@Test
+	public void joinTabBTest() {
+		String[] sa1 = { "ab", "cd", "ef" };
+		String[] sa2 = { "", "cd", "ef" };
+		String[] sa3 = { "ab", "", "ef" };
+		String[] sa4 = { "ab", "cd", "" };
+		String s1 = StringUtil.joinTab(sa1);
+		String s2 = StringUtil.joinTab(sa2);
+		String s3 = StringUtil.joinTab(sa3);
+		String s4 = StringUtil.joinTab(sa4);
+		assertEquals("ab\tcd\tef", s1);
+		assertEquals("\tcd\tef", s2);
+		assertEquals("ab\t\tef", s3);
+		assertEquals("ab\tcd\t", s4);
+	}
+
+	@Test
 	public void splitCommaTest() {
 		String COMMA = ",";
 		String s1 = "a" + COMMA + "b" + COMMA + "c";

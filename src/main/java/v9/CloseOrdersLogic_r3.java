@@ -24,11 +24,6 @@ public class CloseOrdersLogic_r3 {
 	private static final String TRADE_PASSWORD = SendOrderConfig_r3.getPassword();
 
 	/**
-	 * タブ文字。
-	 */
-	public static final String TAB = "\t";
-
-	/**
 	 * 基準パス。
 	 */
 	private static final String DIRPATH = "/tmp/";
@@ -267,10 +262,12 @@ public class CloseOrdersLogic_r3 {
 	public void writeOrders() {
 		System.out.println("CloseOrdersLogic_r3.writeOrders(): orderMap.size=" + orderMap.size());
 		List<String> lines = new ArrayList<>();
-		lines.add("# orderId           " + TAB + "executionId");
+		String line = StringUtil.joinTab("orderId           ", "executionId");
+		lines.add("# " + line);
 		for (String key : orderMap.keySet()) {
 			String val = orderMap.get(key);
-			lines.add(key + TAB + val);
+			line = StringUtil.joinTab(key, val);
+			lines.add(line);
 			System.out.println("  " + key + ": " + val);
 		}
 		FileUtil.writeAllLines(TXT_FILEPATH, lines);

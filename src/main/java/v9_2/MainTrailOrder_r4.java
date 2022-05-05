@@ -26,10 +26,6 @@ public class MainTrailOrder_r4 {
 	 * API実行クラス。
 	 */
 	private static Class<?> clazz = MethodHandles.lookup().lookupClass();
-	/**
-	 * タブ文字。
-	 */
-	public static final String TAB = "\t";
 
 	/**
 	 * 基準パス。

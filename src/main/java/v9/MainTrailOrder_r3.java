@@ -19,11 +19,6 @@ import v9.PositionsLogic_r3.PosInfo;
  */
 public class MainTrailOrder_r3 {
 	/**
-	 * タブ文字。
-	 */
-	public static final String TAB = "\t";
-
-	/**
 	 * 基準パス。
 	 */
 	private static final String DIRPATH = "/tmp/";

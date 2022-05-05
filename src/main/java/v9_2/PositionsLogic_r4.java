@@ -20,11 +20,6 @@ import util.StringUtil;
  */
 public class PositionsLogic_r4 {
 	/**
-	 * タブ文字。
-	 */
-	public static final String TAB = "\t";
-
-	/**
 	 * 基準パス。
 	 */
 	private static final String DIRPATH = "/tmp/";
@@ -145,20 +140,21 @@ public class PositionsLogic_r4 {
 		 * @return ヘッダ文字列。
 		 */
 		public static String toHeaderString() {
-			StringBuilder sb = new StringBuilder();
-			sb.append("# ");
-			sb.append("code   ").append(TAB);
-			sb.append("name             ").append(TAB);
-			sb.append("price(qty)").append(TAB);
-			sb.append("side").append(TAB);
-			sb.append("curPric").append(TAB);
-			sb.append("high").append(TAB);
-			sb.append("low").append(TAB);
-			sb.append("trigger").append(TAB);
-			sb.append("createDate                            ").append(TAB);
-			sb.append("updateDate                            ").append(TAB);
-			sb.append("executionIds");
-			return sb.toString();
+			String[] sa = new String[MAX_COLS];
+			int i = 0;
+			sa[i++] = "code   ";
+			sa[i++] = "name             ";
+			sa[i++] = "price(qty)";
+			sa[i++] = "side";
+			sa[i++] = "curPric";
+			sa[i++] = "high";
+			sa[i++] = "low";
+			sa[i++] = "trigger";
+			sa[i++] = "createDate                            ";
+			sa[i++] = "updateDate                            ";
+			sa[i++] = "executionIds";
+			String val = "# " + StringUtil.joinTab(sa);
+			return val;
 		}
 
 		/**
@@ -202,24 +198,28 @@ public class PositionsLogic_r4 {
 		 * @return レコード文字列。
 		 */
 		public String toLineString() {
+			String[] sa = new String[MAX_COLS];
+			int i = 0;
+			sa[i++] = code;
+			sa[i++] = name;
+			sa[i++] = price + "(" + getLeavesQty() + "-" + getHoldQty() + ")";
+			sa[i++] = side + "(" + StringUtil.sideStr(side) + ")";
+			sa[i++] = "" + curPrice;
+			sa[i++] = "" + profitHigh;
+			sa[i++] = "" + profitLow;
+			sa[i++] = "" + triggerPrice;
+			sa[i++] = createDate + "(" + DateTimeUtil.toString(createDate) + ")";
+			sa[i++] = updateDate + "(" + DateTimeUtil.toString(updateDate) + ")";
 			StringBuilder sb = new StringBuilder();
-			sb.append(code).append(TAB);
-			sb.append(name).append(TAB);
-			sb.append(price).append("(").append(getLeavesQty()).append("-").append(getHoldQty()).append(")").append(TAB);
-			sb.append(side).append("(").append(StringUtil.sideStr(side)).append(")").append(TAB);
-			sb.append(curPrice).append(TAB);
-			sb.append(profitHigh).append(TAB);
-			sb.append(profitLow).append(TAB);
-			sb.append(triggerPrice).append(TAB);
-			sb.append(createDate).append("(").append(DateTimeUtil.toString(createDate)).append(")").append(TAB);
-			sb.append(updateDate).append("(").append(DateTimeUtil.toString(updateDate)).append(")").append(TAB);
-			for (int i = 0; i < executionList.size(); i++) {
-				if (i > 0) {
+			for (int j = 0; j < executionList.size(); j++) {
+				if (j > 0) {
 					sb.append(",");
 				}
-				sb.append(executionList.get(i));
+				sb.append(executionList.get(j));
 			}
-			return sb.toString();
+			sa[i++] = sb.toString();
+			String val = StringUtil.joinTab(sa);
+			return val;
 		}
 
 		@Override

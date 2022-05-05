@@ -232,6 +232,29 @@ public class StringUtil {
 	}
 
 	/**
+	 * タブ文字で2つの文字列を結合する。
+	 * 
+	 * @param s1 文字列1。
+	 * @param s2 文字列2。
+	 * @return 結合した文字列。
+	 */
+	public static String joinTab(String s1, String s2) {
+		String val = s1 + "\t" + s2;
+		return val;
+	}
+
+	/**
+	 * タブ文字で結合する。
+	 * 
+	 * @param sa 文字列の配列。
+	 * @return 結合した文字列。
+	 */
+	public static String joinTab(String[] sa) {
+		String val = String.join("\t", sa);
+		return val;
+	}
+
+	/**
 	 * カンマ文字で分割する。String.split()と異なり、行末の空文字列にも対応する。
 	 * 
 	 * @param s 文字列。

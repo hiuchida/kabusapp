@@ -10,11 +10,6 @@ import java.util.TreeMap;
  */
 public class GlobalConfigUtil {
 	/**
-	 * タブ文字。
-	 */
-	public static final String TAB = "\t";
-
-	/**
 	 * 設定ファイルのカラム数。
 	 */
 	public static final int MAX_COLS = 2;
