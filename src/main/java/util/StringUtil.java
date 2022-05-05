@@ -172,7 +172,7 @@ public class StringUtil {
 	 * @return 文字列。
 	 */
 	public static String parseString(String s, String d) {
-		if (s == null) {
+		if (s == null || d == null) {
 			return s;
 		}
 		int idx = s.indexOf(d);
@@ -180,6 +180,31 @@ public class StringUtil {
 			s = s.substring(0, idx);
 		}
 		return s;
+	}
+
+	/**
+	 * 指定した文字列から、左右2つの文字列に挟まれた文字列を取得する。
+	 * 
+	 * @param s  全体の文字列。
+	 * @param sl 左側の文字列。
+	 * @param sr 右側の文字列。
+	 * @return 切り出した文字列。左右の文字列が見つからない場合はnull。
+	 */
+	public static String parseString(String s, String sl, String sr) {
+		if (s == null || sl == null || sr == null) {
+			return s;
+		}
+		int idxL = s.indexOf(sl);
+		if (idxL < 0) {
+			return null;
+		}
+		idxL += sl.length();
+		int idxR = s.indexOf(sr, idxL);
+		if (idxR < 0) {
+			return null;
+		}
+		String val = s.substring(idxL, idxR);
+		return val;
 	}
 
 	/**

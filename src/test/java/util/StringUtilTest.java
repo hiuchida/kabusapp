@@ -1,10 +1,36 @@
 package util;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
 public class StringUtilTest {
+
+	@Test
+	public void parseStringATest() {
+		String s1 = "abcdef";
+		String a1 = StringUtil.parseString(s1, "def");
+		assertEquals("abc", a1);
+		String a2 = StringUtil.parseString(s1, "abc");
+		assertEquals("", a2);
+		String a3 = StringUtil.parseString(s1, "xyz");
+		assertEquals("abcdef", a3);
+	}
+
+	@Test
+	public void parseStringBTest() {
+		String s1 = "abcdef";
+		String a1 = StringUtil.parseString(s1, "ab", "ef");
+		assertEquals("cd", a1);
+		String a2 = StringUtil.parseString(s1, "abc", "def");
+		assertEquals("", a2);
+		String a3 = StringUtil.parseString(s1, "xyz", "def");
+		assertNull(a3);
+		String a4 = StringUtil.parseString(s1, "abc", "xyz");
+		assertNull(a4);
+	}
 
 	@Test
 	public void splitTabTest() {

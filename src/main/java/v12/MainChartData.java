@@ -26,6 +26,7 @@ import io.swagger.client.ApiException;
 import util.Consts;
 import util.FileUtil;
 import util.GlobalConfigUtil;
+import util.StringUtil;
 import v9_2.LockedAuthorizedToken_r4;
 
 /**
@@ -155,16 +156,10 @@ public class MainChartData {
 		}
 
 		// 価格を切り出す
-		String str2 = "\"CurrentPrice\":";
-		int idx2 = message.indexOf(str2);
-		if (idx2 < 0) {
+		String price = StringUtil.parseString(message, "\"CurrentPrice\":", ",");
+		if (price == null) {
 			return null;
 		}
-		int idx3 = message.indexOf(",", idx2 + str2.length());
-		if (idx3 < 0) {
-			return null;
-		}
-		String price = message.substring(idx2 + str2.length(), idx3);
 		
 		// バッファリングされた最新の価格と同じ場合はスキップする
 		if (price.equals(lastPrice)) {
@@ -173,16 +168,7 @@ public class MainChartData {
 		lastPrice = price;
 		
 		// 日時を切り出す
-		String str4 = "\"CurrentPriceTime\":\"";
-		int idx4 = message.indexOf(str4);
-		if (idx4 < 0) {
-			return null;
-		}
-		int idx5 = message.indexOf("\"", idx4 + str4.length());
-		if (idx5 < 0) {
-			return null;
-		}
-		String date = message.substring(idx4 + str4.length(), idx5);
+		String date = StringUtil.parseString(message, "\"CurrentPriceTime\":\"", "\"");
 		
 		// 日時から"T"と"+09:00"を取る
 		date = date.substring(0, 10) + " " + date.substring(11, 19);
