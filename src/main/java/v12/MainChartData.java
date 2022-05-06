@@ -150,9 +150,9 @@ public class MainChartData {
 			return null;
 		}
 
-		// 価格を切り出す
+		// 価格を切り出す。時間外は"CurrentPrice":nullのため、"null"が返る。
 		String price = StringUtil.parseString(message, "\"CurrentPrice\":", ",");
-		if (price == null) {
+		if (price == null || "null".equals(price)) {
 			return null;
 		}
 		
@@ -162,9 +162,12 @@ public class MainChartData {
 		}
 		lastPrice = price;
 		
-		// 日時を切り出す
+		// 日時を切り出す。時間外は"CurrentPriceTime":nullのため、見つからない。
 		String date = StringUtil.parseString(message, "\"CurrentPriceTime\":\"", "\"");
-		
+		if (date == null) {
+			return null;
+		}
+
 		// 日時から"T"と"+09:00"を取る
 		date = date.substring(0, 10) + " " + date.substring(11, 19);
 		
