@@ -165,6 +165,23 @@ public class StringUtil {
 	}
 
 	/**
+	 * 数値文字列を数値に変換する。
+	 * 
+	 * @param s 数値文字列。
+	 * @return 数値。
+	 */
+	public static double parseDouble(String s) {
+		if (s == null) {
+			return 0;
+		}
+		try {
+			return Double.parseDouble(s);
+		} catch (NumberFormatException e) {
+			return 0;
+		}
+	}
+
+	/**
 	 * 指定した文字以降を除外して、文字列を取得する。
 	 * 
 	 * @param s 文字列。
