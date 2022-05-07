@@ -24,6 +24,7 @@ import api.BoardBean;
 import api.RegisterEtcApi;
 import io.swagger.client.ApiException;
 import util.Consts;
+import util.DateTimeUtil;
 import util.FileUtil;
 import util.GlobalConfigUtil;
 import util.StringUtil;
@@ -130,7 +131,8 @@ public class MainChartData {
 						writeCnt++;
 					}
 				}
-				System.out.println("MainChartData.writeChartData(): bufList.size=" + bufList.size() + ", writeCnt=" + writeCnt);
+				String now = DateTimeUtil.nowToString();
+				System.out.println(now + " MainChartData.writeChartData(): bufList.size=" + bufList.size() + ", writeCnt=" + writeCnt);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -211,23 +213,27 @@ public class MainChartData {
 
 	@OnOpen
 	public void onOpen(Session session) {
-		System.out.println("onOpen:" + session);
+		String now = DateTimeUtil.nowToString();
+		System.out.println(now + " onOpen:" + session);
 	}
 
 	@OnMessage
 	public void onMessage(String message) {
-//		System.out.println("onMessge：" + message);
+//		String now = DateTimeUtil.nowToString();
+//		System.out.println(now + " onMessge：" + message);
 		addChartData(message);
 	}
 
 	@OnError
 	public void onError(Throwable th) {
-		System.out.println("onError：" + th.getMessage());
+		String now = DateTimeUtil.nowToString();
+		System.out.println(now + " onError：" + th.getMessage());
 	}
 
 	@OnClose
 	public void onClose(Session session) {
-		System.out.println("onClose:" + session);
+		String now = DateTimeUtil.nowToString();
+		System.out.println(now + " onClose:" + session);
 	}
 
 }
