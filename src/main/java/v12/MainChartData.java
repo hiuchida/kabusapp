@@ -118,10 +118,10 @@ public class MainChartData {
 	 * チャートデータファイルを書き込む。成功したらバッファをクリアする。メッセージの解析はスレッド同期せずに行う。
 	 */
 	private void writeChartData() {
-		List<String> bufList = getAndClearChartData();
-		if (bufList.size() > 0) {
-			int writeCnt = 0;
+		if (isExistsChartData()) {
 			try (PrintWriter pw = FileUtil.writer(DB_FILEPATH, FileUtil.UTF8, true)) {
+				int writeCnt = 0;
+				List<String> bufList = getAndClearChartData();
 				for (String s : bufList) {
 //					BoardBean bb = parseJson(s);
 //					System.out.println(bb);
@@ -134,7 +134,9 @@ public class MainChartData {
 				String now = DateTimeUtil.nowToString();
 				System.out.println(now + " MainChartData.writeChartData(): bufList.size=" + bufList.size() + ", writeCnt=" + writeCnt);
 			} catch (IOException e) {
-				e.printStackTrace();
+				String now = DateTimeUtil.nowToString();
+				System.out.println(now + " MainChartData.writeChartData(): ERROR " + e);
+//				e.printStackTrace();
 			}
 		}
 	}
@@ -195,6 +197,15 @@ public class MainChartData {
 	 */
 	private synchronized void addChartData(String message) {
 		dataList.add(message);
+	}
+
+	/**
+	 * 受信したメッセージがバッファに存在するか確認する。スレッド同期するため、単純な処理にする。
+	 * 
+	 * @return true:存在する、false:存在しない。
+	 */
+	private synchronized boolean isExistsChartData() {
+		return dataList.size() > 0;
 	}
 
 	/**
