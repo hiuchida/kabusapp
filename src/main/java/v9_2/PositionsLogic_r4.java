@@ -1,5 +1,7 @@
 package v9_2;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +29,10 @@ public class PositionsLogic_r4 {
 	 * 建玉情報を保存したファイルパス。存在しなければ生成される。
 	 */
 	private static final String TXT_FILEPATH = DIRPATH + "PositionsLogic_r4.txt";
+	/**
+	 * 建玉情報の削除情報を保存したファイルパス。存在しなければ生成される。
+	 */
+	private static final String DEL_FILEPATH = DIRPATH + "PositionsLogic_r4.del";
 	/**
 	 * 建玉情報ログのファイルパス。存在しなければ生成される。
 	 */
@@ -479,13 +485,18 @@ public class PositionsLogic_r4 {
 	 */
 	private void deletePositions() {
 		if (posKeySet.size() > 0) {
-			System.out.println("PositionsLogic_r4.deletePositions(): posKeySet.size=" + posKeySet.size());
-			for (String key : posKeySet) {
-				PosInfo pi = posMap.get(key);
-				String msg = "delete " + key + " " + pi.name;
-				System.out.println("  > " + msg);
-				FileUtil.printLog(LOG_FILEPATH, "deletePositions", msg);
-				posMap.remove(key);
+			try (PrintWriter pw = FileUtil.writer(DEL_FILEPATH, FileUtil.UTF8, true)) {
+				System.out.println("PositionsLogic_r4.deletePositions(): posKeySet.size=" + posKeySet.size());
+				for (String key : posKeySet) {
+					PosInfo pi = posMap.get(key);
+					FileUtil.printLogLine(pw, pi.toLineString());
+					String msg = "delete " + key + " " + pi.name;
+					System.out.println("  > deletePositions " + msg);
+					FileUtil.printLog(LOG_FILEPATH, "deletePositions", msg);
+					posMap.remove(key);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}

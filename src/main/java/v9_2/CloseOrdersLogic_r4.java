@@ -1,5 +1,7 @@
 package v9_2;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,10 @@ public class CloseOrdersLogic_r4 {
 	 * 返済注文情報を保存したファイルパス。存在しなければ生成される。
 	 */
 	private static final String TXT_FILEPATH = DIRPATH + "CloseOrdersLogic_r4.txt";
+	/**
+	 * 返済注文情報の削除情報を保存したファイルパス。存在しなければ生成される。
+	 */
+	private static final String DEL_FILEPATH = DIRPATH + "CloseOrdersLogic_r4.del";
 	/**
 	 * 返済注文情報ログのファイルパス。存在しなければ生成される。
 	 */
@@ -231,13 +237,19 @@ public class CloseOrdersLogic_r4 {
 	 */
 	private void deleteOrders() {
 		if (orderKeySet.size() > 0) {
-			System.out.println("CloseOrdersLogic_r4.deleteOrders(): orderKeySet.size=" + orderKeySet.size());
-			for (String key : orderKeySet) {
-				String val = orderMap.get(key);
-				String msg = "delete orderId=" + key + ", holdId=" + val;
-				System.out.println("  > " + msg);
-				FileUtil.printLog(LOG_FILEPATH, "deleteOrders", msg);
-				orderMap.remove(key);
+			try (PrintWriter pw = FileUtil.writer(DEL_FILEPATH, FileUtil.UTF8, true)) {
+				System.out.println("CloseOrdersLogic_r4.deleteOrders(): orderKeySet.size=" + orderKeySet.size());
+				for (String key : orderKeySet) {
+					String val = orderMap.get(key);
+					String line = StringUtil.joinTab(key, val);
+					FileUtil.printLogLine(pw, line);
+					String msg = "delete orderId=" + key + ", holdId=" + val;
+					System.out.println("  > deleteOrders " + msg);
+					FileUtil.printLog(LOG_FILEPATH, "deleteOrders", msg);
+					orderMap.remove(key);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
