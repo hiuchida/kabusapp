@@ -156,21 +156,21 @@ public class MainCalcIndicator2 {
 	private void printBollingerBands() {
 		for (int i = 0; i < chartList.size(); i++) {
 			ChartInfo ci = chartList.get(i);
-			long sqr12 = 0;
-			int sum12 = 0;
-			int cnt12 = 0;
+			long sqr = 0;
+			int sum = 0;
+			int cnt = 0;
 			System.out.printf("%s,%d,%d", ci.date, ci.closePrice, ci.flag);
 			if (i >= 11) {
 				for (int j = i; j > i - 12; j--) {
 					ChartInfo ci2 = chartList.get(j);
-					sqr12 += ci2.closePrice * ci2.closePrice;
-					sum12 += ci2.closePrice;
-					cnt12++;
+					sqr += ci2.closePrice * ci2.closePrice;
+					sum += ci2.closePrice;
+					cnt++;
 				}
-				double mean12 = (double) sum12 / cnt12;
-				double variance = (double)sqr12 / cnt12 - mean12 * mean12;
+				double mean = (double) sum / cnt;
+				double variance = (double)sqr / cnt - mean * mean;
 				double sd = Math.sqrt(variance);
-				System.out.printf(",%.2f,%.2f,%.2f,%.2f,%.2f,%.2f", sd, mean12 - 2 * sd, mean12 - sd, mean12, mean12 + sd, mean12 + 2 * sd);
+				System.out.printf(",%.2f,%.2f,%.2f,%.2f,%.2f,%.2f", sd, mean - 2 * sd, mean - sd, mean, mean + sd, mean + 2 * sd);
 			}
 			System.out.println();
 		}
