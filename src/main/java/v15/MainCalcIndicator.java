@@ -11,7 +11,7 @@ import util.FileUtil;
 import util.StringUtil;
 
 /**
- * テクニカル指標を計算するクラス。
+ * テクニカル指標(SMA6,SMA12,SMA24)を計算するクラス。
  */
 public class MainCalcIndicator {
 	/**
@@ -130,7 +130,7 @@ public class MainCalcIndicator {
 	}
 
 	/**
-	 * テクニカル指標を計算する。
+	 * テクニカル指標(SMA6,SMA12,SMA24)を計算する。
 	 */
 	public static void main(String[] args) {
 		new MainCalcIndicator().execute();
