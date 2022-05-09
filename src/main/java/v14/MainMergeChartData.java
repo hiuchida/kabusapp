@@ -46,7 +46,7 @@ public class MainMergeChartData {
 		 */
 		public int closePrice;
 		/**
-		 * データフラグ。0:データなし、1:4本値のデータ、2:PUSH APIで取得したデータ。
+		 * データフラグ。0:データなし、1:4本値のデータ、2:PUSH APIで取得したデータ、3:コピーされたデータ。
 		 */
 		public int flag;
 
