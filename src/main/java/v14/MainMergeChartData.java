@@ -195,7 +195,7 @@ public class MainMergeChartData {
 				continue;
 			}
 			String[] cols = StringUtil.splitComma(s);
-			if (cols.length != 2) {
+			if (cols.length < 2) {
 				System.out.println("Warning: SKIP cols.length=" + cols.length + ", line=" + s);
 				continue;
 			}
