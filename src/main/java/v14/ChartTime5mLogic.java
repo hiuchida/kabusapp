@@ -13,9 +13,9 @@ public class ChartTime5mLogic {
 	 */
 	private static String[] time2 = new String[90 + 1]; // 90 = 15 * 6
 	/**
-	 * 夜間(00:00-05:50,06:00,06:05)の時刻一覧。
+	 * 夜間(00:00-06:05)の時刻一覧。
 	 */
-	private static String[] time3 = new String[73 - 1 + 1]; // 73 = 12 * 6 + 1
+	private static String[] time3 = new String[73 + 1]; // 73 = 12 * 6 + 1
 
 	static {
 		init1();
@@ -58,7 +58,7 @@ public class ChartTime5mLogic {
 	}
 
 	/**
-	 * 夜間(00:00-05:50,06:00,06:05)の時刻一覧。
+	 * 夜間(00:00-06:05)の時刻一覧。
 	 */
 	private static void init3() {
 		int hour = 0;
@@ -67,9 +67,10 @@ public class ChartTime5mLogic {
 			String time = String.format("%02d:%02d:00", hour, min);
 			time3[i] = time;
 			min += 5;
-			if ("05:50:00".equals(time)) {
-				min += 5;
-			}
+// 05:55が無い日もあるが、リストに含める。
+//			if ("05:50:00".equals(time)) {
+//				min += 5;
+//			}
 			if (min >= 60) {
 				hour++;
 				min -= 60;
