@@ -165,7 +165,13 @@ public class MainChartData {
 			return null;
 		}
 		lastPrice = price;
-		
+
+		// 売買高を切り出す。時間外は"TradingVolume":nullのため、"null"が返る。
+		String volume = StringUtil.parseString(message, "\"TradingVolume\":", ",");
+		if (volume == null || "null".equals(volume)) {
+			return null;
+		}
+
 		// 日時を切り出す。時間外は"CurrentPriceTime":nullのため、見つからない。
 		String date = StringUtil.parseString(message, "\"CurrentPriceTime\":\"", "\"");
 		if (date == null) {
@@ -175,7 +181,7 @@ public class MainChartData {
 		// 日時から"T"と"+09:00"を取る
 		date = date.substring(0, 10) + " " + date.substring(11, 19);
 		
-		return date + "," + price;
+		return date + "," + price + "," + volume;
 	}
 
 	/**
