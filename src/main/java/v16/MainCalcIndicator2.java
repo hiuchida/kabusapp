@@ -154,13 +154,41 @@ public class MainCalcIndicator2 {
 	 * ボリンジャーバンド(12本)を表示する。
 	 */
 	private void printBollingerBands() {
+		long sqr = 0;
+		int sum = 0;
+		int cnt = 0;
 		for (int i = 0; i < chartList.size(); i++) {
 			ChartInfo ci = chartList.get(i);
-			long sqr = 0;
-			int sum = 0;
-			int cnt = 0;
+			System.out.printf("%s,%d,%d", ci.date, ci.closePrice, ci.flag);
+			int price = ci.closePrice;
+			if (cnt < 12) {
+				sqr += price * price;
+				sum += price;
+				cnt++;
+			} else {
+				int p_12 = chartList.get(i - 12).closePrice;
+				sqr += price * price - p_12 * p_12;
+				sum += price - p_12;
+			}
+			if (cnt == 12) {
+				double mean = (double) sum / cnt;
+				double variance = (double)sqr / cnt - mean * mean;
+				double sd = Math.sqrt(variance);
+				System.out.printf(",%.2f,%.2f,%.2f,%.2f,%.2f,%.2f", sd, mean - 2 * sd, mean - sd, mean, mean + sd, mean + 2 * sd);
+			}
+			System.out.println();
+		}
+	}
+/*
+	// 2重ループ
+	private void printBollingerBands() {
+		for (int i = 0; i < chartList.size(); i++) {
+			ChartInfo ci = chartList.get(i);
 			System.out.printf("%s,%d,%d", ci.date, ci.closePrice, ci.flag);
 			if (i >= 11) {
+				long sqr = 0;
+				int sum = 0;
+				int cnt = 0;
 				for (int j = i; j > i - 12; j--) {
 					ChartInfo ci2 = chartList.get(j);
 					sqr += ci2.closePrice * ci2.closePrice;
@@ -175,6 +203,7 @@ public class MainCalcIndicator2 {
 			System.out.println();
 		}
 	}
+*/
 
 	/**
 	 * マージしたチャートデータを読み込む。
