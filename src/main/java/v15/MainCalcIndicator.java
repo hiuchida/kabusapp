@@ -193,6 +193,46 @@ public class MainCalcIndicator {
 			System.out.println();
 		}
 	}
+/*
+	// 2重ループ
+	private void printSma() {
+		for (int i = 0; i < chartList.size(); i++) {
+			ChartInfo ci = chartList.get(i);
+			System.out.printf("%s,%d,%d", ci.date, ci.closePrice, ci.flag);
+			if (i >= 5) {
+				int sum = 0;
+				int cnt = 0;
+				for (int j = i; j > i - 6; j--) {
+					ChartInfo ci2 = chartList.get(j);
+					sum += ci2.closePrice;
+					cnt++;
+				}
+				System.out.printf(",%.2f", ((double) sum / cnt));
+			}
+			if (i >= 11) {
+				int sum = 0;
+				int cnt = 0;
+				for (int j = i; j > i - 12; j--) {
+					ChartInfo ci2 = chartList.get(j);
+					sum += ci2.closePrice;
+					cnt++;
+				}
+				System.out.printf(",%.2f", ((double) sum / cnt));
+			}
+			if (i >= 23) {
+				int sum = 0;
+				int cnt = 0;
+				for (int j = i; j > i - 24; j--) {
+					ChartInfo ci2 = chartList.get(j);
+					sum += ci2.closePrice;
+					cnt++;
+				}
+				System.out.printf(",%.2f", ((double) sum / cnt));
+			}
+			System.out.println();
+		}
+	}
+*/
 
 	/**
 	 * マージしたチャートデータを読み込む。
