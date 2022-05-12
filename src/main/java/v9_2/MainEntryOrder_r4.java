@@ -135,9 +135,9 @@ public class MainEntryOrder_r4 {
 		initConfig();
 		refreshOrders();
 		List<OrderInfo> entryList = entryOrdersLogic.execute();
+		openOrder();
 		int exchange = ExchangeUtil.now();
 		if (exchange > 0) {
-			openOrder(exchange);
 			for (OrderInfo oi : entryList) {
 				if (oi.state == OrderInfo.STATE_NOT_ORDER) {
 					sendEntryOrder(oi, exchange);
@@ -151,10 +151,9 @@ public class MainEntryOrder_r4 {
 	/**
 	 * 新規注文を実行する。
 	 * 
-	 * @param exchange 市場コード(Exchange)。
 	 * @throws ApiException 
 	 */
-	private void openOrder(int exchange) throws ApiException {
+	private void openOrder() throws ApiException {
 		int curPrice = boardLogic.getCurPrice(SYMBOL + "@2");
 		for (String key : orderMap.keySet()) {
 			// Price,Side,Qty
