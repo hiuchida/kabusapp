@@ -292,10 +292,10 @@ public class EntryOrdersLogic_r4 {
 	 * @throws ApiException
 	 */
 	public List<OrderInfo> execute() throws ApiException {
-		posLogic.execute();
 		readOrders();
 		List<OrdersSuccess> response = ordersApi.get();
 		System.out.println("EntryOrdersLogic_r4.execute(): response.size=" + response.size());
+		posLogic.execute();
 		for (int i = 0; i < response.size(); i++) {
 			OrdersSuccess order = response.get(i);
 			String orderId = order.getID();

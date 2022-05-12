@@ -133,7 +133,6 @@ public class MainEntryOrder_r4 {
 	public void execute() throws ApiException {
 		sendMailUtil.deleteMailFile();
 		initConfig();
-		refreshOrders();
 		List<OrderInfo> entryList = entryOrdersLogic.execute();
 		openOrder();
 		int exchange = ExchangeUtil.now();
@@ -158,6 +157,7 @@ public class MainEntryOrder_r4 {
 		if (curPrice == 0) {
 			return;
 		}
+		posLogic.execute();
 		for (String key : orderMap.keySet()) {
 			// Price,Side,Qty
 			// 26745,S,1
@@ -457,22 +457,6 @@ public class MainEntryOrder_r4 {
 			lines.add("");
 		}
 		FileUtil.writeAllLines(TXT_FILEPATH, lines);
-	}
-
-	/**
-	 * 注文情報を再取得する。
-	 */
-	private void refreshOrders() {
-		try {
-			posLogic.execute();
-		} catch (ApiException e) {
-			e.printStackTrace();
-		}
-		try {
-			entryOrdersLogic.execute();
-		} catch (ApiException e) {
-			e.printStackTrace();
-		}
 	}
 
 }
