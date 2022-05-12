@@ -90,6 +90,10 @@ public class PositionsLogic_r4 {
 		 * 約定数量情報のリスト。
 		 */
 		public List<ExecutionInfo> executionList;
+		/**
+		 * 約定数量情報の文字列（削除ログ用）。
+		 */
+		public String executionStr;
 
 		/**
 		 * コンストラクタ（新規作成）。
@@ -106,6 +110,7 @@ public class PositionsLogic_r4 {
 			this.side = side;
 			this.createDate = System.currentTimeMillis();
 			this.executionList = new ArrayList<>();
+			this.executionStr = "";
 		}
 
 		/**
@@ -126,6 +131,7 @@ public class PositionsLogic_r4 {
 			this.createDate = StringUtil.parseLong(cols[i++]);
 			this.updateDate = StringUtil.parseLong(cols[i++]);
 			this.executionList = new ArrayList<>();
+			this.executionStr = cols[i++];
 		}
 
 		/**
@@ -199,6 +205,20 @@ public class PositionsLogic_r4 {
 		}
 
 		/**
+		 * 約定数量情報のリストから文字列を設定する。
+		 */
+		public void setExecutionStr() {
+			StringBuilder sb = new StringBuilder();
+			for (int j = 0; j < executionList.size(); j++) {
+				if (j > 0) {
+					sb.append(",");
+				}
+				sb.append(executionList.get(j));
+			}
+			this.executionStr = sb.toString();
+		}
+
+		/**
 		 * 建玉情報ファイルのレコード文字列を生成する。
 		 * 
 		 * @return レコード文字列。
@@ -216,14 +236,7 @@ public class PositionsLogic_r4 {
 			sa[i++] = "" + triggerPrice;
 			sa[i++] = createDate + "(" + DateTimeUtil.toString(createDate) + ")";
 			sa[i++] = updateDate + "(" + DateTimeUtil.toString(updateDate) + ")";
-			StringBuilder sb = new StringBuilder();
-			for (int j = 0; j < executionList.size(); j++) {
-				if (j > 0) {
-					sb.append(",");
-				}
-				sb.append(executionList.get(j));
-			}
-			sa[i++] = sb.toString();
+			sa[i++] = executionStr;
 			String val = StringUtil.joinTab(sa);
 			return val;
 		}
@@ -512,6 +525,7 @@ public class PositionsLogic_r4 {
 		list.addAll(posMap.values());
 		Collections.sort(list);
 		for (PosInfo pi : list) {
+			pi.setExecutionStr();
 			lines.add(pi.toLineString());
 			String key = pi.getKey();
 			System.out.println("  " + key + ": " + pi);
