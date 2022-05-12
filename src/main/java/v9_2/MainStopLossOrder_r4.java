@@ -23,6 +23,14 @@ import v9_2.PositionsLogic_r4.PosInfo;
  */
 public class MainStopLossOrder_r4 {
 	/**
+	 * API実行クラス。
+	 */
+	private static Class<?> clazz = MethodHandles.lookup().lookupClass();
+	/**
+	 * ストップロス注文を発注する含み損。
+	 */
+	private static final int STOP_LOSS_ORDER_START = GlobalConfigUtil.getInt("StopLossOrderStart", -500);
+	/**
 	 * 建玉の価格からの値幅。
 	 */
 	private static final int STOP_LOSS_PRICE_RANGE = GlobalConfigUtil.getInt("StopLossPriceRange", 1000);
@@ -47,7 +55,7 @@ public class MainStopLossOrder_r4 {
 	 * @throws ApiException
 	 */
 	public static void main(String[] args) throws ApiException {
-		ApiErrorLog.init(MethodHandles.lookup().lookupClass(), Consts.VERSION);
+		ApiErrorLog.init(clazz, Consts.VERSION);
 		String X_API_KEY = LockedAuthorizedToken_r4.lockToken();
 		try {
 			new MainStopLossOrder_r4(X_API_KEY).execute();
@@ -95,6 +103,15 @@ public class MainStopLossOrder_r4 {
 		int exchange = ExchangeUtil.now();
 		if (exchange > 0) {
 			for (PosInfo pi : posList) {
+				int sign = StringUtil.sign(pi.side);
+				int profit = (pi.curPrice - pi.price) * sign;
+				if (profit >= STOP_LOSS_ORDER_START) {
+					String msg = "skip price=" + pi.price + StringUtil.sideStr(pi.side)
+							+ ", " + profit + " >= " + STOP_LOSS_ORDER_START;
+					System.out.println("  > execute " + msg);
+					FileUtil.printLog(LOG_FILEPATH, "execute", msg);
+					continue;
+				}
 				for (ExecutionInfo ei : pi.executionList) {
 					String holdId = ei.executionId;
 					if ((ei.leavesQty - ei.holdQty) <= 0) {
