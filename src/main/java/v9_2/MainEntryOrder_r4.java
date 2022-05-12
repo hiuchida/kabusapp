@@ -155,6 +155,9 @@ public class MainEntryOrder_r4 {
 	 */
 	private void openOrder() throws ApiException {
 		int curPrice = boardLogic.getCurPrice(SYMBOL + "@2");
+		if (curPrice == 0) {
+			return;
+		}
 		for (String key : orderMap.keySet()) {
 			// Price,Side,Qty
 			// 26745,S,1
