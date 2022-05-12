@@ -334,7 +334,7 @@ public class PositionsLogic_r4 {
 			int curPrice = (int) (double) pos.getCurrentPrice();
 			Integer type = pos.getSecurityType();
 			if (type != null && type == 901 && qty != 0 && curPrice != 0) {
-				int profit = ((curPrice - price) * sign);
+				int profit = (curPrice - price) * sign;
 				String key = PosInfo.getKey(code, price, side);
 				System.out.println("  " + StringUtil.index(i + 1) + ": " + key + " " + type + " " + code + " " + name
 						+ " " + qty + " " + price + " " + StringUtil.sideStr(side) + " " + curPrice + " " + profit + " "
