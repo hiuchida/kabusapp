@@ -339,16 +339,17 @@ public class PositionsLogic_r4 {
 			String id = pos.getExecutionID();
 			String code = pos.getSymbol();
 			String name = pos.getSymbolName();
+			int price = (int) (double) pos.getPrice();
 			String side = pos.getSide();
+			String key = PosInfo.getKey(code, price, side);
+			posKeySet.remove(key);
 			int sign = StringUtil.sign(side);
 			ExecutionInfo ei = new ExecutionInfo(id, pos.getLeavesQty(), pos.getHoldQty());
 			int qty = (int) (sign * ei.leavesQty);
-			int price = (int) (double) pos.getPrice();
 			int curPrice = (int) (double) pos.getCurrentPrice();
 			Integer type = pos.getSecurityType();
 			if (type != null && type == 901 && qty != 0 && curPrice != 0) {
 				int profit = (curPrice - price) * sign;
-				String key = PosInfo.getKey(code, price, side);
 				System.out.println("  " + StringUtil.index(i + 1) + ": " + key + " " + type + " " + code + " " + name
 						+ " " + qty + " " + price + " " + StringUtil.sideStr(side) + " " + curPrice + " " + profit + " "
 						+ ei);
@@ -384,7 +385,6 @@ public class PositionsLogic_r4 {
 				pi.executionList.add(ei);
 				pi.curPrice = curPrice;
 				pi.updateDate = System.currentTimeMillis();
-				posKeySet.remove(key);
 			} else {
 				System.out.println("  " + StringUtil.index(i + 1) + ": SKIP " + type + " " + code + " " + name + " "
 						+ qty + " " + price + " " + StringUtil.sideStr(side) + " " + curPrice + " " + ei);
