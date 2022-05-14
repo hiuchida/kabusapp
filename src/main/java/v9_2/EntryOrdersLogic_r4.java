@@ -87,15 +87,15 @@ public class EntryOrdersLogic_r4 {
 		 */
 		public static final int STATE_CLOSE = 7;
 		/**
-		 * 注文情報から削除済（終了）。
+		 * 注文情報から論理削除済（終了）。
 		 */
 		public static final int STATE_FINISH_DELETE = 95;
 		/**
-		 * 注文情報から削除済（キャンセル）。
+		 * 注文情報から論理削除済（キャンセル）。
 		 */
 		public static final int STATE_CANCEL_DELETE = 96;
 		/**
-		 * 注文情報から削除済（返済）。
+		 * 注文情報から論理削除済（返済）。
 		 */
 		public static final int STATE_CLOSE_DELETE = 97;
 		/**
