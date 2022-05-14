@@ -1,5 +1,7 @@
 package v9_2;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +37,10 @@ public class EntryOrdersLogic_r4 {
 	 * 新規注文情報を保存したファイルパス。事前に準備し、uniqIdが振られて更新される。
 	 */
 	private static final String TXT_FILEPATH = DIRPATH + "EntryOrdersLogic_r4.txt";
+	/**
+	 * 新規注文情報の削除情報を保存したファイルパス。存在しなければ生成される。
+	 */
+	private static final String DEL_FILEPATH = DIRPATH + "EntryOrdersLogic_r4.del";
 	/**
 	 * 新規注文ログのファイルパス。存在しなければ生成される。
 	 */
@@ -500,9 +506,10 @@ public class EntryOrdersLogic_r4 {
 	}
 
 	/**
-	 * 終了済の注文を論理削除する。
+	 * 終了済の注文を論理削除する。完了済の注文を物理削除する。
 	 */
 	private void deleteOrders() {
+		List<String> delList = new ArrayList<>();
 		if (orderKeySet.size() > 0) {
 			System.out.println("EntryOrdersLogic_r4.deleteOrders(): orderKeySet.size=" + orderKeySet.size());
 			for (String key : orderKeySet) {
@@ -524,6 +531,8 @@ public class EntryOrdersLogic_r4 {
 					oi.state = OrderInfo.STATE_CANCEL_DELETE;
 				} else if (oi.state == OrderInfo.STATE_CLOSE) {
 					oi.state = OrderInfo.STATE_CLOSE_DELETE;
+				} else if (oi.state == OrderInfo.STATE_CANCEL_DELETE || oi.state == OrderInfo.STATE_CLOSE_DELETE) {
+					delList.add(key);
 				} else {
 					continue;
 				}
@@ -532,6 +541,22 @@ public class EntryOrdersLogic_r4 {
 					System.out.println("  > deleteOrders " + msg);
 					FileUtil.printLog(LOG_FILEPATH, "deleteOrders", msg);
 				}
+			}
+		}
+		if (delList.size() > 0) {
+			try (PrintWriter pw = FileUtil.writer(DEL_FILEPATH, FileUtil.UTF8, true)) {
+				System.out.println("EntryOrdersLogic_r4.deleteOrders(): delList.size=" + delList.size());
+				for (String key : delList) {
+					OrderInfo oi = orderMap.get(key);
+					FileUtil.printLogLine(pw, oi.toLineString());
+					String msg = "delete " + key + ": " + oi;
+					System.out.println("  > deleteOrders " + msg);
+					FileUtil.printLog(LOG_FILEPATH, "deleteOrders", msg);
+					orderMap.remove(key);
+					idMap.remove(oi.orderId);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
