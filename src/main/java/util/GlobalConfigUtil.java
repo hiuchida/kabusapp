@@ -40,6 +40,9 @@ public class GlobalConfigUtil {
 		System.out.println("--- " + CFG_FILEPATH + " ---");
 		System.out.println("GlobalConfigUtil.readConfig(): lines.size=" + lines.size());
 		for (String s : lines) {
+			if (s.length() == 0) {
+				continue;
+			}
 			if (s.startsWith("#")) {
 				continue;
 			}

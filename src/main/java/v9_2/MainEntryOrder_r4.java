@@ -392,6 +392,9 @@ public class MainEntryOrder_r4 {
 		System.out.println("--- " + CFG_FILEPATH + " ---");
 		System.out.println("MainEntryOrder_r4.readConfig(): lines.size=" + lines.size());
 		for (String s : lines) {
+			if (s.length() == 0) {
+				continue;
+			}
 			if (s.startsWith("#")) {
 				continue;
 			}
@@ -412,6 +415,9 @@ public class MainEntryOrder_r4 {
 		orderMap = new TreeMap<>();
 		List<String> lines = FileUtil.readAllLines(TXT_FILEPATH);
 		for (String s : lines) {
+			if (s.length() == 0) {
+				continue;
+			}
 			if (s.startsWith("#")) {
 				continue;
 			}
