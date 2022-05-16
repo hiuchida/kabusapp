@@ -152,17 +152,24 @@ public class MainStopLossOrder_r4 {
 			pdl.add(pd);
 		}
 		body.setClosePositions(pdl);
-		body.setFrontOrderType(30); // 逆指値
-		body.setPrice(0.0); // 逆指値時0円
 		body.setExpireDay(0); // 当日
-		RequestSendOrderDerivFutureReverseLimitOrder rlo = new RequestSendOrderDerivFutureReverseLimitOrder();
-		{
-			rlo.setTriggerPrice((double) triggerPrice);
-			rlo.setUnderOver(StringUtil.underOver(body.getSide()));
-			rlo.setAfterHitOrderType(1); // 成行
-			rlo.setAfterHitPrice(0.0); // 成行時0円
+		if (triggerPrice == 0) {
+			// 逆指値注文がエラーとなる価格の場合は、成行注文する
+			body.setFrontOrderType(120); // 成行
+			body.setPrice(0.0); // 成行時0円
+			triggerPrice = pi.curPrice;
+		} else {
+			body.setFrontOrderType(30); // 逆指値
+			body.setPrice(0.0); // 逆指値時0円
+			RequestSendOrderDerivFutureReverseLimitOrder rlo = new RequestSendOrderDerivFutureReverseLimitOrder();
+			{
+				rlo.setTriggerPrice((double) triggerPrice);
+				rlo.setUnderOver(StringUtil.underOver(body.getSide()));
+				rlo.setAfterHitOrderType(1); // 成行
+				rlo.setAfterHitPrice(0.0); // 成行時0円
+			}
+			body.setReverseLimitOrder(rlo);
 		}
-		body.setReverseLimitOrder(rlo);
 		
 		int sign = StringUtil.sign(pi.side);
 		int delta = (triggerPrice - pi.price) * sign;
@@ -205,6 +212,11 @@ public class MainStopLossOrder_r4 {
 	 */
 	private int triggerPrice(PosInfo pi) {
 		int sign = StringUtil.sign(pi.side);
+		int profit = (pi.curPrice - pi.price) * sign;
+		if (profit <= -1 * STOP_LOSS_PRICE_RANGE) {
+			// 逆指値注文がエラーとなる価格の場合は、成行注文する
+			return 0;
+		}
 		int price = pi.price + -1 * STOP_LOSS_PRICE_RANGE * sign;
 		return price;
 	}
