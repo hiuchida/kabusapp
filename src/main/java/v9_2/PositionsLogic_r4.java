@@ -342,30 +342,37 @@ public class PositionsLogic_r4 {
 			int price = (int) (double) pos.getPrice();
 			String side = pos.getSide();
 			String key = PosInfo.getKey(code, price, side);
-			posKeySet.remove(key);
 			int sign = StringUtil.sign(side);
 			ExecutionInfo ei = new ExecutionInfo(id, pos.getLeavesQty(), pos.getHoldQty());
 			int qty = (int) (sign * ei.leavesQty);
 			int curPrice = (int) (double) pos.getCurrentPrice();
 			Integer type = pos.getSecurityType();
-			if (type != null && type == 901 && qty != 0 && curPrice != 0) {
+			if (type == null || type != 901 || qty == 0) {
+				String msg = "get " + StringUtil.index(i + 1) + ": SKIP " + type + " " + code + " " + name + " "
+						+ qty + " " + price + " " + StringUtil.sideStr(side) + " " + curPrice + " " + ei;
+				System.out.println("  > execute " + msg);
+				continue;
+			}
+			posKeySet.remove(key);
+			if (curPrice != 0) {
 				int profit = (curPrice - price) * sign;
-				System.out.println("  " + StringUtil.index(i + 1) + ": " + key + " " + type + " " + code + " " + name
+				String msg = "get " + StringUtil.index(i + 1) + ": " + key + " " + type + " " + code + " " + name
 						+ " " + qty + " " + price + " " + StringUtil.sideStr(side) + " " + curPrice + " " + profit + " "
-						+ ei);
+						+ ei;
+				System.out.println("  > execute " + msg);
 				PosInfo pi = posMap.get(key);
 				if (pi == null) {
 					pi = new PosInfo(code, name, price, side);
 					pi.profitHigh = profit;
 					pi.profitLow = profit;
 					posMap.put(key, pi);
-					String msg = "create " + key + " " + name + ": curPrice=" + curPrice + " profit=" + profit;
+					msg = "create " + key + " " + name + ": curPrice=" + curPrice + " profit=" + profit;
 					System.out.println("  > " + msg);
 					FileUtil.printLog(LOG_FILEPATH, "execute", msg);
 				} else {
 					if (pi.profitHigh < profit) {
 						int delta = profit - pi.profitHigh;
-						String msg = "update " + key + " " + name + ": curPrice=" + curPrice + " profitHighDelta="
+						msg = "update " + key + " " + name + ": curPrice=" + curPrice + " profitHighDelta="
 								+ delta + " (" + profit + " <- " + pi.profitHigh + ")";
 						System.out.println("  > " + msg);
 						FileUtil.printLog(LOG_FILEPATH, "execute", msg);
@@ -375,7 +382,7 @@ public class PositionsLogic_r4 {
 					// 本来はhigh,lowのどちらかしか更新されないはずだが、念のため両方チェック
 					if (profit < pi.profitLow) {
 						int delta = profit - pi.profitLow;
-						String msg = "update " + key + " " + name + ": curPrice=" + curPrice + " profitLowDelta="
+						msg = "update " + key + " " + name + ": curPrice=" + curPrice + " profitLowDelta="
 								+ delta + " (" + profit + " <- " + pi.profitLow + ")";
 						System.out.println("  > " + msg);
 						FileUtil.printLog(LOG_FILEPATH, "execute", msg);
@@ -385,9 +392,6 @@ public class PositionsLogic_r4 {
 				pi.executionList.add(ei);
 				pi.curPrice = curPrice;
 				pi.updateDate = System.currentTimeMillis();
-			} else {
-				System.out.println("  " + StringUtil.index(i + 1) + ": SKIP " + type + " " + code + " " + name + " "
-						+ qty + " " + price + " " + StringUtil.sideStr(side) + " " + curPrice + " " + ei);
 			}
 		}
 		deletePositions();
