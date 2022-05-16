@@ -76,9 +76,9 @@ public class MainChartData {
 	private List<String> dataList = new ArrayList<>();
 
 	/**
-	 * バッファリングされた最新の価格。
+	 * バッファリングされた最新の売買高。
 	 */
-	private String lastPrice = "";
+	private String lastVolume = "";
 
 	/**
 	 * コンストラクタ。
@@ -160,17 +160,17 @@ public class MainChartData {
 			return null;
 		}
 		
-		// バッファリングされた最新の価格と同じ場合はスキップする
-		if (price.equals(lastPrice)) {
-			return null;
-		}
-		lastPrice = price;
-
 		// 売買高を切り出す。時間外は"TradingVolume":nullのため、"null"が返る。
 		String volume = StringUtil.parseString(message, "\"TradingVolume\":", ",");
 		if (volume == null || "null".equals(volume)) {
 			return null;
 		}
+
+		// バッファリングされた最新の売買高と同じ場合はスキップする
+		if (volume.equals(lastVolume)) {
+			return null;
+		}
+		lastVolume = volume;
 
 		// 日時を切り出す。時間外は"CurrentPriceTime":nullのため、見つからない。
 		String date = StringUtil.parseString(message, "\"CurrentPriceTime\":\"", "\"");
