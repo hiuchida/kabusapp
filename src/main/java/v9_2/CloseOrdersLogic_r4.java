@@ -45,7 +45,86 @@ public class CloseOrdersLogic_r4 {
 	/**
 	 * 返済注文情報ファイルのカラム数。
 	 */
-	public static final int MAX_COLS = 2;
+	public static final int MAX_COLS = 3;
+
+	/**
+	 * 返済注文情報クラス。
+	 */
+	public static class CloseInfo {
+		/**
+		 * 注文番号(ID)。
+		 */
+		public String orderId;
+		/**
+		 * 約定番号（ExecutionID）。
+		 */
+		public String executionId;
+		/**
+		 * コメント。
+		 */
+		public String comment;
+
+		/**
+		 * コンストラクタ。
+		 * 
+		 * @param orderId     注文番号(ID)。
+		 * @param executionId 約定番号（ExecutionID）。
+		 * @param comment     コメント。
+		 */
+		public CloseInfo(String orderId, String executionId, String comment) {
+			this.orderId = orderId;
+			this.executionId = executionId;
+			this.comment = comment;
+		}
+
+		/**
+		 * 返済注文情報ファイルのヘッダ文字列を生成する。
+		 * 
+		 * @return ヘッダ文字列。
+		 */
+		public static String toHeaderString() {
+			String[] sa = new String[3];
+			int i = 0;
+			sa[i++] = "orderId           ";
+			sa[i++] = "executionId";
+			sa[i++] = "comment";
+			String val = "# " + StringUtil.joinTab(sa);
+			return val;
+		}
+
+		/**
+		 * インスタンスの主キー(orderId)を取得する。
+		 * 
+		 * @return 主キー。
+		 */
+		public String getKey() {
+			return orderId;
+		}
+
+		/**
+		 * 注文依頼情報ファイルのレコード文字列を生成する。
+		 * 
+		 * @return レコード文字列。
+		 */
+		public String toLineString() {
+			String[] sa = new String[3];
+			int i = 0;
+			sa[i++] = orderId;
+			sa[i++] = executionId;
+			sa[i++] = comment;
+			String val = StringUtil.joinTab(sa);
+			return val;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append(orderId);
+			sb.append(": ").append(executionId);
+			sb.append(" (").append(comment).append(")");
+			return sb.toString();
+		}
+	}
 
 	/**
 	 * 注文約定照会API。
@@ -65,7 +144,7 @@ public class CloseOrdersLogic_r4 {
 	/**
 	 * 返済注文約定情報のマップ。
 	 */
-	private Map<String, String> orderMap;
+	private Map<String, CloseInfo> orderMap;
 	/**
 	 * 削除対象の返済注文約定情報キーのセット。
 	 */
@@ -111,10 +190,10 @@ public class CloseOrdersLogic_r4 {
 			if (cashMargin != 3) { // 返済以外
 				continue;
 			}
-			String val = orderMap.get(orderId);
-			if (val == null) {
-				val = "?";
-				orderMap.put(orderId, val);
+			CloseInfo ci = orderMap.get(orderId);
+			if (ci == null) {
+				ci = new CloseInfo(orderId, "?", "# ?");
+				orderMap.put(orderId, ci);
 				String msg = "create " + orderId + " " + code + " " + name;
 				System.out.println("  > " + msg);
 				FileUtil.printLog(LOG_FILEPATH, "execute", msg);
@@ -134,8 +213,8 @@ public class CloseOrdersLogic_r4 {
 	 */
 	public String getOrderId(String exectionId) {
 		for (String key : orderMap.keySet()) {
-			String val = orderMap.get(key);
-			if (exectionId.equals(val)) {
+			CloseInfo ci = orderMap.get(key);
+			if (exectionId.equals(ci.executionId)) {
 				return key;
 			}
 		}
@@ -176,7 +255,7 @@ public class CloseOrdersLogic_r4 {
 		OrderSuccess response = sendoderFutureApi.post(body);
 		System.out.println(response);
         String orderId = response.getOrderId();
-        registerOrder(orderId, holdId);
+        registerOrder(orderId, holdId, msg);
         return orderId;
 	}
 
@@ -185,13 +264,15 @@ public class CloseOrdersLogic_r4 {
 	 * 
 	 * @param orderId 注文番号(ID)。
 	 * @param holdId  約定番号（ExecutionID）。
+	 * @param comment コメント。
 	 */
-	private void registerOrder(String orderId, String holdId) {
+	private void registerOrder(String orderId, String holdId, String comment) {
 		String msg = "orderId=" + orderId + ", holdId=" + holdId;
 		FileUtil.printLog(LOG_FILEPATH, "registerOrder", msg);
 		System.out.println("  > registerOrder " + msg);
 
-        orderMap.put(orderId, holdId);
+		CloseInfo ci = new CloseInfo(orderId, holdId, "# " + comment);
+        orderMap.put(orderId, ci);
 	}
 
 	/**
@@ -222,12 +303,15 @@ public class CloseOrdersLogic_r4 {
 				System.out.println("Warning SKIP cols.length=" + cols.length + ", line=" + s);
 				continue;
 			}
-			orderMap.put(cols[0], cols[1]);
-			orderKeySet.add(cols[0]);
+			CloseInfo ci = new CloseInfo(cols[0], cols[1], cols[2]);
+			String key = ci.getKey();
+			orderMap.put(key, ci);
+			orderKeySet.add(key);
 		}
 		System.out.println("CloseOrdersLogic_r4.readOrders(): orderMap.size=" + orderMap.size());
 		for (String key : orderMap.keySet()) {
-			String val = orderMap.get(key);
+			CloseInfo ci = orderMap.get(key);
+			String val = ci.executionId;
 			System.out.println("  " + key + ": " + val);
 		}
 	}
@@ -240,10 +324,10 @@ public class CloseOrdersLogic_r4 {
 			try (PrintWriter pw = FileUtil.writer(DEL_FILEPATH, FileUtil.UTF8, true)) {
 				System.out.println("CloseOrdersLogic_r4.deleteOrders(): orderKeySet.size=" + orderKeySet.size());
 				for (String key : orderKeySet) {
-					String val = orderMap.get(key);
-					String line = StringUtil.joinTab(key, val);
+					CloseInfo ci = orderMap.get(key);
+					String line = ci.toLineString();
 					FileUtil.printLogLine(pw, line);
-					String msg = "delete orderId=" + key + ", holdId=" + val;
+					String msg = "delete orderId=" + key + ", holdId=" + ci.executionId;
 					System.out.println("  > deleteOrders " + msg);
 					FileUtil.printLog(LOG_FILEPATH, "deleteOrders", msg);
 					orderMap.remove(key);
@@ -260,12 +344,11 @@ public class CloseOrdersLogic_r4 {
 	public void writeOrders() {
 		System.out.println("CloseOrdersLogic_r4.writeOrders(): orderMap.size=" + orderMap.size());
 		List<String> lines = new ArrayList<>();
-		String line = StringUtil.joinTab("orderId           ", "executionId");
-		lines.add("# " + line);
+		lines.add(CloseInfo.toHeaderString());
 		for (String key : orderMap.keySet()) {
-			String val = orderMap.get(key);
-			line = StringUtil.joinTab(key, val);
-			lines.add(line);
+			CloseInfo ci = orderMap.get(key);
+			lines.add(ci.toLineString());
+			String val = ci.executionId;
 			System.out.println("  " + key + ": " + val);
 		}
 		FileUtil.writeAllLines(TXT_FILEPATH, lines);
