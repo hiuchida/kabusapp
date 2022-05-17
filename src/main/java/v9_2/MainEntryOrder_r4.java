@@ -13,6 +13,7 @@ import util.Consts;
 import util.ExchangeUtil;
 import util.FileUtil;
 import util.GlobalConfigUtil;
+import util.ScheduleUtil;
 import util.SendMailUtil;
 import util.StringUtil;
 import v9_2.EntryOrdersLogic_r4.OrderInfo;
@@ -132,6 +133,9 @@ public class MainEntryOrder_r4 {
 	 */
 	public void execute() throws ApiException {
 		sendMailUtil.deleteMailFile();
+		if (!ScheduleUtil.now()) {
+			return;
+		}
 		initConfig();
 		List<OrderInfo> entryList = entryOrdersLogic.execute();
 		openOrder();
