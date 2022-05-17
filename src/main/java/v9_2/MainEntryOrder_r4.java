@@ -214,10 +214,10 @@ public class MainEntryOrder_r4 {
 			return;
 		}
 		initConfig();
-		List<OrderInfo> entryList = entryOrdersLogic.execute();
 		openOrder();
 		int exchange = ExchangeUtil.now();
 		if (exchange > 0) {
+			List<OrderInfo> entryList = entryOrdersLogic.execute();
 			for (OrderInfo oi : entryList) {
 				if (oi.state == OrderInfo.STATE_NOT_ORDER) {
 					sendEntryOrder(oi, exchange);
@@ -256,6 +256,7 @@ public class MainEntryOrder_r4 {
 		if (curPrice == 0) {
 			return;
 		}
+		entryOrdersLogic.execute();
 		for (String key : orderMap.keySet()) {
 			// Price,Side,Qty
 			// 26745,S,1
