@@ -81,12 +81,18 @@ public class MainChartData {
 	private String lastVolume = "";
 
 	/**
+	 * メインスレッド。
+	 */
+	private Thread mainThread;
+
+	/**
 	 * コンストラクタ。
 	 * 
 	 * @param X_API_KEY 認証済TOKEN。
 	 */
 	public MainChartData(String X_API_KEY) {
 		this.registerEtcApi = new RegisterEtcApi(X_API_KEY);
+		this.mainThread = Thread.currentThread();
 	}
 
 	/**
@@ -100,11 +106,30 @@ public class MainChartData {
 		// WebSocket初期化
 		URI uri = URI.create(WEBSOCKET_URI);
 		WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-		Session session = container.connectToServer(this, uri);
+		final Session session = container.connectToServer(this, uri);
 		// 銘柄登録
 		registerEtcApi.put(SYMBOL, 2);
+		// シャットダウンハンドラ
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				try {
+					session.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				mainThread.interrupt();
+				try {
+					mainThread.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				String now = DateTimeUtil.nowToString();
+				System.out.println(String.format("%s [%d] ShutdownHook: Done", now, Thread.currentThread().getId()));
+				System.out.flush();
+			}
+		});
 		// イベントループ
-		while (true) {
+		while (session.isOpen()) {
 			try {
 				Thread.sleep(10 * 1000);
 			} catch (InterruptedException e) {
@@ -112,6 +137,9 @@ public class MainChartData {
 			}
 			writeChartData();
 		}
+		String now = DateTimeUtil.nowToString();
+		System.out.println(String.format("%s [%d] MainChartData.execute: Done", now, Thread.currentThread().getId()));
+		System.out.flush();
 	}
 
 	/**
@@ -132,10 +160,12 @@ public class MainChartData {
 					}
 				}
 				String now = DateTimeUtil.nowToString();
-				System.out.println(now + " MainChartData.writeChartData(): bufList.size=" + bufList.size() + ", writeCnt=" + writeCnt);
+				System.out.println(String.format("%s [%d] MainChartData.writeChartData(): bufList.size=%d, writeCnt=%d", now, Thread.currentThread().getId(), bufList.size(), writeCnt));
+				System.out.flush();
 			} catch (IOException e) {
 				String now = DateTimeUtil.nowToString();
-				System.out.println(now + " MainChartData.writeChartData(): ERROR " + e);
+				System.out.println(String.format("%s [%d] MainChartData.writeChartData(): ERROR %s", now, Thread.currentThread().getId(), e.toString()));
+				System.out.flush();
 //				e.printStackTrace();
 			}
 		}
@@ -231,26 +261,30 @@ public class MainChartData {
 	@OnOpen
 	public void onOpen(Session session) {
 		String now = DateTimeUtil.nowToString();
-		System.out.println(now + " onOpen:" + session);
+		System.out.println(String.format("%s [%d] onOpen:%s", now, Thread.currentThread().getId(), session.toString()));
+		System.out.flush();
 	}
 
 	@OnMessage
 	public void onMessage(String message) {
 //		String now = DateTimeUtil.nowToString();
-//		System.out.println(now + " onMessge：" + message);
+//		System.out.println(String.format("%s [%d] onMessge:%s", now, Thread.currentThread().getId(), message));
+//		System.out.flush();
 		addChartData(message);
 	}
 
 	@OnError
 	public void onError(Throwable th) {
 		String now = DateTimeUtil.nowToString();
-		System.out.println(now + " onError：" + th.getMessage());
+		System.out.println(String.format("%s [%d] onError:%s", now, Thread.currentThread().getId(), th.getMessage()));
+		System.out.flush();
 	}
 
 	@OnClose
 	public void onClose(Session session) {
 		String now = DateTimeUtil.nowToString();
-		System.out.println(now + " onClose:" + session);
+		System.out.println(String.format("%s [%d] onClose:%s", now, Thread.currentThread().getId(), session.toString()));
+		System.out.flush();
 	}
 
 }
