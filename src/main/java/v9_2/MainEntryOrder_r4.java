@@ -173,11 +173,6 @@ public class MainEntryOrder_r4 {
 	private BoardLogic_r4 boardLogic;
 
 	/**
-	 * 建玉情報を管理する。
-	 */
-	private PositionsLogic_r4 posLogic;
-
-	/**
 	 * 新規注文情報を管理する。
 	 */
 	private EntryOrdersLogic_r4 entryOrdersLogic;
@@ -204,7 +199,6 @@ public class MainEntryOrder_r4 {
 	 */
 	public MainEntryOrder_r4(String X_API_KEY) {
 		this.boardLogic = new BoardLogic_r4(X_API_KEY);
-		this.posLogic = new PositionsLogic_r4(X_API_KEY);
 		this.entryOrdersLogic = new EntryOrdersLogic_r4(X_API_KEY);
 		this.sendMailUtil = new SendMailUtil(MAIL_FILEPATH);
 	}
@@ -262,7 +256,6 @@ public class MainEntryOrder_r4 {
 		if (curPrice == 0) {
 			return;
 		}
-		posLogic.execute();
 		for (String key : orderMap.keySet()) {
 			// Price,Side,Qty
 			// 26745,S,1
@@ -362,14 +355,15 @@ public class MainEntryOrder_r4 {
 		if (oi == null) {
 			return false;
 		}
-		if (oi.state < OrderInfo.STATE_FINISH) {
-			return false;
+		boolean rc = false;
+		switch (oi.state) {
+		case OrderInfo.STATE_CANCEL:
+		case OrderInfo.STATE_CLOSE:
+		case OrderInfo.STATE_CANCEL_DELETE:
+		case OrderInfo.STATE_CLOSE_DELETE:
+			rc = true;
 		}
-		if (oi.state == OrderInfo.STATE_CANCEL || oi.state == OrderInfo.STATE_CLOSE
-				|| oi.state == OrderInfo.STATE_CANCEL_DELETE || oi.state == OrderInfo.STATE_CLOSE_DELETE) {
-			return true;
-		}
-		return !posLogic.isValidExecutionId(oi.executionIds);
+		return rc;
 	}
 
 	/**
