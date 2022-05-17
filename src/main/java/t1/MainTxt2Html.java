@@ -61,7 +61,7 @@ public class MainTxt2Html {
 		String[] cols = StringUtil.splitTab(header);
 		list.add("<tr>");
 		for (String s : cols) {
-			list.add("<td>" + s.trim() + "</td>");
+			list.add("<th>" + s.trim() + "</th>");
 		}
 		list.add("</tr>");
 	}
