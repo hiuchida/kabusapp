@@ -1,12 +1,16 @@
-package util;
+package logic;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import util.DateTimeUtil;
+import util.FileUtil;
+import util.GlobalConfigUtil;
+
 /**
- * メール送信に関するユーティリティクラス。
+ * メール送信を管理するクラス。
  */
-public class SendMailUtil {
+public class SendMailLogic {
 	/**
 	 * メール送信先。
 	 */
@@ -31,7 +35,7 @@ public class SendMailUtil {
 	 * 
 	 * @param mailFilePath メール本文を保存したファイルパス。
 	 */
-	public SendMailUtil(String mailFilePath) {
+	public SendMailLogic(String mailFilePath) {
 		this.mailFilePath = mailFilePath;
 	}
 

@@ -9,11 +9,11 @@ import io.swagger.client.ApiException;
 import io.swagger.client.model.PositionsDeriv;
 import io.swagger.client.model.RequestSendOrderDerivFuture;
 import io.swagger.client.model.RequestSendOrderDerivFutureReverseLimitOrder;
+import logic.SendMailLogic;
 import util.Consts;
 import util.ExchangeUtil;
 import util.FileUtil;
 import util.GlobalConfigUtil;
-import util.SendMailUtil;
 import util.StringUtil;
 import v9_2.PositionsLogic_r4.ExecutionInfo;
 import v9_2.PositionsLogic_r4.PosInfo;
@@ -77,7 +77,7 @@ public class MainStopLossOrder_r4 {
 	/**
 	 * メール送信を管理する。
 	 */
-	private SendMailUtil sendMailUtil;
+	private SendMailLogic sendMailLogic;
 
 	/**
 	 * コンストラクタ。
@@ -87,7 +87,7 @@ public class MainStopLossOrder_r4 {
 	public MainStopLossOrder_r4(String X_API_KEY) {
 		this.closeOrderLogic = new CloseOrdersLogic_r4(X_API_KEY);
 		this.posLogic = new PositionsLogic_r4(X_API_KEY);
-		this.sendMailUtil = new SendMailUtil(MAIL_FILEPATH);
+		this.sendMailLogic = new SendMailLogic(MAIL_FILEPATH);
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class MainStopLossOrder_r4 {
 	 * @throws ApiException 
 	 */
 	public void execute() throws ApiException {
-		sendMailUtil.deleteMailFile();
+		sendMailLogic.deleteMailFile();
 		closeOrderLogic.execute();
 		posLogic.execute();
 		List<PosInfo> posList = posLogic.getList();
@@ -122,7 +122,7 @@ public class MainStopLossOrder_r4 {
 			}
 			closeOrderLogic.writeOrders();
 		}
-		sendMailUtil.writeMailFile("StopLossOrder");
+		sendMailLogic.writeMailFile("StopLossOrder");
 	}
 
 	/**
@@ -199,7 +199,7 @@ public class MainStopLossOrder_r4 {
 			sb.append(", holdId=").append(holdId);
 			sb.append("}");
 			String msgMail = sb.toString();
-			sendMailUtil.addLine(msgMail);
+			sendMailLogic.addLine(msgMail);
 		}
 		return orderId;
 	}
