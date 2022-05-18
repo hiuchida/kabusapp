@@ -313,6 +313,8 @@ public class PositionsLogic_r5 {
 	 * 削除対象の建玉情報キーのセット。
 	 */
 	private Set<String> posKeySet;
+	
+	private ChartDataLogic chartDataLogic;
 
 	/**
 	 * コンストラクタ。
@@ -321,6 +323,7 @@ public class PositionsLogic_r5 {
 	 */
 	public PositionsLogic_r5(String X_API_KEY) {
 		this.positionsApi = new PositionsApi(X_API_KEY);
+		this.chartDataLogic = new ChartDataLogic();
 	}
 
 	/**
@@ -370,6 +373,24 @@ public class PositionsLogic_r5 {
 					System.out.println("  > " + msg);
 					FileUtil.printLog(LOG_FILEPATH, "execute", msg);
 				} else {
+					int[] priceHighLow = chartDataLogic.searchHighLow(pi.updateDate);
+					if (priceHighLow[0] > 0) {
+						int profitHigh = (priceHighLow[0] - price) * sign;
+						int profitLow = (priceHighLow[1] - price) * sign;
+						if (profitHigh >= profitLow && profitHigh > profit) {
+							msg = "priceHighLow profitHigh=" + profitHigh + " <- " + profit + ", highPrice=" + priceHighLow[0] + " <- " + curPrice;
+							System.out.println("  > " + msg);
+							FileUtil.printLog(LOG_FILEPATH, "execute", msg);
+							profit = profitHigh;
+							curPrice = priceHighLow[0];
+						} else if (profitLow > profitHigh && profitLow > profit) {
+							msg = "priceHighLow profitLow=" + profitLow + " <- " + profit + ", lowPrice=" + priceHighLow[1] + " <- " + curPrice;
+							System.out.println("  > " + msg);
+							FileUtil.printLog(LOG_FILEPATH, "execute", msg);
+							profit = profitLow;
+							curPrice = priceHighLow[1];
+						}
+					}
 					if (pi.profitHigh < profit) {
 						int delta = profit - pi.profitHigh;
 						msg = "update " + key + " " + name + ": curPrice=" + curPrice + " profitHighDelta="
@@ -379,6 +400,7 @@ public class PositionsLogic_r5 {
 						pi.profitHigh = profit;
 						highSet.add(key);
 					}
+					// profitLowは近い将来削除する予定。priceHighLowは考慮しない。
 					// 本来はhigh,lowのどちらかしか更新されないはずだが、念のため両方チェック
 					if (profit < pi.profitLow) {
 						int delta = profit - pi.profitLow;
