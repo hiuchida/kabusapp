@@ -3,7 +3,7 @@ package v9_2;
 import api.ApisoftlimitApi;
 import api.TokenApi;
 import io.swagger.client.ApiException;
-import util.FileLockUtil;
+import logic.FileLockLogic;
 import util.FileUtil;
 
 /**
@@ -36,9 +36,9 @@ public class LockedAuthorizedToken_r4 {
 	 */
 	private static LockedAuthorizedToken_r4 singleton = new LockedAuthorizedToken_r4();
 	/**
-	 * ファイルロック情報。
+	 * 認証済TOKENロックを管理する。
 	 */
-	private static FileLockUtil.LockInfo lock = new FileLockUtil.LockInfo();
+	private static FileLockLogic fileLockLogic = new FileLockLogic(LOCK_FILEPATH);
 
 	/**
 	 * シングルトンインスタンスを取得する。
@@ -56,20 +56,7 @@ public class LockedAuthorizedToken_r4 {
 	 * @throws ApiException
 	 */
 	public static String lockToken() throws ApiException {
-		boolean bFirst = true;
-		while (true) {
-			if (FileLockUtil.lock(lock, false, LOCK_FILEPATH)) {
-				break;
-			}
-			if (bFirst) {
-				System.out.println("Waiting for other processes to finish.");
-				bFirst = false;
-			}
-			try {
-				Thread.sleep(100);
-			} catch (Exception e) {
-			}
-		}
+		fileLockLogic.lockFile();
 		return singleton.initToken();
 	}
 
@@ -77,7 +64,7 @@ public class LockedAuthorizedToken_r4 {
 	 * ファイルロックを解放する。
 	 */
 	public static void unlockToken() {
-		FileLockUtil.unlock(lock);
+		fileLockLogic.unlockFile();
 	}
 
 	/**
