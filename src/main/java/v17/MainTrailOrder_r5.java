@@ -17,7 +17,6 @@ import util.FileUtil;
 import util.StringUtil;
 import v17.PositionsLogic_r5.ExecutionInfo;
 import v17.PositionsLogic_r5.PosInfo;
-import v9_2.CloseOrdersLogic_r4;
 import v9_2.LockedAuthorizedToken_r4;
 
 /**
@@ -61,7 +60,7 @@ public class MainTrailOrder_r5 {
 	/**
 	 * 注文約定情報を管理する。
 	 */
-	private CloseOrdersLogic_r4 closeOrderLogic;
+	private CloseOrdersLogic_r5 closeOrderLogic;
 
 	/**
 	 * 建玉情報を管理する。
@@ -79,7 +78,7 @@ public class MainTrailOrder_r5 {
 	 * @param X_API_KEY 認証済TOKEN。
 	 */
 	public MainTrailOrder_r5(String X_API_KEY) {
-		this.closeOrderLogic = new CloseOrdersLogic_r4(X_API_KEY);
+		this.closeOrderLogic = new CloseOrdersLogic_r5(X_API_KEY);
 		this.posLogic = new PositionsLogic_r5(X_API_KEY);
 		this.sendMailLogic = new SendMailLogic(MAIL_FILEPATH);
 	}
