@@ -1,4 +1,4 @@
-package v9_2;
+package logic;
 
 import api.BoardApi;
 import io.swagger.client.ApiException;
@@ -6,7 +6,7 @@ import io.swagger.client.ApiException;
 /**
  * 時価情報・板情報を管理する。
  */
-public class BoardLogic_r4 {
+public class BoardLogic {
 
 	/**
 	 * 時価情報・板情報API。
@@ -18,7 +18,7 @@ public class BoardLogic_r4 {
 	 * 
 	 * @param X_API_KEY 認証済TOKEN。
 	 */
-	public BoardLogic_r4(String X_API_KEY) {
+	public BoardLogic(String X_API_KEY) {
 		this.boardApi = new BoardApi(X_API_KEY);
 	}
 

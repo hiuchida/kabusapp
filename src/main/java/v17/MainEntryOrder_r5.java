@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import api.ApiErrorLog;
 import io.swagger.client.ApiException;
 import io.swagger.client.model.RequestSendOrderDerivFuture;
+import logic.BoardLogic;
 import logic.SendMailLogic;
 import util.Consts;
 import util.ExchangeUtil;
@@ -17,7 +18,6 @@ import util.GlobalConfigUtil;
 import util.ScheduleUtil;
 import util.StringUtil;
 import v17.EntryOrdersLogic_r5.OrderInfo;
-import v9_2.BoardLogic_r4;
 import v9_2.LockedAuthorizedToken_r4;
 
 /**
@@ -172,7 +172,7 @@ public class MainEntryOrder_r5 {
 	/**
 	 * 時価情報・板情報を管理する。
 	 */
-	private BoardLogic_r4 boardLogic;
+	private BoardLogic boardLogic;
 
 	/**
 	 * 新規注文情報を管理する。
@@ -200,7 +200,7 @@ public class MainEntryOrder_r5 {
 	 * @param X_API_KEY 認証済TOKEN。
 	 */
 	public MainEntryOrder_r5(String X_API_KEY) {
-		this.boardLogic = new BoardLogic_r4(X_API_KEY);
+		this.boardLogic = new BoardLogic(X_API_KEY);
 		this.entryOrdersLogic = new EntryOrdersLogic_r5(X_API_KEY);
 		this.sendMailLogic = new SendMailLogic(MAIL_FILEPATH);
 	}
