@@ -23,6 +23,7 @@ import api.ApiErrorLog;
 import api.BoardBean;
 import api.RegisterEtcApi;
 import io.swagger.client.ApiException;
+import logic.FileLockLogic;
 import util.Consts;
 import util.DateTimeUtil;
 import util.FileUtil;
@@ -45,6 +46,10 @@ public class MainChartData {
 	 * チャートデータファイルパス。
 	 */
 	private static final String DB_FILEPATH = DIRPATH + "ChartData.csv";
+	/**
+	 * ファイルロック管理用0バイトのファイルパス。存在しなければ生成される。
+	 */
+	private static final String LOCK_FILEPATH = DIRPATH + "ChartData.lock";
 
 	/**
 	 * PUSH APIからチャートデータを作成する。
@@ -86,6 +91,11 @@ public class MainChartData {
 	private Thread mainThread;
 
 	/**
+	 * チャートデータロックを管理する。
+	 */
+	private FileLockLogic fileLockLogic;
+
+	/**
 	 * コンストラクタ。
 	 * 
 	 * @param X_API_KEY 認証済TOKEN。
@@ -93,6 +103,7 @@ public class MainChartData {
 	public MainChartData(String X_API_KEY) {
 		this.registerEtcApi = new RegisterEtcApi(X_API_KEY);
 		this.mainThread = Thread.currentThread();
+		this.fileLockLogic = new FileLockLogic(LOCK_FILEPATH);
 	}
 
 	/**
@@ -147,6 +158,7 @@ public class MainChartData {
 	 */
 	private void writeChartData() {
 		if (isExistsChartData()) {
+			fileLockLogic.lockFile();
 			try (PrintWriter pw = FileUtil.writer(DB_FILEPATH, FileUtil.UTF8, true)) {
 				int writeCnt = 0;
 				List<String> bufList = getAndClearChartData();
@@ -167,6 +179,8 @@ public class MainChartData {
 				System.out.println(String.format("%s [%d] MainChartData.writeChartData(): ERROR %s", now, Thread.currentThread().getId(), e.toString()));
 				System.out.flush();
 //				e.printStackTrace();
+			} finally {
+				fileLockLogic.unlockFile();
 			}
 		}
 	}

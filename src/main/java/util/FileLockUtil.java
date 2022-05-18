@@ -60,7 +60,7 @@ public class FileLockUtil {
 			}
 			fc.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		lockInfo.fc = null;
 		lockInfo.fl = null;
