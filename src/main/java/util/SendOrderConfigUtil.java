@@ -1,11 +1,9 @@
-package v9_2;
-
-import util.FileUtil;
+package util;
 
 /**
  * 注文発注に関する設定情報を管理する。
  */
-public class SendOrderConfig_r4 {
+public class SendOrderConfigUtil {
 	/**
 	 * 基準パス。
 	 */
@@ -18,13 +16,13 @@ public class SendOrderConfig_r4 {
 	/**
 	 * シングルトンインスタンス。
 	 */
-	private static SendOrderConfig_r4 singleton = new SendOrderConfig_r4();
+	private static SendOrderConfigUtil singleton = new SendOrderConfigUtil();
 
 	/**
 	 * シングルトンインスタンスを取得する。
 	 * @return シングルトンインスタンス。
 	 */
-	public static SendOrderConfig_r4 getInstance() {
+	public static SendOrderConfigUtil getInstance() {
 		return singleton;
 	}
 
@@ -36,7 +34,7 @@ public class SendOrderConfig_r4 {
 		return singleton.initPassword();
 	}
 
-	private SendOrderConfig_r4() {
+	private SendOrderConfigUtil() {
 	}
 
 	/**
