@@ -28,8 +28,8 @@ import util.Consts;
 import util.DateTimeUtil;
 import util.FileUtil;
 import util.GlobalConfigUtil;
+import util.LockedAuthorizedTokenUtil;
 import util.StringUtil;
-import v9_2.LockedAuthorizedToken_r4;
 
 /**
  * PUSH APIからチャートデータを作成するツール。
@@ -60,8 +60,8 @@ public class MainChartData {
 	 */
 	public static void main(String[] args) throws DeploymentException, IOException, ApiException {
 		ApiErrorLog.init(MethodHandles.lookup().lookupClass(), Consts.VERSION);
-		String X_API_KEY = LockedAuthorizedToken_r4.lockToken();
-		LockedAuthorizedToken_r4.unlockToken();
+		String X_API_KEY = LockedAuthorizedTokenUtil.lockToken();
+		LockedAuthorizedTokenUtil.unlockToken();
 		new MainChartData(X_API_KEY).execute();
 	}
 

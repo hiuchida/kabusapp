@@ -1,15 +1,14 @@
-package v9_2;
+package util;
 
 import api.ApisoftlimitApi;
 import api.TokenApi;
 import io.swagger.client.ApiException;
 import logic.FileLockLogic;
-import util.FileUtil;
 
 /**
  * 認証済TOKENをファイルロック管理する。
  */
-public class LockedAuthorizedToken_r4 {
+public class LockedAuthorizedTokenUtil {
 	/**
 	 * 基準パス。
 	 */
@@ -34,7 +33,7 @@ public class LockedAuthorizedToken_r4 {
 	/**
 	 * シングルトンインスタンス。
 	 */
-	private static LockedAuthorizedToken_r4 singleton = new LockedAuthorizedToken_r4();
+	private static LockedAuthorizedTokenUtil singleton = new LockedAuthorizedTokenUtil();
 	/**
 	 * 認証済TOKENロックを管理する。
 	 */
@@ -45,7 +44,7 @@ public class LockedAuthorizedToken_r4 {
 	 * 
 	 * @return シングルトンインスタンス。
 	 */
-	public static LockedAuthorizedToken_r4 getInstance() {
+	public static LockedAuthorizedTokenUtil getInstance() {
 		return singleton;
 	}
 
@@ -68,6 +67,17 @@ public class LockedAuthorizedToken_r4 {
 	}
 
 	/**
+	 * ファイルロックせず、認証済TOKENを取得する。有効かどうか保証しない。
+	 * 
+	 * @return 認証済TOKEN。
+	 */
+	public static String peekToken() {
+		String token = FileUtil.readOneLine(TXT_FILEPATH);
+		FileUtil.printLog(LOG_FILEPATH, "initToken", "peek  token=" + token);
+		return token;
+	}
+
+	/**
 	 * トークン発行API。
 	 */
 	private TokenApi tokenApi;
@@ -75,7 +85,7 @@ public class LockedAuthorizedToken_r4 {
 	/**
 	 * コンストラクタ。
 	 */
-	private LockedAuthorizedToken_r4() {
+	private LockedAuthorizedTokenUtil() {
 		this.tokenApi = new TokenApi();
 	}
 

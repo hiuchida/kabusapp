@@ -14,6 +14,7 @@ import logic.SendMailLogic;
 import util.Consts;
 import util.ExchangeUtil;
 import util.FileUtil;
+import util.LockedAuthorizedTokenUtil;
 import util.StringUtil;
 import v9_2.PositionsLogic_r4.ExecutionInfo;
 import v9_2.PositionsLogic_r4.PosInfo;
@@ -48,11 +49,11 @@ public class MainTrailOrder_r4 {
 	 */
 	public static void main(String[] args) throws ApiException {
 		ApiErrorLog.init(clazz, Consts.VERSION);
-		String X_API_KEY = LockedAuthorizedToken_r4.lockToken();
+		String X_API_KEY = LockedAuthorizedTokenUtil.lockToken();
 		try {
 			new MainTrailOrder_r4(X_API_KEY).execute();
 		} finally {
-			LockedAuthorizedToken_r4.unlockToken();
+			LockedAuthorizedTokenUtil.unlockToken();
 		}
 	}
 

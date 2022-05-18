@@ -15,6 +15,7 @@ import util.Consts;
 import util.ExchangeUtil;
 import util.FileUtil;
 import util.GlobalConfigUtil;
+import util.LockedAuthorizedTokenUtil;
 import util.ScheduleUtil;
 import util.StringUtil;
 import v9_2.EntryOrdersLogic_r4.OrderInfo;
@@ -160,11 +161,11 @@ public class MainEntryOrder_r4 {
 	 */
 	public static void main(String[] args) throws ApiException {
 		ApiErrorLog.init(MethodHandles.lookup().lookupClass(), Consts.VERSION);
-		String X_API_KEY = LockedAuthorizedToken_r4.lockToken();
+		String X_API_KEY = LockedAuthorizedTokenUtil.lockToken();
 		try {
 			new MainEntryOrder_r4(X_API_KEY).execute();
 		} finally {
-			LockedAuthorizedToken_r4.unlockToken();
+			LockedAuthorizedTokenUtil.unlockToken();
 		}
 	}
 

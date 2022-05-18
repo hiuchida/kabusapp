@@ -14,10 +14,10 @@ import logic.SendMailLogic;
 import util.Consts;
 import util.ExchangeUtil;
 import util.FileUtil;
+import util.LockedAuthorizedTokenUtil;
 import util.StringUtil;
 import v17.PositionsLogic_r5.ExecutionInfo;
 import v17.PositionsLogic_r5.PosInfo;
-import v9_2.LockedAuthorizedToken_r4;
 
 /**
  * トレイル注文ツール。
@@ -49,11 +49,11 @@ public class MainTrailOrder_r5 {
 	 */
 	public static void main(String[] args) throws ApiException {
 		ApiErrorLog.init(clazz, Consts.VERSION);
-		String X_API_KEY = LockedAuthorizedToken_r4.lockToken();
+		String X_API_KEY = LockedAuthorizedTokenUtil.lockToken();
 		try {
 			new MainTrailOrder_r5(X_API_KEY).execute();
 		} finally {
-			LockedAuthorizedToken_r4.unlockToken();
+			LockedAuthorizedTokenUtil.unlockToken();
 		}
 	}
 
