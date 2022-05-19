@@ -263,57 +263,64 @@ public class MainEntryOrder_r4 {
 			// Price,Side,Qty
 			// 26745,S,1
 			ReqInfo ri = orderMap.get(key);
-			String val = ri.status;
+			String oval = ri.status;
 			String[] cols = StringUtil.splitComma(key);
 			int basePrice = StringUtil.parseInt(cols[0]);
 			String side = StringUtil.sideCode(cols[1]);
 			int qty = StringUtil.parseInt(cols[2]);
 			String msg = "key=" + key + ", basePrice=" + basePrice + ", side=" + side
-					+ ", qty=" + qty + ", val=" + val;
+					+ ", qty=" + qty + ", oval=" + oval;
 			System.out.println("  > openOrder " + msg);
 			FileUtil.printLog(LOG_FILEPATH, "openOrder", msg);
 
-			String[] flds = StringUtil.splitComma(val);
+			String nval = null;
+			String[] flds = StringUtil.splitComma(oval);
 			if (flds.length == 1) {
 				if ("R".equals(flds[0])) {
 					if (checkOpenOrder(basePrice, side, curPrice)) {
 						String uniqId = entryOrdersLogic.addOrder(basePrice, qty, side);
-						String nval = "O," + uniqId;
-						ri.status = nval;
-						msg = "change " + key + ": " + val + " -> " + nval;
-						System.out.println("  > openOrder " + msg);
-						FileUtil.printLog(LOG_FILEPATH, "openOrder", msg);
+						nval = "O," + uniqId;
 					}
+				} else if ("P".equals(flds[0])) {
 				}
 			} else {
 				if ("O".equals(flds[0])) {
 					String uniqId = flds[1];
-					if (checkOpenOrder(uniqId, basePrice, side, curPrice)) {
+					OrderInfo oi = entryOrdersLogic.getOrder(uniqId);
+					if (oi == null) {
+						nval = "R";
+					} else if (checkOpenOrder(uniqId, basePrice, side, curPrice)) {
 						uniqId = entryOrdersLogic.addOrder(basePrice, qty, side);
-						String nval = "O," + uniqId;
-						ri.status = nval;
-						msg = "change " + key + ": " + val + " -> " + nval;
-						System.out.println("  > openOrder " + msg);
-						FileUtil.printLog(LOG_FILEPATH, "openOrder", msg);
+						nval = "O," + uniqId;
+					}
+				} else if ("P".equals(flds[0])) {
+					String uniqId = flds[1];
+					OrderInfo oi = entryOrdersLogic.getOrder(uniqId);
+					if (oi == null) {
+						nval = "P";
 					}
 				} else if ("C".equals(flds[0])) {
 					String uniqId = flds[1];
 					OrderInfo oi = entryOrdersLogic.getOrder(uniqId);
-					if (OrderInfo.STATE_UNKNOWN < oi.state && oi.state < OrderInfo.STATE_FINISH) {
+					if (oi == null) {
+						nval = "P";
+					} else if (OrderInfo.STATE_UNKNOWN < oi.state && oi.state < OrderInfo.STATE_FINISH) {
 						String orderId = oi.orderId;
-						msg = "cancel " + key + ": orderId=" + orderId + ", price=" + oi.price + StringUtil.sideStr(oi.side) + ", qty=" + oi.orderQty;
+						msg = "cancelOrder " + key + ": orderId=" + orderId + ", price=" + oi.price + StringUtil.sideStr(oi.side) + ", qty=" + oi.orderQty;
 						entryOrdersLogic.cancelOrder(orderId, msg);
-						System.out.println("  > cancelOrder " + msg);
-						FileUtil.printLog(LOG_FILEPATH, "cancelOrder", msg);
+						System.out.println("  > openOrder " + msg);
+						FileUtil.printLog(LOG_FILEPATH, "openOrder", msg);
 					} else if ((OrderInfo.STATE_CANCEL <= oi.state && oi.state <= OrderInfo.STATE_CLOSE)
 							|| (OrderInfo.STATE_CANCEL_DELETE <= oi.state && oi.state <= OrderInfo.STATE_CLOSE_DELETE)) {
-						String nval = "P";
-						ri.status = nval;
-						msg = "change " + key + ": " + val + " -> " + nval;
-						System.out.println("  > cancelOrder " + msg);
-						FileUtil.printLog(LOG_FILEPATH, "cancelOrder", msg);
+						nval = "P";
 					}
 				}
+			}
+			if (nval != null) {
+				ri.status = nval;
+				msg = "changeStatus " + key + ": " + oval + " -> " + nval;
+				System.out.println("  > openOrder " + msg);
+				FileUtil.printLog(LOG_FILEPATH, "openOrder", msg);
 			}
 		}
 		writeOrders();
