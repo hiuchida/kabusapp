@@ -289,7 +289,7 @@ public class MainEntryOrder_r4 {
 					OrderInfo oi = entryOrdersLogic.getOrder(uniqId);
 					if (oi == null) {
 						nval = "R";
-					} else if (checkOpenOrder(uniqId, basePrice, side, curPrice)) {
+					} else if (checkOpenOrder(oi, basePrice, side, curPrice)) {
 						uniqId = entryOrdersLogic.addOrder(basePrice, qty, side);
 						nval = "O," + uniqId;
 					}
@@ -348,21 +348,17 @@ public class MainEntryOrder_r4 {
 	/**
 	 * 既存注文と残高をチェックする。
 	 * 
-	 * @param uniqId     ユニークID。
-	 * @param basePrice  基準の値段。
-	 * @param side       売買区分(Side)。
-	 * @param curPrice   現値。
+	 * @param oi        新規注文情報。
+	 * @param basePrice 基準の値段。
+	 * @param side      売買区分(Side)。
+	 * @param curPrice  現値。
 	 * @return true:発注する、false:スキップ
 	 * @throws ApiException 
 	 */
-	private boolean checkOpenOrder(String uniqId, int basePrice, String side, int curPrice) {
+	private boolean checkOpenOrder(OrderInfo oi, int basePrice, String side, int curPrice) {
 		int sign = StringUtil.sign(side);
 		int delta = (curPrice - basePrice) * sign;
 		if (delta > SKIP_PRICE_DELTA_CEIL || delta < SKIP_PRICE_DELTA_FLOOR) {
-			return false;
-		}
-		OrderInfo oi = entryOrdersLogic.getOrder(uniqId);
-		if (oi == null) {
 			return false;
 		}
 		boolean rc = false;
