@@ -201,8 +201,8 @@ public class PositionsLogic_r6 {
 
 		@Override
 		public int compareTo(PosInfo that) {
-			String key1 = this.executionId;
-			String key2 = that.executionId;
+			String key1 = this.code + "_" + this.side + "_" + this.price + "_" + this.executionId;
+			String key2 = that.code + "_" + that.side + "_" + that.price + "_" + that.executionId;
 			return key1.compareTo(key2);
 		}
 
