@@ -16,7 +16,6 @@ import util.FileUtil;
 import util.GlobalConfigUtil;
 import util.LockedAuthorizedTokenUtil;
 import util.StringUtil;
-import v18.PositionsLogic_r6.ExecutionInfo;
 import v18.PositionsLogic_r6.PosInfo;
 
 /**
@@ -99,7 +98,7 @@ public class MainStopLossOrder_r6 {
 	public void execute() throws ApiException {
 		sendMailLogic.deleteMailFile();
 		closeOrderLogic.execute();
-		posLogic.execute();
+		posLogic.readPositions();
 		List<PosInfo> posList = posLogic.getList();
 		int exchange = ExchangeUtil.now();
 		if (exchange > 0) {
@@ -113,13 +112,10 @@ public class MainStopLossOrder_r6 {
 					FileUtil.printLog(LOG_FILEPATH, "execute", msg);
 					continue;
 				}
-				for (ExecutionInfo ei : pi.executionList) {
-					String holdId = ei.executionId;
-					if ((ei.leavesQty - ei.holdQty) <= 0) {
-						continue;
-					}
-					sendCloseOrder(pi, ei, exchange, holdId);
+				if (pi.leavesQty - pi.holdQty <= 0) {
+					continue;
 				}
+				sendCloseOrder(pi, exchange);
 			}
 			closeOrderLogic.writeOrders();
 		}
@@ -130,13 +126,11 @@ public class MainStopLossOrder_r6 {
 	 * 返済注文を実行する。
 	 * 
 	 * @param pi       建玉情報。
-	 * @param ei       約定数量情報。
 	 * @param exchange 市場コード（Exchange）。
-	 * @param holdId   約定番号（ExecutionID）。
 	 * @return 注文番号(ID)。
 	 * @throws ApiException 
 	 */
-	private String sendCloseOrder(PosInfo pi, ExecutionInfo ei, int exchange, String holdId) throws ApiException {
+	private String sendCloseOrder(PosInfo pi, int exchange) throws ApiException {
 		int triggerPrice = triggerPrice(pi);
 		RequestSendOrderDerivFuture body = new RequestSendOrderDerivFuture();
 		body.setSymbol(pi.code);
@@ -144,11 +138,11 @@ public class MainStopLossOrder_r6 {
 		body.setTradeType(2); // 返済
 		body.setTimeInForce(2); // FAK
 		body.setSide(StringUtil.sideReturn(pi.side));
-		body.setQty(ei.leavesQty - ei.holdQty);
+		body.setQty(pi.leavesQty - pi.holdQty);
 		List<PositionsDeriv> pdl = new ArrayList<>();
 		{
 			PositionsDeriv pd = new PositionsDeriv();
-			pd.setHoldID(holdId);
+			pd.setHoldID(pi.executionId);
 			pd.setQty(body.getQty());
 			pdl.add(pd);
 		}
@@ -183,13 +177,13 @@ public class MainStopLossOrder_r6 {
 			sb.append(", qty=").append(body.getQty());
 			sb.append(", trigger=").append(triggerPrice).append(StringUtil.sideStr(body.getSide()));
 			sb.append("(").append(delta).append(")");
-			sb.append(", holdId=").append(holdId);
+			sb.append(", holdId=").append(pi.executionId);
 			sb.append("}");
 			msg = sb.toString();
 			System.out.println("  > sendCloseOrder " + msg);
 			FileUtil.printLog(LOG_FILEPATH, "sendCloseOrder", msg);
 		}
-		String orderId = closeOrderLogic.sendOrder(body, holdId, msg);
+		String orderId = closeOrderLogic.sendOrder(body, pi.executionId, msg);
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.append("CLOSE:{").append(pi.name).append(" ").append(StringUtil.exchangeStr(exchange));
@@ -197,7 +191,7 @@ public class MainStopLossOrder_r6 {
 			sb.append(", qty=").append(body.getQty());
 			sb.append(", trigger=").append(triggerPrice).append(StringUtil.sideStr(body.getSide()));
 			sb.append("(").append(delta).append(")");
-			sb.append(", holdId=").append(holdId);
+			sb.append(", holdId=").append(pi.executionId);
 			sb.append("}");
 			String msgMail = sb.toString();
 			sendMailLogic.addLine(msgMail);

@@ -46,7 +46,11 @@ public class PositionsLogic_r6 {
 		/**
 		 * 建玉情報ファイルのカラム数。
 		 */
-		public static final int MAX_COLS = 11;
+		public static final int MAX_COLS = 13;
+		/**
+		 * 約定番号（ExecutionID）。
+		 */
+		public String executionId;
 		/**
 		 * 銘柄コード(Symbol)。
 		 */
@@ -59,6 +63,14 @@ public class PositionsLogic_r6 {
 		 * 値段(Price)。
 		 */
 		public int price;
+		/**
+		 * 残数量（保有数量）(LeavesQty)。
+		 */
+		public int leavesQty;
+		/**
+		 * 拘束数量（返済のために拘束されている数量）(HoldQty)。
+		 */
+		public int holdQty;
 		/**
 		 * 売買区分(Side)。
 		 */
@@ -87,31 +99,23 @@ public class PositionsLogic_r6 {
 		 * 更新日時。
 		 */
 		public long updateDate;
-		/**
-		 * 約定数量情報のリスト。
-		 */
-		public List<ExecutionInfo> executionList;
-		/**
-		 * 約定数量情報の文字列（削除ログ用）。
-		 */
-		public String executionStr;
 
 		/**
 		 * コンストラクタ（新規作成）。
 		 * 
+		 * @param id    約定番号（ExecutionID）。
 		 * @param code  銘柄コード(Symbol)。
 		 * @param name  銘柄名(SymbolName)。
 		 * @param price 値段(Price)。
 		 * @param side  売買区分(Side)。
 		 */
-		public PosInfo(String code, String name, int price, String side) {
+		public PosInfo(String id, String code, String name, int price, String side) {
+			this.executionId = id;
 			this.code = code;
 			this.name = name;
 			this.price = price;
 			this.side = side;
 			this.createDate = System.currentTimeMillis();
-			this.executionList = new ArrayList<>();
-			this.executionStr = "";
 		}
 
 		/**
@@ -121,9 +125,12 @@ public class PositionsLogic_r6 {
 		 */
 		public PosInfo(String[] cols) {
 			int i = 0;
+			this.executionId = cols[i++];
 			this.code = cols[i++];
 			this.name = cols[i++];
 			this.price = StringUtil.parseInt(cols[i++]);
+			this.leavesQty = StringUtil.parseInt(cols[i++]);
+			this.holdQty = StringUtil.parseInt(cols[i++]);
 			this.side = "" + StringUtil.parseInt(cols[i++]);
 			this.curPrice = StringUtil.parseInt(cols[i++]);
 			this.profitHigh = StringUtil.parseInt(cols[i++]);
@@ -131,20 +138,6 @@ public class PositionsLogic_r6 {
 			this.triggerPrice = StringUtil.parseInt(cols[i++]);
 			this.createDate = StringUtil.parseLong(cols[i++]);
 			this.updateDate = StringUtil.parseLong(cols[i++]);
-			this.executionList = new ArrayList<>();
-			this.executionStr = cols[i++];
-		}
-
-		/**
-		 * 主キー(code_price_sideStr)を生成する。
-		 * 
-		 * @param code  銘柄コード(Symbol)。
-		 * @param price 値段(Price)。
-		 * @param side  売買区分(Side)。
-		 * @return 主キー。
-		 */
-		public static String getKey(String code, int price, String side) {
-			return code + "_" + price + "_" + StringUtil.sideStr(side);
 		}
 
 		/**
@@ -155,9 +148,12 @@ public class PositionsLogic_r6 {
 		public static String toHeaderString() {
 			String[] sa = new String[MAX_COLS];
 			int i = 0;
-			sa[i++] = "code   ";
+			sa[i++] = "executionId";
+			sa[i++] = "code     ";
 			sa[i++] = "name             ";
-			sa[i++] = "price(qty)";
+			sa[i++] = "price";
+			sa[i++] = "leavesQ";
+			sa[i++] = "holdQty";
 			sa[i++] = "side";
 			sa[i++] = "curPric";
 			sa[i++] = "high";
@@ -165,35 +161,8 @@ public class PositionsLogic_r6 {
 			sa[i++] = "trigger";
 			sa[i++] = "createDate                            ";
 			sa[i++] = "updateDate                            ";
-			sa[i++] = "executionIds";
 			String val = "# " + StringUtil.joinTab(sa);
 			return val;
-		}
-
-		/**
-		 * 残数量（保有数量）(LeavesQty)を集計する。
-		 * 
-		 * @return 残数量（保有数量）(LeavesQty)。
-		 */
-		public int getLeavesQty() {
-			int qty = 0;
-			for (ExecutionInfo ei : executionList) {
-				qty += ei.leavesQty;
-			}
-			return qty;
-		}
-
-		/**
-		 * 拘束数量（返済のために拘束されている数量）(HoldQty)を集計する。
-		 * 
-		 * @return 拘束数量（返済のために拘束されている数量）(HoldQty)。
-		 */
-		public int getHoldQty() {
-			int qty = 0;
-			for (ExecutionInfo ei : executionList) {
-				qty += ei.holdQty;
-			}
-			return qty;
 		}
 
 		/**
@@ -202,21 +171,7 @@ public class PositionsLogic_r6 {
 		 * @return 主キー。
 		 */
 		public String getKey() {
-			return getKey(code, price, side);
-		}
-
-		/**
-		 * 約定数量情報のリストから文字列を設定する。
-		 */
-		public void setExecutionStr() {
-			StringBuilder sb = new StringBuilder();
-			for (int j = 0; j < executionList.size(); j++) {
-				if (j > 0) {
-					sb.append(",");
-				}
-				sb.append(executionList.get(j));
-			}
-			this.executionStr = sb.toString();
+			return executionId;
 		}
 
 		/**
@@ -227,9 +182,12 @@ public class PositionsLogic_r6 {
 		public String toLineString() {
 			String[] sa = new String[MAX_COLS];
 			int i = 0;
+			sa[i++] = executionId;
 			sa[i++] = code;
 			sa[i++] = name;
-			sa[i++] = price + "(" + getLeavesQty() + "-" + getHoldQty() + ")";
+			sa[i++] = "" + price;
+			sa[i++] = "" + leavesQty;
+			sa[i++] = "" + holdQty;
 			sa[i++] = side + "(" + StringUtil.sideStr(side) + ")";
 			sa[i++] = "" + curPrice;
 			sa[i++] = "" + profitHigh;
@@ -237,15 +195,14 @@ public class PositionsLogic_r6 {
 			sa[i++] = "" + triggerPrice;
 			sa[i++] = createDate + "(" + DateTimeUtil.toString(createDate) + ")";
 			sa[i++] = updateDate + "(" + DateTimeUtil.toString(updateDate) + ")";
-			sa[i++] = executionStr;
 			String val = StringUtil.joinTab(sa);
 			return val;
 		}
 
 		@Override
 		public int compareTo(PosInfo that) {
-			String key1 = code + "_" + price + "_" + StringUtil.sideStr(side);
-			String key2 = that.code + "_" + that.price + "_" + StringUtil.sideStr(that.side);
+			String key1 = this.executionId;
+			String key2 = that.executionId;
 			return key1.compareTo(key2);
 		}
 
@@ -256,47 +213,6 @@ public class PositionsLogic_r6 {
 			sb.append(", profitHigh=").append(profitHigh);
 			sb.append(", profitLow=").append(profitLow);
 			sb.append("}");
-			return sb.toString();
-		}
-	}
-
-	/**
-	 * 約定数量情報クラス
-	 */
-	public static class ExecutionInfo {
-		/**
-		 * 約定番号（ExecutionID）。
-		 */
-		public String executionId;
-		/**
-		 * 残数量（保有数量）(LeavesQty)。
-		 */
-		public int leavesQty;
-		/**
-		 * 拘束数量（返済のために拘束されている数量）(HoldQty)。
-		 */
-		public int holdQty;
-
-		/**
-		 * コンストラクタ（新規作成）。
-		 * 
-		 * @param executionId 約定番号（ExecutionID）。
-		 * @param leavesQty   残数量（保有数量）(LeavesQty)。
-		 * @param holdQty     拘束数量（返済のために拘束されている数量）(HoldQty)。
-		 */
-		public ExecutionInfo(String executionId, Double leavesQty, Double holdQty) {
-			this.executionId = executionId;
-			this.leavesQty = (int) (double) leavesQty;
-			this.holdQty = (int) (double) holdQty;
-		}
-
-		@Override
-		public String toString() {
-			StringBuilder sb = new StringBuilder();
-			sb.append(executionId);
-			sb.append("(").append(leavesQty);
-			sb.append("-").append(holdQty);
-			sb.append(")");
 			return sb.toString();
 		}
 	}
@@ -341,32 +257,34 @@ public class PositionsLogic_r6 {
 		for (int i = 0; i < response.size(); i++) {
 			PositionsSuccess pos = response.get(i);
 			String id = pos.getExecutionID();
+			String key = id;
 			String code = pos.getSymbol();
 			String name = pos.getSymbolName();
 			int price = (int) (double) pos.getPrice();
+			int leavesQty = (int) (double) pos.getLeavesQty();
+			int holdQty = (int) (double) pos.getHoldQty();
 			String side = pos.getSide();
-			String key = PosInfo.getKey(code, price, side);
 			int sign = StringUtil.sign(side);
-			ExecutionInfo ei = new ExecutionInfo(id, pos.getLeavesQty(), pos.getHoldQty());
-			int qty = (int) (sign * ei.leavesQty);
 			int curPrice = (int) (double) pos.getCurrentPrice();
 			Integer type = pos.getSecurityType();
-			if (type == null || type != 901 || qty == 0) {
-				String msg = "get " + StringUtil.index(i + 1) + ": SKIP " + type + " " + code + " " + name + " "
-						+ qty + " " + price + " " + StringUtil.sideStr(side) + " " + curPrice + " " + ei;
+			if (type == null || type != 901 || leavesQty == 0) {
+				String msg = "get " + StringUtil.index(i + 1) + ": SKIP " + id + " " + type + " " + code + " "
+						+ name + " " + price + " " + StringUtil.sideStr(side)
+						+ "(" + leavesQty + "-" + holdQty + ") " + curPrice;
 				System.out.println("  > execute " + msg);
 				continue;
 			}
 			posKeySet.remove(key);
 			if (curPrice != 0) {
 				int profit = (curPrice - price) * sign;
-				String msg = "get " + StringUtil.index(i + 1) + ": " + key + " " + type + " " + code + " " + name
-						+ " " + qty + " " + price + " " + StringUtil.sideStr(side) + " " + curPrice + " " + profit + " "
-						+ ei;
+				String msg = "get " + StringUtil.index(i + 1) + ": " + id + " " + key + " " + type + " " + code
+						+ " " + name + " " + price + " " + StringUtil.sideStr(side)
+						+ "(" + leavesQty + "-" + holdQty + ") " + " " + curPrice + " " + profit;
 				System.out.println("  > execute " + msg);
+				FileUtil.printLog(LOG_FILEPATH, "execute", msg);
 				PosInfo pi = posMap.get(key);
 				if (pi == null) {
-					pi = new PosInfo(code, name, price, side);
+					pi = new PosInfo(id, code, name, price, side);
 					pi.profitHigh = profit;
 					pi.profitLow = profit;
 					posMap.put(key, pi);
@@ -412,7 +330,8 @@ public class PositionsLogic_r6 {
 						pi.profitLow = profit;
 					}
 				}
-				pi.executionList.add(ei);
+				pi.leavesQty = leavesQty;
+				pi.holdQty = holdQty;
 				pi.curPrice = curPrice;
 				pi.updateDate = System.currentTimeMillis();
 			}
@@ -482,20 +401,14 @@ public class PositionsLogic_r6 {
 	 * @throws ApiException
 	 */
 	public PosInfo getByExecutionId(String executionId) {
-		for (PosInfo pi : posMap.values()) {
-			for (ExecutionInfo ei : pi.executionList) {
-				if (ei.executionId.equals(executionId)) {
-					return pi;
-				}
-			}
-		}
-		return null;
+		PosInfo pi = posMap.get(executionId);
+		return pi;
 	}
 
 	/**
 	 * 建玉情報ファイルを読み込む。不正なレコードは無視される。
 	 */
-	private void readPositions() {
+	public void readPositions() {
 		posMap = new TreeMap<>();
 		posKeySet = new TreeSet<>();
 		List<String> lines = FileUtil.readAllLines(TXT_FILEPATH);
@@ -552,7 +465,6 @@ public class PositionsLogic_r6 {
 		list.addAll(posMap.values());
 		Collections.sort(list);
 		for (PosInfo pi : list) {
-			pi.setExecutionStr();
 			lines.add(pi.toLineString());
 			String key = pi.getKey();
 			System.out.println("  " + key + ": " + pi);

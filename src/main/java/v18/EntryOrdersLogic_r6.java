@@ -302,7 +302,7 @@ public class EntryOrdersLogic_r6 {
 		readOrders();
 		List<OrdersSuccess> response = ordersApi.get();
 		System.out.println("EntryOrdersLogic_r6.execute(): response.size=" + response.size());
-		posLogic.execute();
+		posLogic.readPositions();
 		for (int i = 0; i < response.size(); i++) {
 			OrdersSuccess order = response.get(i);
 			String orderId = order.getID();

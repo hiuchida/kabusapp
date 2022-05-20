@@ -16,7 +16,6 @@ import util.ExchangeUtil;
 import util.FileUtil;
 import util.LockedAuthorizedTokenUtil;
 import util.StringUtil;
-import v18.PositionsLogic_r6.ExecutionInfo;
 import v18.PositionsLogic_r6.PosInfo;
 
 /**
@@ -112,42 +111,40 @@ public class MainTrailOrder_r6 {
 					}
 				}
 				pi.triggerPrice = triggerPrice;
-				for (ExecutionInfo ei : pi.executionList) {
-					String holdId = ei.executionId;
-					if (ei.holdQty > 0) {
-						String orderId = closeOrderLogic.getOrderId(holdId);
-						if (orderId == null) {
-							String msg = "not found " + pi.name + " " + holdId;
-							System.out.println("  > " + msg);
-							FileUtil.printLog(LOG_FILEPATH, "execute", msg);
-							continue;
-						}
-						try {
-							cancelOrder(orderId, pi, holdId, ei.holdQty);
-						} catch (ApiException e) {
-							e.printStackTrace();
-							String msg = "cancelOrder ERROR";
-							System.out.println("  > " + msg);
-							FileUtil.printLog(LOG_FILEPATH, "execute", msg);
-							continue;
-						}
-						List<PositionsSuccess> psList = posLogic.getPosition(pi.code);
-						for (PositionsSuccess ps : psList) {
-							String id = ps.getExecutionID();
-							if (holdId.equals(id)) {
-								ei.leavesQty = (int) (double) ps.getLeavesQty();
-								ei.holdQty = (int) (double) ps.getHoldQty();
-							}
-						}
-						if ((ei.leavesQty - ei.holdQty) <= 0) {
-							String msg = "zero qty " + pi.name + " " + holdId;
-							System.out.println("  > " + msg);
-							FileUtil.printLog(LOG_FILEPATH, "execute", msg);
-							continue;
+				String holdId = pi.executionId;
+				if (pi.holdQty > 0) {
+					String orderId = closeOrderLogic.getOrderId(holdId);
+					if (orderId == null) {
+						String msg = "executionId not found holdId=" + holdId + ", price=" + pi.price + StringUtil.sideStr(pi.side);
+						System.out.println("  > " + msg);
+						FileUtil.printLog(LOG_FILEPATH, "execute", msg);
+						continue;
+					}
+					try {
+						cancelOrder(orderId, pi);
+					} catch (ApiException e) {
+						e.printStackTrace();
+						String msg = "cancelOrder ERROR";
+						System.out.println("  > " + msg);
+						FileUtil.printLog(LOG_FILEPATH, "execute", msg);
+						continue;
+					}
+					List<PositionsSuccess> psList = posLogic.getPosition(pi.code);
+					for (PositionsSuccess ps : psList) {
+						String id = ps.getExecutionID();
+						if (holdId.equals(id)) {
+							pi.leavesQty = (int) (double) ps.getLeavesQty();
+							pi.holdQty = (int) (double) ps.getHoldQty();
 						}
 					}
-					sendCloseOrder(pi, ei, exchange, holdId);
+					if ((pi.leavesQty - pi.holdQty) <= 0) {
+						String msg = "zero qty " + pi.name + " " + holdId;
+						System.out.println("  > " + msg);
+						FileUtil.printLog(LOG_FILEPATH, "execute", msg);
+						continue;
+					}
 				}
+				sendCloseOrder(pi, exchange);
 			}
 			closeOrderLogic.writeOrders();
 			posLogic.writePositions();
@@ -160,12 +157,10 @@ public class MainTrailOrder_r6 {
 	 * 
 	 * @param orderId 注文番号(ID)。
 	 * @param pi      建玉情報。
-	 * @param holdId  返済建玉ID(HoldID=ExecutionID)。
-	 * @param holdQty 拘束数量（返済のために拘束されている数量）(HoldQty)。
 	 * @throws ApiException
 	 */
-	private void cancelOrder(String orderId, PosInfo pi, String holdId, int holdQty) throws ApiException {
-		String msg = "orderId=" + orderId + ", name=" + pi.name + ", holdId=" + holdId + ", holdQty=" + holdQty;
+	private void cancelOrder(String orderId, PosInfo pi) throws ApiException {
+		String msg = "orderId=" + orderId + ", name=" + pi.name + ", holdId=" + pi.executionId + ", holdQty=" + pi.holdQty;
 		System.out.println("  > cancelOrder " + msg);
 		FileUtil.printLog(LOG_FILEPATH, "cancelOrder", msg);
 		closeOrderLogic.cancelOrder(orderId, msg);
@@ -175,13 +170,11 @@ public class MainTrailOrder_r6 {
 	 * 返済注文を実行する。
 	 * 
 	 * @param pi       建玉情報。
-	 * @param ei       約定数量情報。
 	 * @param exchange 市場コード（Exchange）。
-	 * @param holdId   約定番号（ExecutionID）。
 	 * @return 注文番号(ID)。
 	 * @throws ApiException 
 	 */
-	private String sendCloseOrder(PosInfo pi, ExecutionInfo ei, int exchange, String holdId) throws ApiException {
+	private String sendCloseOrder(PosInfo pi, int exchange) throws ApiException {
 		int triggerPrice = pi.triggerPrice;
 		RequestSendOrderDerivFuture body = new RequestSendOrderDerivFuture();
 		body.setSymbol(pi.code);
@@ -189,11 +182,11 @@ public class MainTrailOrder_r6 {
 		body.setTradeType(2); // 返済
 		body.setTimeInForce(2); // FAK
 		body.setSide(StringUtil.sideReturn(pi.side));
-		body.setQty(ei.leavesQty - ei.holdQty);
+		body.setQty(pi.leavesQty - pi.holdQty);
 		List<PositionsDeriv> pdl = new ArrayList<>();
 		{
 			PositionsDeriv pd = new PositionsDeriv();
-			pd.setHoldID(holdId);
+			pd.setHoldID(pi.executionId);
 			pd.setQty(body.getQty());
 			pdl.add(pd);
 		}
@@ -221,13 +214,13 @@ public class MainTrailOrder_r6 {
 			sb.append(", qty=").append(body.getQty());
 			sb.append(", trigger=").append(triggerPrice).append(StringUtil.sideStr(body.getSide()));
 			sb.append("(").append(delta).append(")");
-			sb.append(", holdId=").append(holdId);
+			sb.append(", holdId=").append(pi.executionId);
 			sb.append("}");
 			msg = sb.toString();
 			System.out.println("  > sendCloseOrder " + msg);
 			FileUtil.printLog(LOG_FILEPATH, "sendCloseOrder", msg);
 		}
-		String orderId = closeOrderLogic.sendOrder(body, holdId, msg);
+		String orderId = closeOrderLogic.sendOrder(body, pi.executionId, msg);
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.append("CLOSE:{").append(pi.name).append(" ").append(StringUtil.exchangeStr(exchange));
@@ -235,7 +228,7 @@ public class MainTrailOrder_r6 {
 			sb.append(", qty=").append(body.getQty());
 			sb.append(", trigger=").append(triggerPrice).append(StringUtil.sideStr(body.getSide()));
 			sb.append("(").append(delta).append(")");
-			sb.append(", holdId=").append(holdId);
+			sb.append(", holdId=").append(pi.executionId);
 			sb.append("}");
 			String msgMail = sb.toString();
 			sendMailLogic.addLine(msgMail);
