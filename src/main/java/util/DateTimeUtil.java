@@ -1,5 +1,6 @@
 package util;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -15,6 +16,24 @@ public class DateTimeUtil {
 	 */
 	public static String nowToString() {
 		return toString(new Date());
+	}
+
+	/**
+	 * 日付文字列から日付型を取得する。
+	 * 
+	 * @param date 日付文字列。
+	 * @return 日付型。
+	 */
+	public static Date parseString(String s) {
+		if (s == null) {
+			return null;
+		}
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+			return sdf.parse(s);
+		} catch (ParseException e) {
+			return null;
+		}
 	}
 
 	/**
