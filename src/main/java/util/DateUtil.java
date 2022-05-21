@@ -10,6 +10,15 @@ import java.util.Date;
 public class DateUtil {
 
 	/**
+	 * 現在の日付を文字列で取得する。
+	 * 
+	 * @return 文字列。
+	 */
+	public static String nowToString() {
+		return toString(new Date());
+	}
+
+	/**
 	 * 日付文字列から日付型を取得する。
 	 * 
 	 * @param date 日付文字列。
