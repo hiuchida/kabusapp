@@ -216,8 +216,8 @@ public class MainChartData {
 		}
 		lastVolume = volume;
 
-		// 日時を切り出す。時間外は"CurrentPriceTime":nullのため、見つからない。
-		String date = StringUtil.parseString(message, "\"CurrentPriceTime\":\"", "\"");
+		// 日時を切り出す。時間外は"TradingVolumeTime":nullのため、見つからない。
+		String date = StringUtil.parseString(message, "\"TradingVolumeTime\":\"", "\"");
 		if (date == null) {
 			return null;
 		}
