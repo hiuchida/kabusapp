@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import logic.FileLockLogic;
 import util.FileUtil;
 import util.StringUtil;
 
@@ -24,6 +25,10 @@ public class MainMergeChartData {
 	 * PUSH APIで受信したチャートデータファイルパス。
 	 */
 	private static final String CHART_CSV_FILEPATH = DIRPATH + "ChartData.csv";
+	/**
+	 * ファイルロック管理用0バイトのファイルパス。存在しなければ生成される。
+	 */
+	private static final String LOCK_FILEPATH = DIRPATH + "ChartData.lock";
 	/**
 	 * マージしたチャートデータファイルパス。
 	 */
@@ -152,6 +157,20 @@ public class MainMergeChartData {
 	private Map<String, ChartInfo> chartMap = new TreeMap<>();
 
 	/**
+	 * チャートデータロックを管理する。
+	 */
+	private FileLockLogic fileLockLogic;
+
+	/**
+	 * コンストラクタ。
+	 * 
+	 * @param X_API_KEY 認証済TOKEN。
+	 */
+	public MainMergeChartData() {
+		this.fileLockLogic = new FileLockLogic(LOCK_FILEPATH);
+	}
+
+	/**
 	 * 保存した4本値チャートデータの終値と、PUSH APIで受信したチャートデータをマージする。
 	 */
 	public void execute() {
@@ -188,7 +207,13 @@ public class MainMergeChartData {
 	 * PUSH APIで受信したチャートデータファイルから現値を読み込む。
 	 */
 	private void readCsvChartData() {
-		List<String> lines = FileUtil.readAllLines(CHART_CSV_FILEPATH);
+		fileLockLogic.lockFile();
+		List<String> lines;
+		try {
+			lines = FileUtil.readAllLines(CHART_CSV_FILEPATH);
+		} finally {
+			fileLockLogic.unlockFile();
+		}
 		int readCnt = 0;
 		for (String s : lines) {
 			if (s.startsWith("#")) {
