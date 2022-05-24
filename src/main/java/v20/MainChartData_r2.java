@@ -197,7 +197,7 @@ public class MainChartData_r2 {
 			try {
 				SymbolNameSuccess sns = symbolNameApi.getFuture("NK225mini", ym);
 				String code = sns.getSymbol();
-				symbolList.add(new SymbolInfo(code));
+				symbolList.add(new SymbolInfo(code, "F" + ym));
 			} catch (ApiException e) {
 				e.printStackTrace();
 			}
