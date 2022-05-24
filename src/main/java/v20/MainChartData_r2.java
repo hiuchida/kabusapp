@@ -23,12 +23,13 @@ import com.google.gson.Gson;
 import api.ApiErrorLog;
 import api.BoardBean;
 import api.RegisterEtcApi;
+import api.SymbolNameApi;
 import io.swagger.client.ApiException;
+import io.swagger.client.model.SymbolNameSuccess;
 import logic.FileLockLogic;
 import util.Consts;
 import util.DateTimeUtil;
 import util.FileUtil;
-import util.GlobalConfigUtil;
 import util.LockedAuthorizedTokenUtil;
 import util.StringUtil;
 
@@ -75,6 +76,10 @@ public class MainChartData_r2 {
 		 */
 		public String code;
 		/**
+		 * 保存先ディレクトリの接尾語。
+		 */
+		public String suffix;
+		/**
 		 * バッファリングされたチャートデータのリスト。
 		 */
 		private List<String> dataList = new ArrayList<>();
@@ -89,11 +94,37 @@ public class MainChartData_r2 {
 		
 		public SymbolInfo(String code) {
 			this.code = code;
-			String dir = DIRPATH + code;
-			new File(dir).mkdirs();
-			this.fileLockLogic = new FileLockLogic(dir + "/" + LOCK_FILENAME);
+			this.suffix = "";
+			String dirPath = getDirPath();
+			new File(dirPath).mkdirs();
+			this.fileLockLogic = new FileLockLogic(dirPath + "/" + LOCK_FILENAME);
 		}
 
+		public SymbolInfo(String code, String suffix) {
+			this.code = code;
+			this.suffix = suffix;
+			String dirPath = getDirPath();
+			new File(dirPath).mkdirs();
+			this.fileLockLogic = new FileLockLogic(dirPath + "/" + LOCK_FILENAME);
+		}
+
+		public String getDirName() {
+			String dirName = code;
+			if (suffix.length() > 0) {
+				dirName = dirName + "_" + suffix;
+			}
+			return dirName;
+		}
+	
+		private String getDirPath() {
+			String dirPath = DIRPATH + getDirName();
+			return dirPath;
+		}
+		
+		public String getFilePath(String filename) {
+			return getDirPath() + "/" + filename;
+		}
+	
 		/**
 		 * 受信したメッセージをバッファに追加する。スレッド同期するため、単純な処理にする。
 		 * 
@@ -130,17 +161,17 @@ public class MainChartData_r2 {
 	/**
 	 * 銘柄コード。
 	 */
-	private String SYMBOL = GlobalConfigUtil.get("Symbol");
-
-	// TODO 検証用定数 2022/07-2022/09
-	private String SYMBOL2207 = "167070019";
-	private String SYMBOL2208 = "167080019";
-	private String SYMBOL2209 = "167090019";
+//	private String SYMBOL = GlobalConfigUtil.get("Symbol");
 
 	/**
 	 * 銘柄リスト。
 	 */
 	private List<SymbolInfo> symbolList = new ArrayList<>();
+
+	/**
+	 * 銘柄コード取得API。
+	 */
+	private SymbolNameApi symbolNameApi;
 
 	/**
 	 * 銘柄登録API。
@@ -158,12 +189,37 @@ public class MainChartData_r2 {
 	 * @param X_API_KEY 認証済TOKEN。
 	 */
 	public MainChartData_r2(String X_API_KEY) {
+		this.symbolNameApi = new SymbolNameApi(X_API_KEY);
 		this.registerEtcApi = new RegisterEtcApi(X_API_KEY);
 		this.mainThread = Thread.currentThread();
-		symbolList.add(new SymbolInfo(SYMBOL));
-		symbolList.add(new SymbolInfo(SYMBOL2207));
-		symbolList.add(new SymbolInfo(SYMBOL2208));
-		symbolList.add(new SymbolInfo(SYMBOL2209));
+		int yyyymm = 202206;
+		for (int ym = yyyymm; ym <= 202209; ym++) {
+			try {
+				SymbolNameSuccess sns = symbolNameApi.getFuture("NK225mini", ym);
+				String code = sns.getSymbol();
+				symbolList.add(new SymbolInfo(code));
+			} catch (ApiException e) {
+				e.printStackTrace();
+			}
+		}
+		int basePrice = 27000;
+		for (int d = -11 ; d <= 11; d++) {
+			int price = basePrice + d * 125;
+			try {
+				SymbolNameSuccess sns = symbolNameApi.getOption(yyyymm, "C", price);
+				String code = sns.getSymbol();
+				symbolList.add(new SymbolInfo(code, "C" + price));
+			} catch (ApiException e) {
+				e.printStackTrace();
+			}
+			try {
+				SymbolNameSuccess sns = symbolNameApi.getOption(yyyymm, "P", price);
+				String code = sns.getSymbol();
+				symbolList.add(new SymbolInfo(code, "P" + price));
+			} catch (ApiException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -222,7 +278,7 @@ public class MainChartData_r2 {
 		for (SymbolInfo si : symbolList) {
 			if (si.isExistsChartData()) {
 				si.fileLockLogic.lockFile();
-				try (PrintWriter pw = FileUtil.writer(getFilepath(si.code, DB_FILENAME), FileUtil.UTF8, true)) {
+				try (PrintWriter pw = FileUtil.writer(si.getFilePath(DB_FILENAME), FileUtil.UTF8, true)) {
 					int writeCnt = 0;
 					List<String> bufList = si.getAndClearChartData();
 					for (String s : bufList) {
@@ -235,11 +291,11 @@ public class MainChartData_r2 {
 						}
 					}
 					String now = DateTimeUtil.nowToString();
-					System.out.println(String.format("%s [%d] MainChartData.writeChartData(): code=%s, bufList.size=%d, writeCnt=%d", now, Thread.currentThread().getId(), si.code, bufList.size(), writeCnt));
+					System.out.println(String.format("%s [%d] MainChartData.writeChartData(): code=%s, bufList.size=%d, writeCnt=%d", now, Thread.currentThread().getId(), si.getDirName(), bufList.size(), writeCnt));
 					System.out.flush();
 				} catch (IOException e) {
 					String now = DateTimeUtil.nowToString();
-					System.out.println(String.format("%s [%d] MainChartData.writeChartData(): code=%s, ERROR %s", now, Thread.currentThread().getId(), si.code, e.toString()));
+					System.out.println(String.format("%s [%d] MainChartData.writeChartData(): code=%s, ERROR %s", now, Thread.currentThread().getId(), si.getDirName(), e.toString()));
 					System.out.flush();
 //					e.printStackTrace();
 				} finally {
@@ -303,17 +359,6 @@ public class MainChartData_r2 {
 		Gson gson = new Gson();
 		BoardBean bb = gson.fromJson(message, BoardBean.class);
 		return bb;
-	}
-
-	/**
-	 * ファイルパスを生成する。
-	 * 
-	 * @param code     銘柄コード。
-	 * @param filename ファイル名。
-	 * @return ファイルパス。
-	 */
-	private String getFilepath(String code, String filename) {
-		return DIRPATH + code + "/" + filename;
 	}
 
 	@OnOpen
