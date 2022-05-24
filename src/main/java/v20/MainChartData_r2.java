@@ -7,6 +7,8 @@ import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ContainerProvider;
@@ -164,9 +166,9 @@ public class MainChartData_r2 {
 //	private String SYMBOL = GlobalConfigUtil.get("Symbol");
 
 	/**
-	 * 銘柄リスト。
+	 * 銘柄情報マップ。
 	 */
-	private List<SymbolInfo> symbolList = new ArrayList<>();
+	private Map<String, SymbolInfo> symbolMap = new TreeMap<>();
 
 	/**
 	 * 銘柄コード取得API。
@@ -197,7 +199,7 @@ public class MainChartData_r2 {
 			try {
 				SymbolNameSuccess sns = symbolNameApi.getFuture("NK225mini", ym);
 				String code = sns.getSymbol();
-				symbolList.add(new SymbolInfo(code, "F" + ym));
+				symbolMap.put(code, new SymbolInfo(code, "F" + ym));
 			} catch (ApiException e) {
 				e.printStackTrace();
 			}
@@ -208,14 +210,14 @@ public class MainChartData_r2 {
 			try {
 				SymbolNameSuccess sns = symbolNameApi.getOption(yyyymm, "C", price);
 				String code = sns.getSymbol();
-				symbolList.add(new SymbolInfo(code, "C" + price));
+				symbolMap.put(code, new SymbolInfo(code, "C" + price));
 			} catch (ApiException e) {
 				e.printStackTrace();
 			}
 			try {
 				SymbolNameSuccess sns = symbolNameApi.getOption(yyyymm, "P", price);
 				String code = sns.getSymbol();
-				symbolList.add(new SymbolInfo(code, "P" + price));
+				symbolMap.put(code, new SymbolInfo(code, "P" + price));
 			} catch (ApiException e) {
 				e.printStackTrace();
 			}
@@ -235,7 +237,7 @@ public class MainChartData_r2 {
 		WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 		final Session session = container.connectToServer(this, uri);
 		// 銘柄登録
-		for (SymbolInfo si : symbolList) {
+		for (SymbolInfo si : symbolMap.values()) {
 			registerEtcApi.put(si.code, 2);
 		}
 		// シャットダウンハンドラ
@@ -275,7 +277,7 @@ public class MainChartData_r2 {
 	 * チャートデータファイルを書き込む。成功したらバッファをクリアする。メッセージの解析はスレッド同期せずに行う。
 	 */
 	private void writeChartData() {
-		for (SymbolInfo si : symbolList) {
+		for (SymbolInfo si : symbolMap.values()) {
 			if (si.isExistsChartData()) {
 				si.fileLockLogic.lockFile();
 				try (PrintWriter pw = FileUtil.writer(si.getFilePath(DB_FILENAME), FileUtil.UTF8, true)) {
@@ -373,13 +375,17 @@ public class MainChartData_r2 {
 //		String now = DateTimeUtil.nowToString();
 //		System.out.println(String.format("%s [%d] onMessge:%s", now, Thread.currentThread().getId(), message));
 //		System.out.flush();
-		for (SymbolInfo si : symbolList) {
-			int idx = message.indexOf("\"Symbol\":\"" + si.code + "\"");
-			if (idx >= 0) {
-				si.addChartData(message);
-				break;
-			}
+		String code = StringUtil.parseString(message, "\"Symbol\":\"", "\"");
+		if (code == null) {
+			// 過去データからnullになることは有り得ない
+			return;
 		}
+		SymbolInfo si = symbolMap.get(code);
+		if (si == null) {
+			// 別の手段で銘柄登録APIを実行した場合に受信する可能性があるが、無視する
+			return;
+		}
+		si.addChartData(message);
 	}
 
 	@OnError
