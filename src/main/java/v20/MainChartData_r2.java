@@ -45,7 +45,7 @@ public class MainChartData_r2 {
 	/**
 	 * 基準パス。
 	 */
-	private static final String DIRPATH = "/tmp/";
+	private static final String DIRPATH = "/tmp/chart/";
 	/**
 	 * チャートデータファイルパス。
 	 */
