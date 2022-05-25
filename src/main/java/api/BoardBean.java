@@ -3,7 +3,8 @@ package api;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * PUSH配信された時価情報Beanクラス。Sell1～Sell10、Buy1～Buy10を除く。OffsetDateTime型はString型に変更。
+ * PUSH配信された時価情報Beanクラス。OffsetDateTime型はString型に変更。
+ * 
  * @see io.swagger.client.model.BoardSuccess
  */
 public class BoardBean {
@@ -91,6 +92,36 @@ public class BoardBean {
 	@SerializedName("MarketOrderSellQty")
 	public Double marketOrderSellQty = null;
 
+	@SerializedName("Sell1")
+	public BoardBeanQuotation1 sell1 = null;
+
+	@SerializedName("Sell2")
+	public BoardBeanQuotation2 sell2 = null;
+
+	@SerializedName("Sell3")
+	public BoardBeanQuotation2 sell3 = null;
+
+	@SerializedName("Sell4")
+	public BoardBeanQuotation2 sell4 = null;
+
+	@SerializedName("Sell5")
+	public BoardBeanQuotation2 sell5 = null;
+
+	@SerializedName("Sell6")
+	public BoardBeanQuotation2 sell6 = null;
+
+	@SerializedName("Sell7")
+	public BoardBeanQuotation2 sell7 = null;
+
+	@SerializedName("Sell8")
+	public BoardBeanQuotation2 sell8 = null;
+
+	@SerializedName("Sell9")
+	public BoardBeanQuotation2 sell9 = null;
+
+	@SerializedName("Sell10")
+	public BoardBeanQuotation2 sell10 = null;
+
 	@SerializedName("AskQty")
 	public Double askQty = null;
 
@@ -105,6 +136,36 @@ public class BoardBean {
 
 	@SerializedName("MarketOrderBuyQty")
 	public Double marketOrderBuyQty = null;
+
+	@SerializedName("Buy1")
+	public BoardBeanQuotation1 buy1 = null;
+
+	@SerializedName("Buy2")
+	public BoardBeanQuotation2 buy2 = null;
+
+	@SerializedName("Buy3")
+	public BoardBeanQuotation2 buy3 = null;
+
+	@SerializedName("Buy4")
+	public BoardBeanQuotation2 buy4 = null;
+
+	@SerializedName("Buy5")
+	public BoardBeanQuotation2 buy5 = null;
+
+	@SerializedName("Buy6")
+	public BoardBeanQuotation2 buy6 = null;
+
+	@SerializedName("Buy7")
+	public BoardBeanQuotation2 buy7 = null;
+
+	@SerializedName("Buy8")
+	public BoardBeanQuotation2 buy8 = null;
+
+	@SerializedName("Buy9")
+	public BoardBeanQuotation2 buy9 = null;
+
+	@SerializedName("Buy10")
+	public BoardBeanQuotation2 buy10 = null;
 
 	@SerializedName("OverSellQty")
 	public Double overSellQty = null;
@@ -154,9 +215,13 @@ public class BoardBean {
 				+ highPriceTime + ", lowPrice=" + lowPrice + ", lowPriceTime=" + lowPriceTime + ", tradingVolume="
 				+ tradingVolume + ", tradingVolumeTime=" + tradingVolumeTime + ", VWAP=" + VWAP + ", tradingValue="
 				+ tradingValue + ", bidQty=" + bidQty + ", bidPrice=" + bidPrice + ", bidTime=" + bidTime + ", bidSign="
-				+ bidSign + ", marketOrderSellQty=" + marketOrderSellQty + ", askQty=" + askQty + ", askPrice="
+				+ bidSign + ", marketOrderSellQty=" + marketOrderSellQty + ", sell1=" + sell1 + ", sell2=" + sell2
+				+ ", sell3=" + sell3 + ", sell4=" + sell4 + ", sell5=" + sell5 + ", sell6=" + sell6 + ", sell7=" + sell7
+				+ ", sell8=" + sell8 + ", sell9=" + sell9 + ", sell10=" + sell10 + ", askQty=" + askQty + ", askPrice="
 				+ askPrice + ", askTime=" + askTime + ", askSign=" + askSign + ", marketOrderBuyQty="
-				+ marketOrderBuyQty + ", overSellQty=" + overSellQty + ", underBuyQty=" + underBuyQty
+				+ marketOrderBuyQty + ", buy1=" + buy1 + ", buy2=" + buy2 + ", buy3=" + buy3 + ", buy4=" + buy4
+				+ ", buy5=" + buy5 + ", buy6=" + buy6 + ", buy7=" + buy7 + ", buy8=" + buy8 + ", buy9=" + buy9
+				+ ", buy10=" + buy10 + ", overSellQty=" + overSellQty + ", underBuyQty=" + underBuyQty
 				+ ", totalMarketValue=" + totalMarketValue + ", clearingPrice=" + clearingPrice + ", IV=" + IV
 				+ ", gamma=" + gamma + ", theta=" + theta + ", vega=" + vega + ", delta=" + delta + ", securityType="
 				+ securityType + "]";
