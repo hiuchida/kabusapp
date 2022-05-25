@@ -78,6 +78,10 @@ public class MainChartData_r2 {
 		 */
 		public String code;
 		/**
+		 * 市場コード。
+		 */
+		public int exchange;
+		/**
 		 * 保存先ディレクトリの接尾語。
 		 */
 		public String suffix;
@@ -94,16 +98,18 @@ public class MainChartData_r2 {
 		 */
 		public FileLockLogic fileLockLogic;
 		
-		public SymbolInfo(String code) {
+		public SymbolInfo(String code, int exchange) {
 			this.code = code;
+			this.exchange = exchange;
 			this.suffix = "";
 			String dirPath = getDirPath();
 			new File(dirPath).mkdirs();
 			this.fileLockLogic = new FileLockLogic(dirPath + "/" + LOCK_FILENAME);
 		}
 
-		public SymbolInfo(String code, String suffix) {
+		public SymbolInfo(String code, int exchange, String suffix) {
 			this.code = code;
+			this.exchange = exchange;
 			this.suffix = suffix;
 			String dirPath = getDirPath();
 			new File(dirPath).mkdirs();
@@ -199,7 +205,7 @@ public class MainChartData_r2 {
 			try {
 				SymbolNameSuccess sns = symbolNameApi.getFuture("NK225mini", ym);
 				String code = sns.getSymbol();
-				symbolMap.put(code, new SymbolInfo(code, "F" + ym));
+				symbolMap.put(code, new SymbolInfo(code, 2, "F" + ym));
 			} catch (ApiException e) {
 				e.printStackTrace();
 			}
@@ -210,14 +216,14 @@ public class MainChartData_r2 {
 			try {
 				SymbolNameSuccess sns = symbolNameApi.getOption(yyyymm, "C", price);
 				String code = sns.getSymbol();
-				symbolMap.put(code, new SymbolInfo(code, "C" + price));
+				symbolMap.put(code, new SymbolInfo(code, 2, "C" + price));
 			} catch (ApiException e) {
 				e.printStackTrace();
 			}
 			try {
 				SymbolNameSuccess sns = symbolNameApi.getOption(yyyymm, "P", price);
 				String code = sns.getSymbol();
-				symbolMap.put(code, new SymbolInfo(code, "P" + price));
+				symbolMap.put(code, new SymbolInfo(code, 2, "P" + price));
 			} catch (ApiException e) {
 				e.printStackTrace();
 			}
@@ -237,8 +243,9 @@ public class MainChartData_r2 {
 		WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 		final Session session = container.connectToServer(this, uri);
 		// 銘柄登録
+		registerEtcApi.removeAll();
 		for (SymbolInfo si : symbolMap.values()) {
-			registerEtcApi.put(si.code, 2);
+			registerEtcApi.put(si.code, si.exchange);
 		}
 		// シャットダウンハンドラ
 		Runtime.getRuntime().addShutdownHook(new Thread() {

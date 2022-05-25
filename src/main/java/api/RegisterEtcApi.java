@@ -7,6 +7,7 @@ import io.swagger.client.api.RegisterApi;
 import io.swagger.client.model.RegistSuccess;
 import io.swagger.client.model.RequestRegister;
 import io.swagger.client.model.RequestRegisterSymbols;
+import io.swagger.client.model.UnregisterAllSuccess;
 
 /**
  * 銘柄登録API。
@@ -58,6 +59,20 @@ public class RegisterEtcApi {
 			return rs;
 		} catch (ApiException e) {
 			ApiErrorLog.error(e, clazz, "put", symbol + "," + exchange);
+			throw e;
+		}
+	}
+
+	public UnregisterAllSuccess removeAll() throws ApiException {
+		try {
+			UnregisterAllSuccess rs = registerApi.unregisterAllPut(X_API_KEY);
+			try {
+				Thread.sleep(120); // 8.3req/sec
+			} catch (Exception e) {
+			}
+			return rs;
+		} catch (ApiException e) {
+			ApiErrorLog.error(e, clazz, "put", "");
 			throw e;
 		}
 	}
