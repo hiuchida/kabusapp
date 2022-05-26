@@ -1,4 +1,4 @@
-package v14;
+package logic;
 
 /**
  * 5分足の時刻を管理するクラス。
