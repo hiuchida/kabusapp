@@ -142,4 +142,32 @@ public class StringUtilTest {
 		}
 	}
 
+	@Test
+	public void joinCommaATest() {
+		String s1 = "ab";
+		String s2 = "cd";
+		String a1 = StringUtil.joinComma(s1, s2);
+		String a2 = StringUtil.joinComma("", s2);
+		String a3 = StringUtil.joinComma(s1, "");
+		assertEquals("ab,cd", a1);
+		assertEquals(",cd", a2);
+		assertEquals("ab,", a3);
+	}
+
+	@Test
+	public void joinCommaBTest() {
+		String[] sa1 = { "ab", "cd", "ef" };
+		String[] sa2 = { "", "cd", "ef" };
+		String[] sa3 = { "ab", "", "ef" };
+		String[] sa4 = { "ab", "cd", "" };
+		String s1 = StringUtil.joinComma(sa1);
+		String s2 = StringUtil.joinComma(sa2);
+		String s3 = StringUtil.joinComma(sa3);
+		String s4 = StringUtil.joinComma(sa4);
+		assertEquals("ab,cd,ef", s1);
+		assertEquals(",cd,ef", s2);
+		assertEquals("ab,,ef", s3);
+		assertEquals("ab,cd,", s4);
+	}
+
 }

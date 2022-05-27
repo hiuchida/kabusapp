@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.invoke.MethodHandles;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -309,8 +310,6 @@ public class MainChartData_r2 {
 					int writeCnt = 0;
 					List<String> bufList = si.getAndClearChartData();
 					for (String s : bufList) {
-//						BoardBean bb = parseJson(s);
-//						System.out.println(bb);
 						String data = parseChartData(si, s);
 						if (data != null) {
 							pw.println(data);
@@ -340,48 +339,46 @@ public class MainChartData_r2 {
 	 * @return 出力文字列。対象外はnull。
 	 */
 	private String parseChartData(SymbolInfo si, String message) {
-		// 銘柄コードを比較する
-		int idx = message.indexOf("\"Symbol\":\"" + si.code + "\"");
-		if (idx < 0) {
+		BoardBean bb = parseJson(message);
+//		System.out.println(bb);
+		if (!validateBoardBean(bb, si)) {
 			return null;
 		}
 
-		// 価格を切り出す。時間外は"CurrentPrice":nullのため、"null"が返る。
-		String price = StringUtil.parseString(message, "\"CurrentPrice\":", ",");
-		if (price == null || "null".equals(price)) {
-			return null;
-		}
-		
-		// 売買高を切り出す。時間外は"TradingVolume":nullのため、"null"が返る。
-		String volume = StringUtil.parseString(message, "\"TradingVolume\":", ",");
-		if (si.type != 4) {
-			if (volume == null || "null".equals(volume)) {
-				return null;
-			}
-		}
-
-		// 保存された最新のデータと同じ場合はスキップする
+		Double price = bb.currentPrice;
+		Double volume = bb.tradingVolume;
 		String dataValue;
-		if (si.type != 4) {
-			dataValue = price + "," + volume;
-		} else {
-			dataValue = price;
+		switch (si.type) {
+		case 1:
+		case 2:
+			dataValue = concat(price, volume);
+			break;
+		case 3:
+			Double iv = bb.IV;
+			Double delta = bb.delta;
+			Double gamma = bb.gamma;
+			Double theta = bb.theta;
+			Double vega = bb.vega;
+			dataValue = concat(price, volume) + "," + concat(iv, delta, gamma, theta, vega);
+			break;
+		case 4:
+			dataValue = BigDecimal.valueOf(price).toPlainString();
+			break;
+		default:
+			throw new RuntimeException("unknown type=" + si.type);
 		}
+		// 保存された最新のデータと同じ場合はスキップする
 		if (dataValue.equals(si.lastDataValue)) {
 			return null;
 		}
 		si.lastDataValue = dataValue;
 
+		// 時刻は売買高時刻を使用する。指数は売買高時刻が常にnullのため、現値時刻を使用する。
 		String date;
 		if (si.type != 4) {
-			// 日時を切り出す。時間外は"TradingVolumeTime":nullのため、見つからない。
-			date = StringUtil.parseString(message, "\"TradingVolumeTime\":\"", "\"");
+			date = bb.tradingVolumeTime;
 		} else {
-			// 日時を切り出す。時間外は"CurrentPriceTime":nullのため、見つからない。
-			date = StringUtil.parseString(message, "\"CurrentPriceTime\":\"", "\"");
-		}
-		if (date == null) {
-			return null;
+			date = bb.currentPriceTime;
 		}
 
 		// 日時から"T"と"+09:00"を取る
@@ -400,6 +397,102 @@ public class MainChartData_r2 {
 		Gson gson = new Gson();
 		BoardBean bb = gson.fromJson(message, BoardBean.class);
 		return bb;
+	}
+
+	/**
+	 * 時価情報Beanが有効かどうか？
+	 * 
+	 * @param bb 時価情報Bean。
+	 * @param si 銘柄情報。
+	 * @return true:有効、false:無効。 
+	 */
+	private boolean validateBoardBean(BoardBean bb, SymbolInfo si) {
+		// 銘柄コードを比較する。onMessage()で振り分けているので一致しないはずはない。
+		String code = bb.symbol;
+		if (!code.equals(si.code)) {
+			return false;
+		}
+		// 現値をチェックする。時間外はnull。
+		Double price = bb.currentPrice;
+		if (price == null) {
+			return false;
+		}
+		// 売買高と売買高時刻をチェックする。時間外はnull。指数は常にnullのためチェック対象外。
+		if (si.type != 4) {
+			Double volume = bb.tradingVolume;
+			if (volume == null) {
+				return false;
+			}
+			String date = bb.tradingVolumeTime;
+			if (date == null) {
+				return false;
+			}
+		}
+		// 現値時刻をチェックする。時間外はnull。指数は売買高時刻が常にnullのためこちらをチェックする。
+		if (si.type == 4) {
+			String date = bb.currentPriceTime;
+			if (date == null) {
+				return false;
+			}
+		}
+		// Greeksをチェックする。時間外はnull。ＯＰ以外は常にnullのためチェック対象外。
+		if (si.type == 3) {
+			Double iv = bb.IV;
+			if (iv == null) {
+				return false;
+			}
+			Double delta = bb.delta;
+			if (delta == null) {
+				return false;
+			}
+			Double gamma = bb.gamma;
+			if (gamma == null) {
+				return false;
+			}
+			Double theta = bb.theta;
+			if (theta == null) {
+				return false;
+			}
+			Double vega = bb.vega;
+			if (vega == null) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * 2つのDouble値からカンマ区切り文字列を作成する。指数表示(1.23E-4等)にならないようにする。
+	 * @param d1 Double値。
+	 * @param d2 Double値。
+	 * @return カンマ区切り文字列。
+	 */
+	private String concat(Double d1, Double d2) {
+		String s1 = BigDecimal.valueOf(d1).toPlainString();
+		String s2 = BigDecimal.valueOf(d2).toPlainString();
+		String val = StringUtil.joinComma(s1, s2);
+		return val;
+	}
+
+	/**
+	 * 5つのDouble値からカンマ区切り文字列を作成する。指数表示(1.23E-4等)にならないようにする。
+	 * @param d1 Double値。
+	 * @param d2 Double値。
+	 * @param d3 Double値。
+	 * @param d4 Double値。
+	 * @param d5 Double値。
+	 * @return カンマ区切り文字列。
+	 */
+	private String concat(Double d1, Double d2, Double d3, Double d4, Double d5) {
+		String[] sa = new String[5];
+		int i = 0;
+		sa[i++] = BigDecimal.valueOf(d1).toPlainString();
+		sa[i++] = BigDecimal.valueOf(d2).toPlainString();
+		sa[i++] = BigDecimal.valueOf(d3).toPlainString();
+		sa[i++] = BigDecimal.valueOf(d4).toPlainString();
+		sa[i++] = BigDecimal.valueOf(d5).toPlainString();
+		String val = StringUtil.joinComma(sa);
+		return val;
 	}
 
 	@OnOpen
