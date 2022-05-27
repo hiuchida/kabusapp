@@ -246,9 +246,6 @@ public class MainChartData_r2 {
 		}
 		symbolMap.put("101", new SymbolInfo(4, "101", 1));
 		symbolMap.put("9005", new SymbolInfo(1, "9005", 1));
-//		symbolMap.put("USD/JPY", new SymbolInfo(4, "USDJPY", 300));
-//		symbolMap.put("USDJPY", new SymbolInfo(4, "USDJPY", 300));
-//		symbolMap.put("usdjpy", new SymbolInfo(4, "USDJPY", 300));
 	}
 
 	/**
