@@ -74,6 +74,10 @@ public class MainChartData_r2 {
 	 */
 	public static class SymbolInfo {
 		/**
+		 * タイプ（1:株式、2:先物、3:ＯＰ、4:指数）。
+		 */
+		public int type;
+		/**
 		 * 銘柄コード。
 		 */
 		public String code;
@@ -90,15 +94,16 @@ public class MainChartData_r2 {
 		 */
 		private List<String> dataList = new ArrayList<>();
 		/**
-		 * バッファリングされた最新の売買高。
+		 * 保存された最新のデータ。
 		 */
-		public String lastVolume = "";
+		public String lastDataValue = "";
 		/**
 		 * チャートデータロックを管理する。
 		 */
 		public FileLockLogic fileLockLogic;
 		
-		public SymbolInfo(String code, int exchange) {
+		public SymbolInfo(int type, String code, int exchange) {
+			this.type = type;
 			this.code = code;
 			this.exchange = exchange;
 			this.suffix = "";
@@ -107,7 +112,8 @@ public class MainChartData_r2 {
 			this.fileLockLogic = new FileLockLogic(dirPath + "/" + LOCK_FILENAME);
 		}
 
-		public SymbolInfo(String code, int exchange, String suffix) {
+		public SymbolInfo(int type, String code, int exchange, String suffix) {
+			this.type = type;
 			this.code = code;
 			this.exchange = exchange;
 			this.suffix = suffix;
@@ -205,29 +211,44 @@ public class MainChartData_r2 {
 			try {
 				SymbolNameSuccess sns = symbolNameApi.getFuture("NK225mini", ym);
 				String code = sns.getSymbol();
-				symbolMap.put(code, new SymbolInfo(code, 2, "F" + ym));
+				symbolMap.put(code, new SymbolInfo(2, code, 2, "F" + ym));
+			} catch (ApiException e) {
+				e.printStackTrace();
+			}
+		}
+		yyyymm = 202206;
+		for (int ym = yyyymm; ym <= 202209; ym += 3) {
+			try {
+				SymbolNameSuccess sns = symbolNameApi.getFuture("NK225", ym);
+				String code = sns.getSymbol();
+				symbolMap.put(code, new SymbolInfo(2, code, 2, "FL" + ym));
 			} catch (ApiException e) {
 				e.printStackTrace();
 			}
 		}
 		int basePrice = 27000;
-		for (int d = -11 ; d <= 11; d++) {
+		for (int d = -10 ; d <= 10; d++) {
 			int price = basePrice + d * 125;
 			try {
 				SymbolNameSuccess sns = symbolNameApi.getOption(yyyymm, "C", price);
 				String code = sns.getSymbol();
-				symbolMap.put(code, new SymbolInfo(code, 2, "C" + price));
+				symbolMap.put(code, new SymbolInfo(3, code, 2, "C" + price));
 			} catch (ApiException e) {
 				e.printStackTrace();
 			}
 			try {
 				SymbolNameSuccess sns = symbolNameApi.getOption(yyyymm, "P", price);
 				String code = sns.getSymbol();
-				symbolMap.put(code, new SymbolInfo(code, 2, "P" + price));
+				symbolMap.put(code, new SymbolInfo(3, code, 2, "P" + price));
 			} catch (ApiException e) {
 				e.printStackTrace();
 			}
 		}
+		symbolMap.put("101", new SymbolInfo(4, "101", 1));
+		symbolMap.put("9005", new SymbolInfo(1, "9005", 1));
+//		symbolMap.put("USD/JPY", new SymbolInfo(4, "USDJPY", 300));
+//		symbolMap.put("USDJPY", new SymbolInfo(4, "USDJPY", 300));
+//		symbolMap.put("usdjpy", new SymbolInfo(4, "USDJPY", 300));
 	}
 
 	/**
@@ -336,18 +357,32 @@ public class MainChartData_r2 {
 		
 		// 売買高を切り出す。時間外は"TradingVolume":nullのため、"null"が返る。
 		String volume = StringUtil.parseString(message, "\"TradingVolume\":", ",");
-		if (volume == null || "null".equals(volume)) {
-			return null;
+		if (si.type != 4) {
+			if (volume == null || "null".equals(volume)) {
+				return null;
+			}
 		}
 
-		// バッファリングされた最新の売買高と同じ場合はスキップする
-		if (volume.equals(si.lastVolume)) {
+		// 保存された最新のデータと同じ場合はスキップする
+		String dataValue;
+		if (si.type != 4) {
+			dataValue = price + "," + volume;
+		} else {
+			dataValue = price;
+		}
+		if (dataValue.equals(si.lastDataValue)) {
 			return null;
 		}
-		si.lastVolume = volume;
+		si.lastDataValue = dataValue;
 
-		// 日時を切り出す。時間外は"TradingVolumeTime":nullのため、見つからない。
-		String date = StringUtil.parseString(message, "\"TradingVolumeTime\":\"", "\"");
+		String date;
+		if (si.type != 4) {
+			// 日時を切り出す。時間外は"TradingVolumeTime":nullのため、見つからない。
+			date = StringUtil.parseString(message, "\"TradingVolumeTime\":\"", "\"");
+		} else {
+			// 日時を切り出す。時間外は"CurrentPriceTime":nullのため、見つからない。
+			date = StringUtil.parseString(message, "\"CurrentPriceTime\":\"", "\"");
+		}
 		if (date == null) {
 			return null;
 		}
@@ -355,7 +390,7 @@ public class MainChartData_r2 {
 		// 日時から"T"と"+09:00"を取る
 		date = date.substring(0, 10) + " " + date.substring(11, 19);
 		
-		return date + "," + price + "," + volume;
+		return date + "," + dataValue;
 	}
 
 	/**
