@@ -142,7 +142,7 @@ public class MainCalcIndicator3 {
 	private List<ChartInfo> chartList = new ArrayList<>();
 
 	/**
-	 * 保存した4本値チャートデータの終値と、PUSH APIで受信したチャートデータをマージする。
+	 * テクニカル指標(MACD(5,20,9))を計算する。
 	 */
 	public void execute() {
 		readChartData();
