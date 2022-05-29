@@ -21,7 +21,7 @@ public class MainCalcIndicator2 {
 	/**
 	 * マージしたチャートデータファイルパス。
 	 */
-	private static final String CHART_TXT_FILEPATH = DIRPATH + "ChartData.txt";
+	private static final String CHART_TXT_FILEPATH = DIRPATH + "ChartData5m.txt";
 
 	/**
 	 * チャート情報クラス。

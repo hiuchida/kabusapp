@@ -33,7 +33,7 @@ public class MainMergeChartData_r2 {
 	/**
 	 * マージしたチャートデータファイルパス。
 	 */
-	private static final String CHART_TXT_FILEPATH = DIRPATH + "ChartData_r2.txt";
+	private static final String CHART_TXT_FILEPATH = DIRPATH + "ChartData5m_r2.txt";
 
 	/**
 	 * チャート情報クラス。
