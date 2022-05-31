@@ -1,6 +1,5 @@
 package v24;
 
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -9,12 +8,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import logic.FileLockLogic;
-import util.Consts;
 import util.DateTimeUtil;
 import util.DateUtil;
-import util.ErrorLog;
 import util.FileUtil;
-import util.LockedAuthorizedToken;
 import util.StringUtil;
 
 /**
@@ -180,13 +176,7 @@ public class MainMergeChartData2_r2 {
 	 * 保存した4本値チャートデータの終値と、PUSH APIで受信したチャートデータをマージする。
 	 */
 	public static void main(String[] args) {
-		ErrorLog.init(MethodHandles.lookup().lookupClass(), Consts.VERSION);
-		LockedAuthorizedToken.lockToken();
-		try {
-			new MainMergeChartData2_r2().execute();
-		} finally {
-			LockedAuthorizedToken.unlockToken();
-		}
+		new MainMergeChartData2_r2().execute();
 	}
 
 	/**
