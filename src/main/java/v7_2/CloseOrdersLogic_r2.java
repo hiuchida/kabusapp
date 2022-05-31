@@ -105,7 +105,7 @@ public class CloseOrdersLogic_r2 {
 			String side = order.getSide();
 			int state = order.getState();
 			int exchange = order.getExchange();
-			int cashMargin = order.getCashMargin();
+			Integer cashMargin = order.getCashMargin();
 			System.out.println("  " + StringUtil.index(i + 1) + ": " + orderId + " " + code + " " + name + " " + state + " "
 					+ exchange + " " + cashMargin + " " + price + " " + StringUtil.sideStr(side) + " " + orderQty);
 			if (state == 5) { // 終了（発注エラー・取消済・全約定・失効・期限切れ）

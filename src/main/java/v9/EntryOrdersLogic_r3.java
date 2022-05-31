@@ -312,7 +312,7 @@ public class EntryOrdersLogic_r3 {
 			String side = order.getSide();
 			int state = order.getState();
 			int exchange = order.getExchange();
-			int cashMargin = order.getCashMargin();
+			Integer cashMargin = order.getCashMargin();
 			String executionIds = "";
 			for (OrdersSuccessDetails osd : order.getDetails()) {
 				String executionId = osd.getExecutionID();
