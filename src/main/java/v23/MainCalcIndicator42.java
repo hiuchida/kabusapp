@@ -2,10 +2,6 @@ package v23;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import util.FileUtil;
 import util.StringUtil;
@@ -146,7 +142,6 @@ public class MainCalcIndicator42 {
 	 */
 	public void execute() {
 		readChartData();
-		chartList = fill0555(chartList);
 		printHv();
 	}
 
@@ -211,39 +206,6 @@ public class MainCalcIndicator42 {
 			chartList.add(ci);
 		}
 		System.out.println("MainCalcIndicator.readChartData(): chartList.size=" + chartList.size());
-	}
-
-	/**
-	 * 05:55が抜けているチャートデータをflag=3で埋める。
-	 * 
-	 * @param chartList チャートデータのリスト。
-	 * @return 更新されたチャートデータのリスト。
-	 */
-	private List<ChartInfo> fill0555(List<ChartInfo> chartList) {
-		Map<String, ChartInfo> map = new TreeMap<>();
-		Set<String> dateSet = new TreeSet<>();
-		for (ChartInfo ci : chartList) {
-			String key = ci.getKey();
-			map.put(key, ci);
-			String date = ci.date.substring(0, 10);
-			dateSet.add(date);
-		}
-		for (String date : dateSet) {
-			String date0550 = date + " 05:50:00";
-			String date0555 = date + " 05:55:00";
-			ChartInfo ci0550 = map.get(date0550);
-			ChartInfo ci0555 = map.get(date0555);
-			if (ci0550 != null && ci0555 == null) {
-				ci0555 = new ChartInfo(date0555, ci0550.closePrice);
-				map.put(date0555, ci0555);
-			}
-		}
-		List<ChartInfo> list = new ArrayList<>();
-		for (String key : map.keySet()) {
-			ChartInfo ci = map.get(key);
-			list.add(ci);
-		}
-		return list;
 	}
 
 }
