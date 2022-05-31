@@ -110,7 +110,11 @@ public class ChartDataLogic {
 		vals = new int[2];
 		int idx = searchIdx(date);
 		if (idx < 0) {
-			System.out.println("ChartDataLogic.searchHighLow(): idx=" + idx + ", last_ci=" + chartList.get(chartList.size() - 1));
+			if (chartList.size() > 0) {
+				System.out.println("ChartDataLogic.searchHighLow(): idx=" + idx + ", last_ci=" + chartList.get(chartList.size() - 1));
+			} else {
+				System.out.println("ChartDataLogic.searchHighLow(): idx=" + idx + ", last_ci=null");
+			}
 			vals[0] = 0;
 			vals[1] = 0;
 			searchMap.put(date, vals);
