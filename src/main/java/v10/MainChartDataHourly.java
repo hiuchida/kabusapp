@@ -40,6 +40,7 @@ public class MainChartDataHourly {
 			chartCalendar.initCalendar();
 			new MainChartDataHourly("30m").execute();
 			new MainChartDataHourly("5m").execute();
+			new MainChartDataHourly("1m").execute();
 		} finally {
 		}
 	}
@@ -119,6 +120,9 @@ public class MainChartDataHourly {
 			break;
 		case "5m":
 			filter = "5分足";
+			break;
+		case "1m":
+			filter = "1分足";
 			break;
 		default:
 			return;
