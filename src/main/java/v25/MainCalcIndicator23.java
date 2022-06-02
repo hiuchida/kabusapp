@@ -151,7 +151,7 @@ public class MainCalcIndicator23 {
 	}
 
 	/**
-	 * ボリンジャーバンド(12本)を表示する。
+	 * ボリンジャーバンド(25本)を表示する。
 	 */
 	private void printBollingerBands() {
 		final int param1 = 25;
