@@ -80,6 +80,10 @@ public class MainChartDataHourly_r3 {
 	}
 
 	/**
+	 * 銘柄コード。
+	 */
+	private String code;
+	/**
 	 * チャート種別。
 	 */
 	private String chartType;
@@ -99,6 +103,7 @@ public class MainChartDataHourly_r3 {
 	 * @param chartType チャート種別。
 	 */
 	public MainChartDataHourly_r3(String code, String chartType) {
+		this.code = code;
 		this.chartType = chartType;
 		String dir = DIR_DBPATH + "/" + code;
 		new File(dir).mkdirs();
@@ -127,21 +132,27 @@ public class MainChartDataHourly_r3 {
 			String key = getKey(s);
 			dbMap.put(key, s);
 		}
-		System.out.println("MainChartDataHourly.readChartDB(): dbMap.size=" + dbMap.size());
+		if (dbMap.size() > 0) {
+			System.out.println("MainChartDataHourly.readChartDB(): " + dbFilePath + ", dbMap.size=" + dbMap.size());
+		}
 	}
 
 	/**
 	 * チャートＤＢファイルを書き込む。
 	 */
 	private void writeChartDB() {
-		System.out.println("MainChartDataHourly.writeChartDB(): dbMap.size=" + dbMap.size());
-		List<String> lines = new ArrayList<>();
-		lines.add("# date,open,high,low,close,volume");
-		for (String key : dbMap.keySet()) {
-			String val = dbMap.get(key);
-			lines.add(val);
+		if (dbMap.size() > 0) {
+			System.out.println("MainChartDataHourly.writeChartDB(): " + dbFilePath + ", dbMap.size=" + dbMap.size());
+			List<String> lines = new ArrayList<>();
+			lines.add("# date,open,high,low,close,volume");
+			for (String key : dbMap.keySet()) {
+				String val = dbMap.get(key);
+				lines.add(val);
+			}
+			FileUtil.writeAllLines(dbFilePath, lines);
+		} else {
+			new File(dbFilePath).delete();
 		}
-		FileUtil.writeAllLines(dbFilePath, lines);
 	}
 
 	/**
@@ -181,10 +192,14 @@ public class MainChartDataHourly_r3 {
 		}
 		File dir = new File(dirpath);
 		for (File f : dir.listFiles()) {
-			if (!f.getName().endsWith(".csv")) {
+			String name = f.getName();
+			if (!name.endsWith(".csv")) {
 				continue;
 			}
-			if (f.getName().indexOf(filter) < 0) {
+			if (!name.startsWith(code)) {
+				continue;
+			}
+			if (name.indexOf(filter) < 0) {
 				continue;
 			}
 			readChart(f.getPath());
