@@ -130,7 +130,7 @@ public class FileUtil {
 	}
 
 	/**
-	 * ファイルの先頭1行を保存する。
+	 * ファイルのすべての行を保存する。
 	 * 
 	 * @param filepath ファイルパス。
 	 * @param lines    ファイルのすべての行のリスト。
