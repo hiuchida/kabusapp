@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,6 +122,34 @@ public class FileUtil {
 				if (line == null) {
 					break;
 				}
+				list.add(line);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	/**
+	 * ファイルの途中からすべての行を取得する。
+	 * 
+	 * @param filepath ファイルパス。
+	 * @param offset   ファイルオフセット。
+	 * @return ファイルのすべての行のリスト。ファイルが存在しない場合は0件のリストを返す。
+	 */
+	public static List<String> readNextLines(String filepath, long offset) {
+		List<String> list = new ArrayList<>();
+		if (!new File(filepath).exists()) {
+			return list;
+		}
+		try (RandomAccessFile raf = new RandomAccessFile(new File(filepath), "r")) {
+			raf.seek(offset);
+			while (true) {
+				String line = raf.readLine();
+				if (line == null) {
+					break;
+				}
+				line = new String(line.getBytes("ISO-8859-1"), "UTF-8");
 				list.add(line);
 			}
 		} catch (IOException e) {
