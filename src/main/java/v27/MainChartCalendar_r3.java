@@ -140,13 +140,14 @@ public class MainChartCalendar_r3 {
 	private void readAllChartData(String dirpath) {
 		File dir = new File(dirpath);
 		for (File f : dir.listFiles()) {
-			if (!f.getName().endsWith(".csv")) {
+			String name = f.getName();
+			if (!name.endsWith(".csv")) {
 				continue;
 			}
-			if (f.getName().indexOf("週足") >= 0) {
+			if (name.indexOf("週足") >= 0) {
 				continue;
 			}
-			if (f.getName().indexOf("月足") >= 0) {
+			if (name.indexOf("月足") >= 0) {
 				continue;
 			}
 			readChartData(f.getPath());
