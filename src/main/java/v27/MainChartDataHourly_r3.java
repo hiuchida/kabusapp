@@ -151,7 +151,7 @@ public class MainChartDataHourly_r3 {
 			}
 			FileUtil.writeAllLines(dbFilePath, lines);
 		} else {
-			new File(dbFilePath).delete();
+			FileUtil.deleteFile(dbFilePath);
 		}
 	}
 
