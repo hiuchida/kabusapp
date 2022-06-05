@@ -53,6 +53,7 @@ public class MainChartCalendar_r3 {
 	 * コンストラクタ。
 	 */
 	public MainChartCalendar_r3() {
+		FileUtil.mkdirs(DIR_DBPATH);
 	}
 
 	/**
@@ -100,7 +101,6 @@ public class MainChartCalendar_r3 {
 	 * チャートデータからチャートカレンダーを作成する。
 	 */
 	private void execute() {
-		new File(DIR_DBPATH).mkdirs();
 		readCalendar();
 		readAllChartData(DIR_FILEPATH);
 		writeCalendar();

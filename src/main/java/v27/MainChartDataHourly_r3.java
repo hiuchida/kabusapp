@@ -105,9 +105,9 @@ public class MainChartDataHourly_r3 {
 	public MainChartDataHourly_r3(String code, String chartType) {
 		this.code = code;
 		this.chartType = chartType;
-		String dir = DIR_DBPATH + "/" + code;
-		new File(dir).mkdirs();
-		this.dbFilePath = dir + "/" + String.format(DB_FILENAME, chartType);
+		String dirPath = DIR_DBPATH + "/" + code;
+		FileUtil.mkdirs(dirPath);
+		this.dbFilePath = dirPath + "/" + String.format(DB_FILENAME, chartType);
 	}
 
 	/**

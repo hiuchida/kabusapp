@@ -1,6 +1,5 @@
 package v20;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.invoke.MethodHandles;
@@ -109,7 +108,7 @@ public class MainChartData_r2 {
 			this.exchange = exchange;
 			this.suffix = "";
 			String dirPath = getDirPath();
-			new File(dirPath).mkdirs();
+			FileUtil.mkdirs(dirPath);
 			this.fileLockLogic = new FileLockLogic(dirPath + "/" + LOCK_FILENAME);
 		}
 
@@ -119,7 +118,7 @@ public class MainChartData_r2 {
 			this.exchange = exchange;
 			this.suffix = suffix;
 			String dirPath = getDirPath();
-			new File(dirPath).mkdirs();
+			FileUtil.mkdirs(dirPath);
 			this.fileLockLogic = new FileLockLogic(dirPath + "/" + LOCK_FILENAME);
 		}
 

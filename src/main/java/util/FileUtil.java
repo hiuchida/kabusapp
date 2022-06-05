@@ -23,12 +23,22 @@ public class FileUtil {
 	public static final String UTF8 = "UTF-8";
 
 	/**
+	 * ディレクトリを作成する。
+	 * 
+	 * @param dirpath ディレクトリパス。
+	 */
+	public static void mkdirs(String dirpath) {
+		File f = new File(dirpath);
+		f.mkdirs();
+	}
+
+	/**
 	 * ファイル単体を削除する。
 	 * 
-	 * @param file ファイルパス。
+	 * @param filepath ファイルパス。
 	 */
-	public static void deleteFile(String file) {
-		File f = new File(file);
+	public static void deleteFile(String filepath) {
+		File f = new File(filepath);
 		f.delete();
 	}
 
