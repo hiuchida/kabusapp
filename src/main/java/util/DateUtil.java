@@ -50,4 +50,18 @@ public class DateUtil {
 		return sdf.format(date);
 	}
 
+	/**
+	 * 時刻long値から日付を文字列で取得する。
+	 * 
+	 * @param time 時刻long値。
+	 * @return 文字列。
+	 */
+	public static String toString(long time) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+		return sdf.format(time);
+	}
+
+	private DateUtil() {
+	}
+
 }
