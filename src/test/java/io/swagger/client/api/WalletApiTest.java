@@ -12,21 +12,13 @@
 
 package io.swagger.client.api;
 
-import io.swagger.client.model.ErrorResponse;
+import org.junit.Test;
+
 import io.swagger.client.model.WalletCashSuccess;
 import io.swagger.client.model.WalletFutureSuccess;
 import io.swagger.client.model.WalletMarginSuccess;
 import io.swagger.client.model.WalletOptionSuccess;
 import v2.AuthorizedToken;
-
-import org.junit.Test;
-import org.junit.Ignore;
-
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 /**

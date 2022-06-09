@@ -14,7 +14,6 @@ package io.swagger.client.api;
 
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import io.swagger.client.model.ApiSoftLimitResponse;
