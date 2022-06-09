@@ -2,6 +2,8 @@ package util;
 
 import java.util.Calendar;
 
+import api.consts.deliv.ExchangeDCode;
+
 /**
  * 市場コード（Exchange）に関するユーティリティクラス。
  */
@@ -27,14 +29,14 @@ public class ExchangeUtil {
 		int ret = 0;
 		String s = TimeUtil.toString(now.getTime());
 		if ("08:45".compareTo(s) <= 0 && s.compareTo("15:05") < 0) {
-			ret = 23; // 日中
+			ret = ExchangeDCode.日中.intValue();
 			System.out.println("Order of Day. " + s);
 			return ret;
 		}
 		if ("16:30".compareTo(s) <= 0 && s.compareTo("23:59") <= 0) {
-			ret = 24; // 夜間
+			ret = ExchangeDCode.夜間.intValue();
 		} else if ("00:00".compareTo(s) <= 0 && s.compareTo("05:50") < 0) {
-			ret = 24; // 夜間
+			ret = ExchangeDCode.夜間.intValue();
 		}
 		if (ret > 0) {
 			System.out.println("Order of Night. " + s);
@@ -44,24 +46,24 @@ public class ExchangeUtil {
 //		int hour = now.get(Calendar.HOUR_OF_DAY);
 //		int min = now.get(Calendar.MINUTE);
 //		if (hour == 8 && 45 <= min) {
-//			ret = 23; // 日中
+//			ret = ExchangeDCode.日中.intValue();
 //		} else if (9 <= hour && hour <= 14) {
-//			ret = 23; // 日中
+//			ret = ExchangeDCode.日中.intValue();
 //		} else if (hour == 15 && min < 10 - 5) {
-//			ret = 23; // 日中
+//			ret = ExchangeDCode.日中.intValue();
 //		}
 //		if (ret > 0) {
 //			System.out.println("Order of Day. hour=" + hour + ", min=" + min);
 //			return ret;
 //		}
 //		if (hour == 16 && 30 <= min) {
-//			ret = 24; // 夜間
+//			ret = ExchangeDCode.夜間.intValue();
 //		} else if (17 <= hour && hour <= 23) {
-//			ret = 24; // 夜間
+//			ret = ExchangeDCode.夜間.intValue();
 //		} else if (0 <= hour && hour <= 4) {
-//			ret = 24; // 夜間
+//			ret = ExchangeDCode.夜間.intValue();
 //		} else if (hour == 5 && min < 55 - 5) {
-//			ret = 24; // 夜間
+//			ret = ExchangeDCode.夜間.intValue();
 //		}
 //		if (ret > 0) {
 //			System.out.println("Order of Night. hour=" + hour + ", min=" + min);

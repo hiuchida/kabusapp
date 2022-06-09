@@ -3,6 +3,10 @@ package v9;
 import java.util.ArrayList;
 import java.util.List;
 
+import api.consts.deliv.AfterHitOrderTypeDCode;
+import api.consts.deliv.FrontOrderTypeDCode;
+import api.consts.deliv.TimeInForceCode;
+import api.consts.deliv.TradeTypeCode;
 import io.swagger.client.ApiException;
 import io.swagger.client.model.PositionsDeriv;
 import io.swagger.client.model.PositionsSuccess;
@@ -163,8 +167,8 @@ public class MainTrailOrder_r3 {
 		RequestSendOrderDerivFuture body = new RequestSendOrderDerivFuture();
 		body.setSymbol(pi.code);
 		body.setExchange(exchange);
-		body.setTradeType(2); // 返済
-		body.setTimeInForce(2); // FAK
+		body.setTradeType(TradeTypeCode.返済.intValue());
+		body.setTimeInForce(TimeInForceCode.FAK.intValue());
 		body.setSide(StringUtil.sideReturn(pi.side));
 		body.setQty(ei.leavesQty - ei.holdQty);
 		List<PositionsDeriv> pdl = new ArrayList<>();
@@ -175,14 +179,14 @@ public class MainTrailOrder_r3 {
 			pdl.add(pd);
 		}
 		body.setClosePositions(pdl);
-		body.setFrontOrderType(30); // 逆指値
+		body.setFrontOrderType(FrontOrderTypeDCode.逆指値.intValue());
 		body.setPrice(0.0); // 逆指値時0円
 		body.setExpireDay(0); // 当日
 		RequestSendOrderDerivFutureReverseLimitOrder rlo = new RequestSendOrderDerivFutureReverseLimitOrder();
 		{
 			rlo.setTriggerPrice((double) triggerPrice);
 			rlo.setUnderOver(StringUtil.underOver(body.getSide()));
-			rlo.setAfterHitOrderType(1); // 成行
+			rlo.setAfterHitOrderType(AfterHitOrderTypeDCode.成行.intValue());
 			rlo.setAfterHitPrice(0.0); // 成行時0円
 		}
 		body.setReverseLimitOrder(rlo);

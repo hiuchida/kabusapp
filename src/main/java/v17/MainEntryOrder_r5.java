@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import api.ApiErrorLog;
+import api.consts.deliv.FrontOrderTypeDCode;
+import api.consts.deliv.TimeInForceCode;
+import api.consts.deliv.TradeTypeCode;
 import io.swagger.client.ApiException;
 import io.swagger.client.model.RequestSendOrderDerivFuture;
 import logic.BoardLogic;
@@ -386,11 +389,11 @@ public class MainEntryOrder_r5 {
 		RequestSendOrderDerivFuture body = new RequestSendOrderDerivFuture();
 		body.setSymbol(SYMBOL);
 		body.setExchange(exchange);
-		body.setTradeType(1); // 新規
-		body.setTimeInForce(1); // FAS
+		body.setTradeType(TradeTypeCode.新規.intValue());
+		body.setTimeInForce(TimeInForceCode.FAS.intValue());
 		body.setSide(oi.side);
 		body.setQty(oi.orderQty);
-		body.setFrontOrderType(20); // 指値
+		body.setFrontOrderType(FrontOrderTypeDCode.指値.intValue());
 		body.setPrice((double) oi.price);
 		body.setExpireDay(expireDay);
 

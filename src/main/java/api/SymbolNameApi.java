@@ -2,6 +2,8 @@ package api;
 
 import java.lang.invoke.MethodHandles;
 
+import api.consts.FutureCode;
+import api.consts.PutOrCallCode;
 import io.swagger.client.ApiException;
 import io.swagger.client.api.InfoApi;
 import io.swagger.client.model.SymbolNameSuccess;
@@ -36,14 +38,15 @@ public class SymbolNameApi {
 	/**
 	 * 先物銘柄コード取得API。
 	 * 
-	 * @param futureCode 先物コード（NK225:日経平均先物、NK225mini:日経225mini先物など）。
+	 * @param futureCode 先物コード。
 	 * @param derivMonth 限月（yyyyMM形式）。
 	 * @return 銘柄コード。
 	 * @throws ApiException
 	 */
-	public SymbolNameSuccess getFuture(String futureCode, int derivMonth) throws ApiException {
+	public SymbolNameSuccess getFuture(FutureCode futureCode, int derivMonth) throws ApiException {
 		try {
-			SymbolNameSuccess sns = infoApi.symbolnameFutureGet(X_API_KEY, derivMonth, futureCode);
+			String futureCodeStr = (futureCode != null) ? futureCode.codeValue() : null;
+			SymbolNameSuccess sns = infoApi.symbolnameFutureGet(X_API_KEY, derivMonth, futureCodeStr);
 			try {
 				Thread.sleep(120); // 8.3req/sec
 			} catch (Exception e) {
@@ -64,9 +67,10 @@ public class SymbolNameApi {
 	 * @return 銘柄コード。
 	 * @throws ApiException
 	 */
-	public SymbolNameSuccess getOption(int derivMonth, String putOrCall, int strikePrice) throws ApiException {
+	public SymbolNameSuccess getOption(int derivMonth, PutOrCallCode putOrCall, int strikePrice) throws ApiException {
 		try {
-			SymbolNameSuccess sns = infoApi.symbolnameOptionGet(X_API_KEY, derivMonth, putOrCall, strikePrice);
+			String putOrCallStr = (putOrCall != null) ? putOrCall.codeValue() : null;
+			SymbolNameSuccess sns = infoApi.symbolnameOptionGet(X_API_KEY, derivMonth, putOrCallStr, strikePrice);
 			try {
 				Thread.sleep(120); // 8.3req/sec
 			} catch (Exception e) {

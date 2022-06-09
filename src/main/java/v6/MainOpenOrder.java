@@ -1,5 +1,10 @@
 package v6;
 
+import api.consts.SideCode;
+import api.consts.deliv.ExchangeDCode;
+import api.consts.deliv.FrontOrderTypeDCode;
+import api.consts.deliv.TimeInForceCode;
+import api.consts.deliv.TradeTypeCode;
 import io.swagger.client.ApiException;
 import io.swagger.client.api.InfoApi;
 import io.swagger.client.api.OrderApi;
@@ -31,12 +36,12 @@ public class MainOpenOrder {
 				RequestSendOrderDerivFuture body = new RequestSendOrderDerivFuture();
 				body.setPassword(TRADE_PASSWORD);
 				body.setSymbol(code);
-				body.setExchange(2); // 日通し
-				body.setTradeType(1); // 新規
-				body.setTimeInForce(1); // FAS
-				body.setSide("2"); // 買
+				body.setExchange(ExchangeDCode.日通し.intValue());
+				body.setTradeType(TradeTypeCode.新規.intValue());
+				body.setTimeInForce(TimeInForceCode.FAS.intValue());
+				body.setSide("" + SideCode.買.intValue());
 				body.setQty(1); // 注文数量
-				body.setFrontOrderType(20); // 指値
+				body.setFrontOrderType(FrontOrderTypeDCode.指値.intValue());
 				body.setPrice(25000.0); // 注文価格
 				body.setExpireDay(0); // 注文有効期限
 				OrderSuccess response = orderApi.sendoderFuturePost(body, X_API_KEY);

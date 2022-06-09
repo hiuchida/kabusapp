@@ -3,6 +3,13 @@ package v6;
 import java.util.ArrayList;
 import java.util.List;
 
+import api.consts.SideCode;
+import api.consts.UnderOverCode;
+import api.consts.deliv.AfterHitOrderTypeDCode;
+import api.consts.deliv.ExchangeDCode;
+import api.consts.deliv.FrontOrderTypeDCode;
+import api.consts.deliv.TimeInForceCode;
+import api.consts.deliv.TradeTypeCode;
 import io.swagger.client.ApiException;
 import io.swagger.client.api.OrderApi;
 import io.swagger.client.model.OrderSuccess;
@@ -28,10 +35,10 @@ public class MainCloseOrder {
 	        RequestSendOrderDerivFuture body = new RequestSendOrderDerivFuture();
 	        body.setPassword(TRADE_PASSWORD);
 	        body.setSymbol("167060019"); // 日経225mini 22/06
-	        body.setExchange(23); // 日中
-	        body.setTradeType(2); // 返済
-	        body.setTimeInForce(2); // FAK
-	        body.setSide("1"); // 売
+	        body.setExchange(ExchangeDCode.日中.intValue());
+			body.setTradeType(TradeTypeCode.返済.intValue());
+	        body.setTimeInForce(TimeInForceCode.FAK.intValue());
+	        body.setSide("" + SideCode.売.intValue());
 	        body.setQty(1); // 注文数量
 	        List<PositionsDeriv> pdl = new ArrayList<>();
 	        {
@@ -41,14 +48,14 @@ public class MainCloseOrder {
 	        	pdl.add(pd);
 	        }
 	        body.setClosePositions(pdl);
-	        body.setFrontOrderType(30); // 逆指値
+	        body.setFrontOrderType(FrontOrderTypeDCode.逆指値.intValue());
 	        body.setPrice(0.0); // 注文価格
 	        body.setExpireDay(0); // 注文有効期限
 			RequestSendOrderDerivFutureReverseLimitOrder rlo = new RequestSendOrderDerivFutureReverseLimitOrder();
 			{ // 値段が25000円以下になったら、MO(FAK)で注文発注
 				rlo.setTriggerPrice(25000.0); // トリガー価格
-				rlo.setUnderOver(1); // 以下
-				rlo.setAfterHitOrderType(1); // 成行
+				rlo.setUnderOver(UnderOverCode.以下.intValue());
+				rlo.setAfterHitOrderType(AfterHitOrderTypeDCode.成行.intValue());
 				rlo.setAfterHitPrice(0.0); // 成行は0円
 			}
 			body.setReverseLimitOrder(rlo);
@@ -68,10 +75,10 @@ public class MainCloseOrder {
 	        RequestSendOrderDerivFuture body = new RequestSendOrderDerivFuture();
 	        body.setPassword(TRADE_PASSWORD);
 	        body.setSymbol("167060019"); // 日経225mini 22/06
-	        body.setExchange(2); // 日通し
-	        body.setTradeType(2); // 返済
-	        body.setTimeInForce(1); // FAS
-	        body.setSide("1"); // 売
+	        body.setExchange(ExchangeDCode.日通し.intValue());
+			body.setTradeType(TradeTypeCode.返済.intValue());
+	        body.setTimeInForce(TimeInForceCode.FAS.intValue());
+	        body.setSide("" + SideCode.売.intValue());
 	        body.setQty(1); // 注文数量
 	        List<PositionsDeriv> pdl = new ArrayList<>();
 	        {
@@ -81,14 +88,14 @@ public class MainCloseOrder {
 	        	pdl.add(pd);
 	        }
 	        body.setClosePositions(pdl);
-	        body.setFrontOrderType(30); // 逆指値
+	        body.setFrontOrderType(FrontOrderTypeDCode.逆指値.intValue());
 	        body.setPrice(0.0); // 注文価格
 	        body.setExpireDay(0); // 注文有効期限
 			RequestSendOrderDerivFutureReverseLimitOrder rlo = new RequestSendOrderDerivFutureReverseLimitOrder();
 			{ // 値段が25000円以下になったら、指値25010円で注文発注
 				rlo.setTriggerPrice(25000.0); // トリガー価格
-				rlo.setUnderOver(1); // 以下
-				rlo.setAfterHitOrderType(2); // 指値
+				rlo.setUnderOver(UnderOverCode.以下.intValue());
+				rlo.setAfterHitOrderType(AfterHitOrderTypeDCode.指値.intValue());
 				rlo.setAfterHitPrice(25010.0); // 指値価格
 			}
 			body.setReverseLimitOrder(rlo);

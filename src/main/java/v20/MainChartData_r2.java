@@ -26,6 +26,8 @@ import api.ApiErrorLog;
 import api.BoardBean;
 import api.RegisterEtcApi;
 import api.SymbolNameApi;
+import api.consts.FutureCode;
+import api.consts.PutOrCallCode;
 import io.swagger.client.ApiException;
 import io.swagger.client.model.SymbolNameSuccess;
 import logic.FileLockLogic;
@@ -209,7 +211,7 @@ public class MainChartData_r2 {
 		int yyyymm = 202206;
 		for (int ym = yyyymm; ym <= 202209; ym++) {
 			try {
-				SymbolNameSuccess sns = symbolNameApi.getFuture("NK225mini", ym);
+				SymbolNameSuccess sns = symbolNameApi.getFuture(FutureCode.日経225mini先物, ym);
 				String code = sns.getSymbol();
 				symbolMap.put(code, new SymbolInfo(2, code, 2, "F" + ym));
 			} catch (ApiException e) {
@@ -219,7 +221,7 @@ public class MainChartData_r2 {
 		yyyymm = 202206;
 		for (int ym = yyyymm; ym <= 202209; ym += 3) {
 			try {
-				SymbolNameSuccess sns = symbolNameApi.getFuture("NK225", ym);
+				SymbolNameSuccess sns = symbolNameApi.getFuture(FutureCode.日経平均先物, ym);
 				String code = sns.getSymbol();
 				symbolMap.put(code, new SymbolInfo(2, code, 2, "FL" + ym));
 			} catch (ApiException e) {
@@ -230,14 +232,14 @@ public class MainChartData_r2 {
 		for (int d = -10 ; d <= 10; d++) {
 			int price = basePrice + d * 125;
 			try {
-				SymbolNameSuccess sns = symbolNameApi.getOption(yyyymm, "C", price);
+				SymbolNameSuccess sns = symbolNameApi.getOption(yyyymm, PutOrCallCode.CALL, price);
 				String code = sns.getSymbol();
 				symbolMap.put(code, new SymbolInfo(3, code, 2, "C" + price));
 			} catch (ApiException e) {
 				e.printStackTrace();
 			}
 			try {
-				SymbolNameSuccess sns = symbolNameApi.getOption(yyyymm, "P", price);
+				SymbolNameSuccess sns = symbolNameApi.getOption(yyyymm, PutOrCallCode.PUT, price);
 				String code = sns.getSymbol();
 				symbolMap.put(code, new SymbolInfo(3, code, 2, "P" + price));
 			} catch (ApiException e) {

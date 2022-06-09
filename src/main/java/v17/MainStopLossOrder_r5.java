@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import api.ApiErrorLog;
+import api.consts.deliv.AfterHitOrderTypeDCode;
+import api.consts.deliv.FrontOrderTypeDCode;
+import api.consts.deliv.TimeInForceCode;
+import api.consts.deliv.TradeTypeCode;
 import io.swagger.client.ApiException;
 import io.swagger.client.model.PositionsDeriv;
 import io.swagger.client.model.RequestSendOrderDerivFuture;
@@ -141,8 +145,8 @@ public class MainStopLossOrder_r5 {
 		RequestSendOrderDerivFuture body = new RequestSendOrderDerivFuture();
 		body.setSymbol(pi.code);
 		body.setExchange(exchange);
-		body.setTradeType(2); // 返済
-		body.setTimeInForce(2); // FAK
+		body.setTradeType(TradeTypeCode.返済.intValue());
+		body.setTimeInForce(TimeInForceCode.FAK.intValue());
 		body.setSide(StringUtil.sideReturn(pi.side));
 		body.setQty(ei.leavesQty - ei.holdQty);
 		List<PositionsDeriv> pdl = new ArrayList<>();
@@ -156,17 +160,17 @@ public class MainStopLossOrder_r5 {
 		body.setExpireDay(0); // 当日
 		if (triggerPrice == 0) {
 			// 逆指値注文がエラーとなる価格の場合は、成行注文する
-			body.setFrontOrderType(120); // 成行
+			body.setFrontOrderType(FrontOrderTypeDCode.成行.intValue());
 			body.setPrice(0.0); // 成行時0円
 			triggerPrice = pi.curPrice;
 		} else {
-			body.setFrontOrderType(30); // 逆指値
+			body.setFrontOrderType(FrontOrderTypeDCode.逆指値.intValue());
 			body.setPrice(0.0); // 逆指値時0円
 			RequestSendOrderDerivFutureReverseLimitOrder rlo = new RequestSendOrderDerivFutureReverseLimitOrder();
 			{
 				rlo.setTriggerPrice((double) triggerPrice);
 				rlo.setUnderOver(StringUtil.underOver(body.getSide()));
-				rlo.setAfterHitOrderType(1); // 成行
+				rlo.setAfterHitOrderType(AfterHitOrderTypeDCode.成行.intValue());
 				rlo.setAfterHitPrice(0.0); // 成行時0円
 			}
 			body.setReverseLimitOrder(rlo);
