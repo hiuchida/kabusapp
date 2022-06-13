@@ -23,7 +23,7 @@ public class MainChartCalendar_r3 {
 	/**
 	 * チャートデータディレクトリパス。
 	 */
-	private static final String DIR_FILEPATH = DIRPATH + "chart";
+	private static final String DIR_FILEPATH = DIRPATH + "download";
 	/**
 	 * チャートデータディレクトリパス。
 	 */
