@@ -79,7 +79,7 @@ public class OrderApiTest {
         body.setExchange(ExchangeDCode.日通し.intValue());
         body.setTradeType(TradeTypeCode.新規.intValue());
         body.setTimeInForce(TimeInForceCode.FAS.intValue());
-        body.setSide("" + SideCode.買.intValue());
+        body.setSide(SideCode.買.toString());
         body.setQty(1); // 注文数量
         body.setFrontOrderType(FrontOrderTypeDCode.指値.intValue());
         body.setPrice(24500.0); // 注文価格
@@ -106,7 +106,7 @@ public class OrderApiTest {
         body.setExchange(ExchangeDCode.日通し.intValue());
         body.setTradeType(TradeTypeCode.新規.intValue());
         body.setTimeInForce(TimeInForceCode.FAS.intValue());
-        body.setSide("" + SideCode.買.intValue());
+        body.setSide(SideCode.買.toString());
         body.setQty(1); // 注文数量
         body.setFrontOrderType(FrontOrderTypeDCode.指値.intValue());
         body.setPrice(1.0); // 注文価格
@@ -129,14 +129,14 @@ public class OrderApiTest {
     public void sendorderPostTest() throws Exception {
         RequestSendOrder body = new RequestSendOrder();
         body.setPassword(PWD);
-        body.setSymbol("9433@" + ExchangeSCode.東証.intValue()); // ＫＤＤＩ
+        body.setSymbol("9433@" + ExchangeSCode.東証.toString()); // ＫＤＤＩ
         body.setExchange(ExchangeSCode.東証.intValue());
         body.setSecurityType(SecurityTypeCode.株式.intValue());
-        body.setSide("" + SideCode.買.intValue());
+        body.setSide(SideCode.買.toString());
         body.setCashMargin(CashmarginStockCode.現物.intValue());
         body.setMarginTradeType(MarginTradeTypeCode.制度信用.intValue());
         body.setDelivType(DelivTypeCode.指定なし.intValue());
-        body.setFundType(FundTypeCode.信用代用.codeValue());
+        body.setFundType(FundTypeCode.信用代用.toString());
         body.setAccountType(AccountTypeCode.特定.intValue());
         body.setQty(100); // 注文数量
         body.setFrontOrderType(FrontOrderTypeSCode.指値.intValue());
