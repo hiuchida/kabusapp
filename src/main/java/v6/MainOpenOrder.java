@@ -39,7 +39,7 @@ public class MainOpenOrder {
 				body.setExchange(ExchangeDCode.日通し.intValue());
 				body.setTradeType(TradeTypeCode.新規.intValue());
 				body.setTimeInForce(TimeInForceCode.FAS.intValue());
-				body.setSide("" + SideCode.買.intValue());
+				body.setSide(SideCode.買.toString());
 				body.setQty(1); // 注文数量
 				body.setFrontOrderType(FrontOrderTypeDCode.指値.intValue());
 				body.setPrice(25000.0); // 注文価格

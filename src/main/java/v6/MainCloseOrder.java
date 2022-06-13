@@ -38,7 +38,7 @@ public class MainCloseOrder {
 	        body.setExchange(ExchangeDCode.日中.intValue());
 			body.setTradeType(TradeTypeCode.返済.intValue());
 	        body.setTimeInForce(TimeInForceCode.FAK.intValue());
-	        body.setSide("" + SideCode.売.intValue());
+	        body.setSide(SideCode.売.toString());
 	        body.setQty(1); // 注文数量
 	        List<PositionsDeriv> pdl = new ArrayList<>();
 	        {
@@ -78,7 +78,7 @@ public class MainCloseOrder {
 	        body.setExchange(ExchangeDCode.日通し.intValue());
 			body.setTradeType(TradeTypeCode.返済.intValue());
 	        body.setTimeInForce(TimeInForceCode.FAS.intValue());
-	        body.setSide("" + SideCode.売.intValue());
+	        body.setSide(SideCode.売.toString());
 	        body.setQty(1); // 注文数量
 	        List<PositionsDeriv> pdl = new ArrayList<>();
 	        {

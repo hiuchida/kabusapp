@@ -45,7 +45,7 @@ public class SymbolNameApi {
 	 */
 	public SymbolNameSuccess getFuture(FutureCode futureCode, int derivMonth) throws ApiException {
 		try {
-			String futureCodeStr = (futureCode != null) ? futureCode.codeValue() : null;
+			String futureCodeStr = (futureCode != null) ? futureCode.toString() : null;
 			SymbolNameSuccess sns = infoApi.symbolnameFutureGet(X_API_KEY, derivMonth, futureCodeStr);
 			try {
 				Thread.sleep(120); // 8.3req/sec
@@ -69,7 +69,7 @@ public class SymbolNameApi {
 	 */
 	public SymbolNameSuccess getOption(int derivMonth, PutOrCallCode putOrCall, int strikePrice) throws ApiException {
 		try {
-			String putOrCallStr = (putOrCall != null) ? putOrCall.codeValue() : null;
+			String putOrCallStr = (putOrCall != null) ? putOrCall.toString() : null;
 			SymbolNameSuccess sns = infoApi.symbolnameOptionGet(X_API_KEY, derivMonth, putOrCallStr, strikePrice);
 			try {
 				Thread.sleep(120); // 8.3req/sec
