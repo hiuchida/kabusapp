@@ -151,15 +151,16 @@ public class MainChartDataDaily {
 			if (s.charAt(4) != '/' || s.charAt(7) != '/') {
 				continue;
 			}
-			// 日足は常に前営業日にする。
-			{
-				String odate = s.substring(0, 10);
-				String ndate = chartCalendar.searchCalendar(odate);
-				if (ndate == null) {
-					continue;
-				}
-				s = s.replaceAll(odate, ndate);
-			}
+			// 日足は終値を基準日にする。
+//			// 日足は常に前営業日にする。
+//			{
+//				String odate = s.substring(0, 10);
+//				String ndate = chartCalendar.searchCalendar(odate);
+//				if (ndate == null) {
+//					continue;
+//				}
+//				s = s.replaceAll(odate, ndate);
+//			}
 			String key = getKey(s);
 			String nval = s;
 			String oval = dbMap.get(key);
