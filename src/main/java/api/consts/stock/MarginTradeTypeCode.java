@@ -17,6 +17,11 @@ public enum MarginTradeTypeCode {
 		return id;
 	}
 
+	@Override
+	public String toString() {
+		return Integer.toString(id);
+	}
+
 	public static MarginTradeTypeCode valueOf(int id) {
 		for (MarginTradeTypeCode e : values()) {
 			if (e.id == id) {

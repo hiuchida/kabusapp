@@ -17,6 +17,11 @@ public enum StateCode {
 		return id;
 	}
 
+	@Override
+	public String toString() {
+		return Integer.toString(id);
+	}
+
 	public static StateCode valueOf(int id) {
 		for (StateCode e : values()) {
 			if (e.id == id) {

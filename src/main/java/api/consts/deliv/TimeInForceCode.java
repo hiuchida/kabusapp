@@ -18,6 +18,11 @@ public enum TimeInForceCode {
 		return id;
 	}
 
+	@Override
+	public String toString() {
+		return Integer.toString(id);
+	}
+
 	public static TimeInForceCode valueOf(int id) {
 		for (TimeInForceCode e : values()) {
 			if (e.id == id) {

@@ -20,6 +20,11 @@ public enum UnderOverCode {
 		return id;
 	}
 
+	@Override
+	public String toString() {
+		return Integer.toString(id);
+	}
+
 	public static UnderOverCode valueOf(int id) {
 		for (UnderOverCode e : values()) {
 			if (e.id == id) {

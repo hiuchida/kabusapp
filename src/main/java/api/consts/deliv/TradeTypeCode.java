@@ -18,6 +18,11 @@ public enum TradeTypeCode {
 		return id;
 	}
 
+	@Override
+	public String toString() {
+		return Integer.toString(id);
+	}
+
 	public static TradeTypeCode valueOf(int id) {
 		for (TradeTypeCode e : values()) {
 			if (e.id == id) {

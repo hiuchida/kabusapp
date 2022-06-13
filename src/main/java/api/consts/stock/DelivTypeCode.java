@@ -17,6 +17,11 @@ public enum DelivTypeCode {
 		return id;
 	}
 
+	@Override
+	public String toString() {
+		return Integer.toString(id);
+	}
+
 	public static DelivTypeCode valueOf(int id) {
 		for (DelivTypeCode e : values()) {
 			if (e.id == id) {

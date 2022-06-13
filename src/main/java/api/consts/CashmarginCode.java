@@ -17,6 +17,11 @@ public enum CashmarginCode {
 		return id;
 	}
 
+	@Override
+	public String toString() {
+		return Integer.toString(id);
+	}
+
 	public static CashmarginCode valueOf(int id) {
 		for (CashmarginCode e : values()) {
 			if (e.id == id) {

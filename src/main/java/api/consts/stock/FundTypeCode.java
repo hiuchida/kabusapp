@@ -13,7 +13,8 @@ public enum FundTypeCode {
 		this.code = code;
 	}
 
-	public String codeValue() {
+	@Override
+	public String toString() {
 		return code;
 	}
 

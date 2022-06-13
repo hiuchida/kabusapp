@@ -17,6 +17,11 @@ public enum AccountTypeCode {
 		return id;
 	}
 
+	@Override
+	public String toString() {
+		return Integer.toString(id);
+	}
+
 	public static AccountTypeCode valueOf(int id) {
 		for (AccountTypeCode e : values()) {
 			if (e.id == id) {

@@ -19,6 +19,11 @@ public enum AfterHitOrderTypeDCode {
 		return id;
 	}
 
+	@Override
+	public String toString() {
+		return Integer.toString(id);
+	}
+
 	public static AfterHitOrderTypeDCode valueOf(int id) {
 		for (AfterHitOrderTypeDCode e : values()) {
 			if (e.id == id) {

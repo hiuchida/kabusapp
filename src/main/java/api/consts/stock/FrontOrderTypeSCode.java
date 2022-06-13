@@ -19,6 +19,11 @@ public enum FrontOrderTypeSCode {
 		return id;
 	}
 
+	@Override
+	public String toString() {
+		return Integer.toString(id);
+	}
+
 	public static FrontOrderTypeSCode valueOf(int id) {
 		for (FrontOrderTypeSCode e : values()) {
 			if (e.id == id) {

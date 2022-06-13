@@ -18,6 +18,11 @@ public enum ProductCode {
 		return id;
 	}
 
+	@Override
+	public String toString() {
+		return Integer.toString(id);
+	}
+
 	public static ProductCode valueOf(int id) {
 		for (ProductCode e : values()) {
 			if (e.id == id) {

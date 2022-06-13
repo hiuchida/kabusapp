@@ -21,6 +21,11 @@ public enum SideCode {
 		return id;
 	}
 
+	@Override
+	public String toString() {
+		return Integer.toString(id);
+	}
+
 	public static SideCode valueOf(int id) {
 		for (SideCode e : values()) {
 			if (e.id == id) {

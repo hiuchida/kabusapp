@@ -17,6 +17,11 @@ public enum SecurityTypeCode {
 		return id;
 	}
 
+	@Override
+	public String toString() {
+		return Integer.toString(id);
+	}
+
 	public static SecurityTypeCode valueOf(int id) {
 		for (SecurityTypeCode e : values()) {
 			if (e.id == id) {

@@ -17,6 +17,11 @@ public enum ExchangeCode {
 		return id;
 	}
 
+	@Override
+	public String toString() {
+		return Integer.toString(id);
+	}
+
 	public static ExchangeCode valueOf(int id) {
 		for (ExchangeCode e : values()) {
 			if (e.id == id) {
