@@ -88,7 +88,7 @@ public class MainChartDataHourly_r3 {
 	 */
 	private String chartType;
 	/**
-	 * チャートＤＢファイル名。存在しなければ生成される。
+	 * チャートＤＢファイルパス。存在しなければ生成される。
 	 */
 	private String dbFilePath;
 	/**
