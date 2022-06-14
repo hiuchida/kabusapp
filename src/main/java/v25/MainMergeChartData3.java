@@ -164,8 +164,6 @@ public class MainMergeChartData3 {
 
 	/**
 	 * コンストラクタ。
-	 * 
-	 * @param X_API_KEY 認証済TOKEN。
 	 */
 	public MainMergeChartData3() {
 		this.fileLockLogic = new FileLockLogic(LOCK_FILEPATH);
