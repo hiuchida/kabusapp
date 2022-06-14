@@ -62,7 +62,7 @@ public class MainChartDataHourly_r3 {
 	}
 
 	/**
-	 * 複数のチャートデータファイルを読み込む。
+	 * チャートデータファイル名から銘柄コードリストを作成する。
 	 * 
 	 * @param dirpath チャートデータディレクトリパス。
 	 */
