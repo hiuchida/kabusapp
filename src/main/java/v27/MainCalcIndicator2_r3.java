@@ -14,9 +14,9 @@ import util.FileUtil;
 import util.StringUtil;
 
 /**
- * テクニカル指標(SMA5,SMA25,SMA75)を計算するクラス。
+ * テクニカル指標(ボリンジャーバンド)を計算するクラス。
  */
-public class MainCalcIndicator1_r3 {
+public class MainCalcIndicator2_r3 {
 	/**
 	 * 基準パス。
 	 */
@@ -30,9 +30,9 @@ public class MainCalcIndicator1_r3 {
 	 */
 	private static final String CHART_TXT_FILENAME = "ChartData1m_r3.txt";
 	/**
-	 * テクニカル指標(SMA5,SMA25,SMA75)のstdoutのファイル名。
+	 * テクニカル指標(ボリンジャーバンド)のstdoutのファイル名。
 	 */
-	private static final String OUT_FILENAME1 = "CalcIndicator1.out";
+	private static final String OUT_FILENAME2 = "CalcIndicator2.out";
 
 	/**
 	 * チャート情報クラス。
@@ -179,7 +179,7 @@ public class MainCalcIndicator1_r3 {
 		listChartFiles(DIR_CHARTPATH);
 		System.out.println(nameSet);
 		for (String name : nameSet) {
-			new MainCalcIndicator1_r3(name).execute();
+			new MainCalcIndicator2_r3(name).execute();
 		}
 	}
 
@@ -205,9 +205,9 @@ public class MainCalcIndicator1_r3 {
 	 */
 	private String txtFilePath;
 	/**
-	 * テクニカル指標(SMA5,SMA25,SMA75)のstdoutのファイルパス。
+	 * テクニカル指標(ボリンジャーバンド)のstdoutのファイルパス。
 	 */
-	private String outFilePath1;
+	private String outFilePath2;
 	/**
 	 * マージしたチャートデータを時系列に並べたリスト。
 	 */
@@ -218,10 +218,10 @@ public class MainCalcIndicator1_r3 {
 	 * 
 	 * @param name ディレクトリ名。
 	 */
-	public MainCalcIndicator1_r3(String name) {
+	public MainCalcIndicator2_r3(String name) {
 		String dirChartPath = DIR_CHARTPATH + name;
 		this.txtFilePath = dirChartPath + "/" + CHART_TXT_FILENAME;
-		this.outFilePath1 = dirChartPath + "/" + OUT_FILENAME1;
+		this.outFilePath2 = dirChartPath + "/" + OUT_FILENAME2;
 	}
 
 	/**
@@ -230,99 +230,66 @@ public class MainCalcIndicator1_r3 {
 	public void execute() {
 		readChartData();
 		chartList = fill0555_0559(chartList);
-		try (PrintWriter pw = FileUtil.writer(outFilePath1, FileUtil.UTF8)) {
-			printSma(pw);
+		try (PrintWriter pw = FileUtil.writer(outFilePath2, FileUtil.UTF8)) {
+			printBollingerBands(pw);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * SMA5,SMA25,SMA75を表示する。
+	 * ボリンジャーバンド(25本)を表示する。
 	 * 
 	 * @param pw stdoutファイル。
 	 */
-	private void printSma(PrintWriter pw) {
-		final int param1 = 5;
-		final int param2 = 25;
-		final int param3 = 75;
-		int sum1 = 0;
-		int cnt1 = 0;
-		int sum2 = 0;
-		int cnt2 = 0;
-		int sum3 = 0;
-		int cnt3 = 0;
+	private void printBollingerBands(PrintWriter pw) {
+		final int param1 = 25;
+		long sqr = 0;
+		int sum = 0;
+		int cnt = 0;
 		for (int i = 0; i < chartList.size(); i++) {
 			ChartInfo ci = chartList.get(i);
-			if (cnt1 < param1) {
-				sum1 += ci.closePrice;
-				cnt1++;
-			} else {
-				sum1 += ci.closePrice - chartList.get(i - param1).closePrice;
-			}
-			if (cnt2 < param2) {
-				sum2 += ci.closePrice;
-				cnt2++;
-			} else {
-				sum2 += ci.closePrice - chartList.get(i - param2).closePrice;
-			}
-			if (cnt3 < param3) {
-				sum3 += ci.closePrice;
-				cnt3++;
-			} else {
-				sum3 += ci.closePrice - chartList.get(i - param3).closePrice;
-			}
 			pw.printf("%s,%d,%d", ci.date, ci.closePrice, ci.flag);
-			if (cnt1 == param1) {
-				pw.printf(",%.2f", ((double) sum1 / cnt1));
-				if (cnt2 == param2) {
-					pw.printf(",%.2f", ((double) sum2 / cnt2));
-					if (cnt3 == param3) {
-						pw.printf(",%.2f", ((double) sum3 / cnt3));
-					}
-				}
+			int price = ci.closePrice;
+			if (cnt < param1) {
+				sqr += price * price;
+				sum += price;
+				cnt++;
+			} else {
+				int p_1 = chartList.get(i - param1).closePrice;
+				sqr += price * price - p_1 * p_1;
+				sum += price - p_1;
+			}
+			if (cnt == param1) {
+				double mean = (double) sum / cnt;
+				double variance = (double)sqr / cnt - mean * mean;
+				double sd = Math.sqrt(variance);
+				pw.printf(",%.2f,%.2f,%.2f,%.2f,%.2f,%.2f", sd, mean - 2 * sd, mean - sd, mean, mean + sd, mean + 2 * sd);
 			}
 			pw.println();
 		}
 	}
 /*
 	// 2重ループ
-	private void printSma() {
-		final int param1 = 5;
-		final int param2 = 25;
-		final int param3 = 75;
+	private void printBollingerBands() {
+		final int param1 = 25;
 		for (int i = 0; i < chartList.size(); i++) {
 			ChartInfo ci = chartList.get(i);
 			System.out.printf("%s,%d,%d", ci.date, ci.closePrice, ci.flag);
 			if (i >= param1 - 1) {
+				long sqr = 0;
 				int sum = 0;
 				int cnt = 0;
 				for (int j = i; j > i - param1; j--) {
 					ChartInfo ci2 = chartList.get(j);
+					sqr += ci2.closePrice * ci2.closePrice;
 					sum += ci2.closePrice;
 					cnt++;
 				}
-				System.out.printf(",%.2f", ((double) sum / cnt));
-			}
-			if (i >= param2 - 1) {
-				int sum = 0;
-				int cnt = 0;
-				for (int j = i; j > i - param2; j--) {
-					ChartInfo ci2 = chartList.get(j);
-					sum += ci2.closePrice;
-					cnt++;
-				}
-				System.out.printf(",%.2f", ((double) sum / cnt));
-			}
-			if (i >= param3 - 1) {
-				int sum = 0;
-				int cnt = 0;
-				for (int j = i; j > i - param3; j--) {
-					ChartInfo ci2 = chartList.get(j);
-					sum += ci2.closePrice;
-					cnt++;
-				}
-				System.out.printf(",%.2f", ((double) sum / cnt));
+				double mean = (double) sum / cnt;
+				double variance = (double)sqr / cnt - mean * mean;
+				double sd = Math.sqrt(variance);
+				System.out.printf(",%.2f,%.2f,%.2f,%.2f,%.2f,%.2f", sd, mean - 2 * sd, mean - sd, mean, mean + sd, mean + 2 * sd);
 			}
 			System.out.println();
 		}
