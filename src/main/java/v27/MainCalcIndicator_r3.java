@@ -217,6 +217,8 @@ public class MainCalcIndicator_r3 {
 		this.txtFilePath = dirChartPath + "/" + CHART_TXT_FILENAME;
 		calcList.add(new MainCalcIndicator1_r3(name));
 		calcList.add(new MainCalcIndicator2_r3(name));
+		calcList.add(new MainCalcIndicator3_r3(name));
+		calcList.add(new MainCalcIndicator4_r3(name));
 	}
 
 	/**
