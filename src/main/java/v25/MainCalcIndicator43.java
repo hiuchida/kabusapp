@@ -214,7 +214,7 @@ public class MainCalcIndicator43 {
 	}
 
 	/**
-	 * 05:55が抜けているチャートデータをflag=3で埋める。
+	 * 05:55-05:59が抜けているチャートデータをflag=3で埋める。
 	 * 
 	 * @param chartList チャートデータのリスト。
 	 * @return 更新されたチャートデータのリスト。
