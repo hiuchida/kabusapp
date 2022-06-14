@@ -24,11 +24,11 @@ public class MainChartDataDaily_r3 {
 	 */
 	private static final String DIR_FILEPATH = DIRPATH + "download";
 	/**
-	 * チャートデータディレクトリパス。
+	 * チャートＤＢディレクトリパス。
 	 */
 	private static final String DIR_DBPATH = DIRPATH + "db";
 	/**
-	 * チャートＤＢファイルパスのテンプレート。
+	 * チャートＤＢファイル名のテンプレート。
 	 */
 	private static final String DB_FILENAME = "ChartData%s.db";
 

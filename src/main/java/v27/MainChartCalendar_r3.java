@@ -25,11 +25,11 @@ public class MainChartCalendar_r3 {
 	 */
 	private static final String DIR_FILEPATH = DIRPATH + "download";
 	/**
-	 * チャートデータディレクトリパス。
+	 * チャートＤＢディレクトリパス。
 	 */
 	private static final String DIR_DBPATH = DIRPATH + "db";
 	/**
-	 * チャートカレンダーファイルパス。存在しなければ生成される。
+	 * チャートカレンダーファイル名。存在しなければ生成される。
 	 */
 	private static final String TXT_FILEPATH = DIR_DBPATH + "/" + "ChartCalendar.db";
 

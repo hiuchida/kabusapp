@@ -49,11 +49,11 @@ public class MainChartData_r2 {
 	 */
 	private static final String DIRPATH = "/tmp/chart/";
 	/**
-	 * チャートデータファイルパス。
+	 * チャートデータファイル名。
 	 */
 	private static final String DB_FILENAME = "ChartData.csv";
 	/**
-	 * ファイルロック管理用0バイトのファイルパス。存在しなければ生成される。
+	 * ファイルロック管理用0バイトのファイル名。存在しなければ生成される。
 	 */
 	private static final String LOCK_FILENAME = "ChartData.lock";
 
