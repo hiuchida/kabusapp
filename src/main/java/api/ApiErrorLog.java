@@ -3,6 +3,7 @@ package api;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import io.swagger.client.ApiException;
 import util.DateTimeUtil;
 import util.FileUtil;
 
@@ -57,10 +58,10 @@ public class ApiErrorLog {
 	 * @param method メソッド名。
 	 * @param param  パラメータ値。
 	 */
-	public static void error(Exception err, Class<?> clazz2, String method, String param) {
+	public static void error(ApiException err, Class<?> clazz2, String method, String param) {
 		try (PrintWriter pw = FileUtil.writer(LOG_FILEPATH, FileUtil.UTF8, true)) {
 			FileUtil.printLogLine(pw,
-					err.getMessage() + " " + clazz.getName() + "/" + clazz2.getName() + "/" + method + "/" + param);
+					err.getResponseBody() + " " + clazz.getName() + "/" + clazz2.getName() + "/" + method + "/" + param);
 			err.printStackTrace(pw);
 		} catch (IOException e) {
 			e.printStackTrace();
