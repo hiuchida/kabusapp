@@ -373,7 +373,7 @@ public class PositionsLogic_r5 {
 					System.out.println("  > " + msg);
 					FileUtil.printLog(LOG_FILEPATH, "execute", msg);
 				} else {
-					int[] priceHighLow = chartDataLogic.searchHighLow(pi.updateDate);
+					int[] priceHighLow = chartDataLogic.searchHighLow(pi.code, pi.updateDate);
 					if (priceHighLow[0] > 0) {
 						int profitHigh = (priceHighLow[0] - price) * sign;
 						int profitLow = (priceHighLow[1] - price) * sign;
