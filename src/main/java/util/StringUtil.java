@@ -3,6 +3,8 @@ package util;
 import java.util.ArrayList;
 import java.util.List;
 
+import api.consts.UnderOverCode;
+
 /**
  * 文字列に関するユーティリティクラス。
  */
@@ -114,9 +116,9 @@ public class StringUtil {
 	public static int underOver(String side) {
 		switch (side) {
 		case "1":
-			return 1;
+			return UnderOverCode.以下.intValue();
 		case "2":
-			return 2;
+			return UnderOverCode.以上.intValue();
 		default:
 			throw new RuntimeException();
 		}
